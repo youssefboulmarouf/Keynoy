@@ -1,6 +1,5 @@
 import express, {Request, Response} from "express";
 import { DeliveryCompanyService } from "./DeliveryCompanyService";
-import {CustomerJson} from "../customer/CustomerJson";
 import {DeliveryCompanyJson} from "./DeliveryCompanyJson";
 
 const router = express.Router();
@@ -24,7 +23,6 @@ router.get("/:id", async (req: Request, res: Response) => {
         );
 });
 
-
 router.post("/", async  (req: Request, res: Response) => {
     res
         .status(201)
@@ -40,7 +38,7 @@ router.put("/:id", async (req: Request, res: Response) => {    res
     .json(
         await deliveryCompanyService.update(
             Number(req.params.id),
-            CustomerJson.from(req.body)
+            DeliveryCompanyJson.from(req.body)
         )
     );
 });
