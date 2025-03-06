@@ -6,6 +6,7 @@ import CustomerResource from "./customer/CustomerResource";
 import DeliveryCompanyResource from "./delivery/DeliveryCompanyResource";
 import OrderStatusResource from "./order/order-status/OrderStatusResource";
 import OrderResource from "./order/OrderResource";
+import ColorResource from "./product/color/ColorResource";
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use("/order-status", OrderStatusResource);
 
 router.use("/products", ProductResource);
 router.use("/product-types", ProductTypeResource);
+router.use("/colors", ColorResource);
 
 router.use("/suppliers", SupplierResource);
 
