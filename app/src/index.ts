@@ -7,14 +7,25 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+let server: any;
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api", router);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Start the server only if not in test mode
+if (process.env.NODE_ENV !== "test") {
+    server = app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
-export { app }; // Export for testing
+// Function to close the server (useful for Jest tests)
+export const stopServer = () => {
+    if (server) {
+        server.close();
+    }
+};
+
+export { app, server };  // Export for testing
