@@ -1,47 +1,47 @@
-import { Request, Response } from "express";
+import {BaseService} from "../../utilities/BaseService";
+import {ProductTypeJson} from "./ProductTypeJson";
 
-export const getProductTypes = (req: Request, res: Response) => {
-    console.log("getProducts");
-    res.json([{ id: 1, name: "Laptop" }, { id: 2, name: "Phone" }]);
-};
-
-export const getProductTypeById = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+export class ProductTypeService extends BaseService {
+    constructor() {
+        super();
     }
 
-    console.log("getProductById: ", productId);
-    res.status(201).json({ message: `Product Id : ${productId}` });
-};
-
-export const addProductType = (req: Request, res: Response) => {
-    console.log("addProduct");
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} added successfully` });
-};
-
-export const updateProductType = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async get(): Promise<ProductTypeJson[]> {
+        const data = await this.prisma.productType.findMany();
+        return data.map((c: any) => ProductTypeJson.from(c));
     }
 
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} updated successfully` });
-}
-
-export const deleteProductType = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async getById(productTypeId: number): Promise<ProductTypeJson> {
+        return ProductTypeJson.from(
+            await this.prisma.productType.findUnique({ where: { id: productTypeId } })
+        );
     }
 
-    res.status(201).json({ message: `Product ${req.body.message} deleted successfully` });
+    async add(productType: ProductTypeJson): Promise<ProductTypeJson> {
+        return ProductTypeJson.from(
+            await this.prisma.productType.create({
+                data: {
+                    name: productType.getName()
+                }
+            })
+        );
+    }
+
+    async update(productTypeId: number, productType: any): Promise<ProductTypeJson> {
+        return ProductTypeJson.from(
+            await this.prisma.productType.update({
+                where: { id: productTypeId },
+                data: {
+                    name: productType.getName()
+                }
+            })
+        );
+    }
+
+    async delete(productTypeId: number): Promise<void> {
+        await this.prisma.productType.delete({
+            where: { id: productTypeId }
+        });
+    }
+
 }
