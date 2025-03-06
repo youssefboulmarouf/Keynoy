@@ -1,47 +1,50 @@
-import { Request, Response } from "express";
+import {BaseService} from "../utilities/BaseService";
+import {CustomerJson} from "./CustomerJson";
 
-export const getCustomers = (req: Request, res: Response) => {
-    console.log("getProducts");
-    res.json([{ id: 1, name: "Laptop" }, { id: 2, name: "Phone" }]);
-};
-
-export const getCustomerById = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+export class CustomerService extends BaseService {
+    constructor() {
+        super();
     }
 
-    console.log("getProductById: ", productId);
-    res.status(201).json({ message: `Product Id : ${productId}` });
-};
+    public get = async (): Promise<CustomerJson[]> => {
+        const data = await this.prisma.customer.findMany();
+        return data.map((c: any) => CustomerJson.from(c));
+    };
 
-export const addCustomer = (req: Request, res: Response) => {
-    console.log("addProduct");
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} added successfully` });
-};
+    public getById = async (customerId: number): Promise<CustomerJson> => {
+        return CustomerJson.from(
+            await this.prisma.customer.findUnique({ where: { id: customerId } })
+        );
+    };
 
-export const updateCustomer = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
+    public add = async (customer: CustomerJson): Promise<CustomerJson> => {
+        return CustomerJson.from(
+            await this.prisma.customer.create({
+                data: {
+                    name: customer.getName(),
+                    phone: customer.getPhone(),
+                    location: customer.getLocation()
+                }
+            })
+        );
+    };
 
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    public update = async (customerId: number, customer: any): Promise<CustomerJson> => {
+        return CustomerJson.from(
+            await this.prisma.customer.update({
+                where: { id: customerId },
+                data: {
+                    name: customer.getName(),
+                    phone: customer.getPhone(),
+                    location: customer.getLocation()
+                }
+            })
+        );
     }
 
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} updated successfully` });
-}
-
-export const deleteCustomer = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    public delete = async (customerId: number) => {
+        await this.prisma.customer.delete({
+            where: { id: customerId }
+        });
     }
-
-    res.status(201).json({ message: `Product ${req.body.message} deleted successfully` });
 }
