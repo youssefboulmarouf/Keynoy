@@ -13,7 +13,9 @@ export class CustomerService extends BaseService {
 
     async getById(customerId: number): Promise<CustomerJson> {
         return CustomerJson.from(
-            await this.prisma.customer.findUnique({ where: { id: customerId } })
+            await this.prisma.customer.findUnique({
+                    where: { id: customerId }
+            })
         );
     };
 

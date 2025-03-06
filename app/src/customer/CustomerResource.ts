@@ -33,7 +33,8 @@ router.post("/", async  (req: Request, res: Response) => {
         );
 });
 
-router.put("/:id", async (req: Request, res: Response) => {    res
+router.put("/:id", async (req: Request, res: Response) => {
+    res
         .status(200)
         .json(
             await customerService.update(
