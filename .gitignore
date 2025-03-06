@@ -1,8 +1,1 @@
 .idea/
-
-app/node_modules
-app/logs/
-app/dist/
-
-client/node_modules/
-client/build/
