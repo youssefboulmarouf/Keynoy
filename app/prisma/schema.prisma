@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,9 +7,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// CUSTOMERS
 model Customer {
   id         Int    @id @default(autoincrement())
   name       String
   phone      String
-  location   String
+  location   String?
+
+  orders     Order[]
 }
+
+// DELIVERIES
+model DeliveryCompany {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  deliveries Delivery[]
+}
+model Delivery {
+  id            Int      @id @default(autoincrement())
+  dcid          Int?
+  orderId       Int?
+  deliveryDate  DateTime?
+  pickupDate    DateTime?
+  price         Decimal
+
+  deliveryCompany DeliveryCompany? @relation(fields: [dcid], references: [id])
+  order           Order?           @relation(fields: [orderId], references: [id])
+  expenses        Expenses[]
+}
+
+// EXPENSES
+model Expenses {
+  id         Int      @id @default(autoincrement())
+  name       String
+  totalPrice Decimal
+  date       DateTime
+  orderId    Int?
+  deliveryId Int?
+
+  order     Order?    @relation(fields: [orderId], references: [id])
+  delivery  Delivery? @relation(fields: [deliveryId], references: [id])
+}
+
+// ORDERS
+model Order {
+  id            Int       @id @default(autoincrement())
+  customerId    Int?
+  supplierId    Int?
+  orderTypeId   Int?
+  orderStatusId Int?
+  totalPrice    Decimal
+  date          DateTime
+
+  customer     Customer?  @relation(fields: [customerId], references: [id])
+  supplier     Supplier?  @relation(fields: [supplierId], references: [id])
+  orderStatus  OrderStatus? @relation(fields: [orderStatusId], references: [id])
+
+  orderLines   OrderLine[]
+  deliveries   Delivery[]
+  expenses     Expenses[]
+}
+model OrderStatus {
+  id      Int    @id @default(autoincrement())
+  name    String
+
+  orders  Order[]
+}
+model OrderLine {
+  orderId   Int
+  productId Int
+  quantity  Int
+  unitPrice Decimal
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+
+  @@id([orderId, productId])
+}
+
+// PRODUCTS
+model Products {
+  id            Int    @id @default(autoincrement())
+  name          String
+  size          String?
+  productTypeId Int
+  colorId       Int?
+  threshold     Int
+  totalQuantity Int
+
+  productType   ProductType @relation(fields: [productTypeId], references: [id])
+  color         Color?       @relation(fields: [colorId], references: [id])
+  orderLines    OrderLine[]
+}
+model ProductType {
+  id        Int    @id @default(autoincrement())
+  name      String
+
+  products  Products[]
+}
+model Color {
+  id  Int       @id @default(autoincrement())
+  name     String    @unique
+
+  products Products[]
+}
+
+// SUPPLIERS
+model Supplier {
+  id      Int    @id @default(autoincrement())
+  name    String
+
+  orders  Order[]
+}
+
+
+
+
+
+
+
+
+
