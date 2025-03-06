@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.ts",
+    "start": "export NODE_ENV=dev; nodemon src/index.ts",
     "dev": "ts-node src/index.ts",
     "build": "tsc",
     "test": "export NODE_ENV=test && dotenv -e .env.test -- npx prisma migrate reset --force && dotenv -e .env.test -- jest --runInBand"
