@@ -6,18 +6,18 @@ export class CustomerService extends BaseService {
         super();
     }
 
-    public get = async (): Promise<CustomerJson[]> => {
+    async get(): Promise<CustomerJson[]> {
         const data = await this.prisma.customer.findMany();
         return data.map((c: any) => CustomerJson.from(c));
     };
 
-    public getById = async (customerId: number): Promise<CustomerJson> => {
+    async getById(customerId: number): Promise<CustomerJson> {
         return CustomerJson.from(
             await this.prisma.customer.findUnique({ where: { id: customerId } })
         );
     };
 
-    public add = async (customer: CustomerJson): Promise<CustomerJson> => {
+    async add(customer: CustomerJson): Promise<CustomerJson> {
         return CustomerJson.from(
             await this.prisma.customer.create({
                 data: {
@@ -29,7 +29,7 @@ export class CustomerService extends BaseService {
         );
     };
 
-    public update = async (customerId: number, customer: any): Promise<CustomerJson> => {
+    async update(customerId: number, customer: any): Promise<CustomerJson> {
         return CustomerJson.from(
             await this.prisma.customer.update({
                 where: { id: customerId },
@@ -42,7 +42,7 @@ export class CustomerService extends BaseService {
         );
     }
 
-    public delete = async (customerId: number) => {
+    async delete(customerId: number): Promise<void> {
         await this.prisma.customer.delete({
             where: { id: customerId }
         });
