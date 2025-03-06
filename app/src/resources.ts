@@ -4,7 +4,6 @@ import ProductTypeResource from "./product/product-type/ProductTypeResource";
 import SupplierResource from "./supplier/SupplierResource";
 import CustomerResource from "./customer/CustomerResource";
 import DeliveryCompanyResource from "./delivery/DeliveryCompanyResource";
-import OrderTypeResource from "./order/order-type/OrderTypeResource";
 import OrderStatusResource from "./order/order-status/OrderStatusResource";
 import OrderResource from "./order/OrderResource";
 
@@ -15,7 +14,6 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.use("/orders", OrderResource);
-router.use("/order-types", OrderTypeResource);
 router.use("/order-status", OrderStatusResource);
 
 router.use("/products", ProductResource);
