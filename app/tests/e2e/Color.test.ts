@@ -24,7 +24,7 @@ describe("Color API E2E Tests", () => {
         stopServer(); // Stop Express server
     });
 
-    test("Should create a new delivery company", async () => {
+    test("Should create a new color", async () => {
         const response = await request(app)
             .post("/api/colors")
             .send({ id: null, name: "Green" });
@@ -35,7 +35,7 @@ describe("Color API E2E Tests", () => {
         expect(response.body.name).toEqual("Green");
     });
 
-    test("Should retrieve all delivery companies", async () => {
+    test("Should retrieve all colors", async () => {
         const response = await request(app).get("/api/colors");
 
         expect(response.status).toBe(200);
@@ -43,14 +43,14 @@ describe("Color API E2E Tests", () => {
         expect(response.body.length).toBeGreaterThan(0);
     });
 
-    test("Should get a delivery company by ID", async () => {
+    test("Should get a color by ID", async () => {
         const response = await request(app).get(`/api/colors/${dcId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("Red");
     });
 
-    test("Should update a delivery company", async () => {
+    test("Should update a color", async () => {
         const response = await request(app)
             .put(`/api/colors/${dcId}`)
             .send({ id: dcId, name: "Yellow" });
@@ -59,7 +59,7 @@ describe("Color API E2E Tests", () => {
         expect(response.body.name).toBe("Yellow");
     });
 
-    test("Should delete a delivery company", async () => {
+    test("Should delete a color", async () => {
         const response = await request(app).delete(`/api/colors/${dcId}`);
         expect(response.status).toBe(204);
     });
