@@ -36,7 +36,7 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: npm install
+        run: cd app;npm install
 
       - name: Install Prisma CLI
         run: npm install -g prisma
@@ -53,7 +53,7 @@ jobs:
           done
 
       - name: Apply Database Migrations
-        run: npx dotenv -e .env.test -- npx prisma migrate reset --force
+        run: cd app;npx dotenv -e .env.test -- npx prisma migrate reset --force
 
       - name: Run Tests
-        run: npm run test
+        run: cd app;npm run test
