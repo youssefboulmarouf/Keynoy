@@ -53,6 +53,11 @@ jobs:
             exit 1
           fi
 
+      - name: Ensure Database Exists
+        run: |
+          echo "Creating database if not exists..."
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS keynoy_test;"
+
       - name: Apply Database Migrations
         run: cd app;npx prisma migrate deploy;npx prisma db push
         env:
