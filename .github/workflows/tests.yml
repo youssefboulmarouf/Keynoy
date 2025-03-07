@@ -45,12 +45,19 @@ jobs:
         run: |
           echo "DATABASE_URL=mysql://root:root@localhost:3306/keynoy_test" > .env.test
 
-      - name: Debug MySQL Service
+      - name: Wait for MySQL to Be Ready
         run: |
-          echo "Checking MySQL logs..."
-          docker logs $(docker ps -q --filter "ancestor=mysql:8.0")
-          echo "Checking active services..."
-          docker ps
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready!"
+              exit 0
+            fi
+            echo "Still waiting for MySQL ($i)..."
+            sleep 2
+          done
+          echo "MySQL did not start in time!"
+          exit 1
 
       - name: Apply Database Migrations
         run: cd app;npx dotenv -e .env.test -- npx prisma migrate reset --force
