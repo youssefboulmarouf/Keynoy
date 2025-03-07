@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 describe("Color API E2E Tests", () => {
-    let dcId: number;
+    let colorId: number;
 
     // Before all tests, clear test database
     beforeAll(async () => {
@@ -15,7 +15,7 @@ describe("Color API E2E Tests", () => {
             .post("/api/colors")
             .send({ id: null, name: "Red" });
 
-        dcId = response.body.id;
+        colorId = response.body.id;
     });
 
     // After all tests, disconnect Prisma
@@ -44,7 +44,7 @@ describe("Color API E2E Tests", () => {
     });
 
     test("Should get a color by ID", async () => {
-        const response = await request(app).get(`/api/colors/${dcId}`);
+        const response = await request(app).get(`/api/colors/${colorId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("Red");
@@ -52,15 +52,15 @@ describe("Color API E2E Tests", () => {
 
     test("Should update a color", async () => {
         const response = await request(app)
-            .put(`/api/colors/${dcId}`)
-            .send({ id: dcId, name: "Yellow" });
+            .put(`/api/colors/${colorId}`)
+            .send({ id: colorId, name: "Yellow" });
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("Yellow");
     });
 
     test("Should delete a color", async () => {
-        const response = await request(app).delete(`/api/colors/${dcId}`);
+        const response = await request(app).delete(`/api/colors/${colorId}`);
         expect(response.status).toBe(204);
     });
 });

@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 describe("Product Type API E2E Tests", () => {
-    let dcId: number;
+    let ptId: number;
 
     // Before all tests, clear test database
     beforeAll(async () => {
@@ -15,7 +15,7 @@ describe("Product Type API E2E Tests", () => {
             .post("/api/product-types")
             .send({ id: null, name: "Bag" });
 
-        dcId = response.body.id;
+        ptId = response.body.id;
     });
 
     // After all tests, disconnect Prisma
@@ -44,7 +44,7 @@ describe("Product Type API E2E Tests", () => {
     });
 
     test("Should get a product type by ID", async () => {
-        const response = await request(app).get(`/api/product-types/${dcId}`);
+        const response = await request(app).get(`/api/product-types/${ptId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("Bag");
@@ -52,15 +52,15 @@ describe("Product Type API E2E Tests", () => {
 
     test("Should update a product type", async () => {
         const response = await request(app)
-            .put(`/api/product-types/${dcId}`)
-            .send({ id: dcId, name: "product type" });
+            .put(`/api/product-types/${ptId}`)
+            .send({ id: ptId, name: "product type" });
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("product type");
     });
 
     test("Should delete a product type", async () => {
-        const response = await request(app).delete(`/api/product-types/${dcId}`);
+        const response = await request(app).delete(`/api/product-types/${ptId}`);
         expect(response.status).toBe(204);
     });
 });
