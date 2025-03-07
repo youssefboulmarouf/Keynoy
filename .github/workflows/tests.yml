@@ -66,6 +66,11 @@ jobs:
       - name: Generate Prisma Client
         run: cd app;npx prisma generate
 
+      - name: Ensure Database & table Exists
+        run: |
+          echo "Ensure Database & table Exists ..."
+          mysql -h 127.0.0.1 -uroot -proot -e "DESCRIBE DATABASE keynoy_test;"
+
       - name: Run Tests
         run: cd app;npm run github-test
         env:
