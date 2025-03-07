@@ -6,7 +6,8 @@
     "start": "export NODE_ENV=dev; nodemon src/index.ts",
     "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "test": "export NODE_ENV=test && dotenv -e .env.test -- npx prisma migrate reset --force && dotenv -e .env.test -- jest --runInBand"
+    "test": "export NODE_ENV=test && dotenv -e .env.test -- npx prisma migrate reset --force && dotenv -e .env.test -- jest --runInBand",
+    "github-test": "NODE_ENV=test npx prisma migrate reset --force && jest --runInBand"
   },
   "keywords": [],
   "author": "",
