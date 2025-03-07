@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - '**'
-  pull_request:
-    branches:
-      - '**'
 
 jobs:
   test:
@@ -39,24 +36,10 @@ jobs:
         run: cd app;npm install
 
       - name: Set Up Environment Variables
-        run: |
-          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/keynoy_test" > $GITHUB_ENV
+        run: echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/keynoy_test" > $GITHUB_ENV
 
       - name: Wait for MySQL to Be Ready
-        run: |
-          echo "Waiting for MySQL to start..."
-          if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
-            echo "MySQL is ready!"
-            exit 0
-          else
-            echo "MySQL not ready!"
-            exit 1
-          fi
-
-      - name: Ensure Database Exists
-        run: |
-          echo "Creating database if not exists..."
-          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS keynoy_test;"
+        run: mysqladmin ping -h 127.0.0.1 -uroot -proot
 
       - name: Apply Database Migrations
         run: cd app;npx prisma migrate deploy;npx prisma db push
@@ -65,11 +48,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: cd app;npx prisma generate
-
-      - name: Ensure Database & table Exists
-        run: |
-          echo "Ensure Database & table Exists ..."
-          mysql -h 127.0.0.1 -uroot -proot -e "use keynoy_test;SHOW TABLES;"
 
       - name: Run Tests
         run: cd app;npm run github-test
