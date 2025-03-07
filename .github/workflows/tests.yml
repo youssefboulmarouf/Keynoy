@@ -65,7 +65,7 @@ jobs:
           DATABASE_URL: ${{ env.DATABASE_URL }}
 
       - name: Run Tests
-        run: npm run github-test
+        run: cd app; npm run github-test
         env:
           NODE_ENV: test
           DATABASE_URL: ${{ env.DATABASE_URL }}
