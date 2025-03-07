@@ -69,7 +69,7 @@ jobs:
       - name: Ensure Database & table Exists
         run: |
           echo "Ensure Database & table Exists ..."
-          mysql -h 127.0.0.1 -uroot -proot -e "DESCRIBE DATABASE keynoy_test;"
+          mysql -h 127.0.0.1 -uroot -proot -e "use keynoy_test;SHOW TABLES;"
 
       - name: Run Tests
         run: cd app;npm run github-test
