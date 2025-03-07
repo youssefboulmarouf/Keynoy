@@ -43,7 +43,7 @@ jobs:
 
       - name: Set Up Environment Variables
         run: |
-          echo "DATABASE_URL=mysql://root:root@localhost:3306/keynoy_test" > .env.test
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/keynoy_test" > $GITHUB_ENV
 
       - name: Wait for MySQL to Be Ready
         run: |
@@ -60,7 +60,9 @@ jobs:
           exit 1
 
       - name: Apply Database Migrations
-        run: cd app;npx dotenv -e .env.test -- npx prisma migrate reset --force
+        run: cd app;npx prisma migrate reset --force
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
 
       - name: Run Tests
         run: cd app;npm run test
