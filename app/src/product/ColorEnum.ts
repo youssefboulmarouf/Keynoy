@@ -1,4 +1,5 @@
 export enum ColorEnum {
+    TRANSPARENT = 'transparent',
     RED = "red",
     BLUE = "blue",
     GREEN = "green",
@@ -12,6 +13,7 @@ export enum ColorEnum {
     BROWN = "brown",
     CYAN = "cyan",
     MAGENTA = "magenta",
+    GOLD = "gold",
 }
 
 export function colorFromString(status: string): ColorEnum | undefined {
