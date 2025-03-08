@@ -22,7 +22,7 @@ async function main() {
 
     // Insert Products
     await prisma.$executeRawUnsafe(`
-    INSERT INTO Products (name, size, productTypeId, color, threshold, totalQuantity)
+    INSERT INTO Product (name, size, productTypeId, color, threshold, totalQuantity)
     VALUES
       ('25/20', '25/20', 1, 'black', 0, 0),
       ('25/20', '25/20', 1, 'white', 0, 0),
