@@ -1,5 +1,5 @@
 export enum ColorEnum {
-    TRANSPARENT = 'transparent',
+    TRANSPARENT = "transparent",
     RED = "red",
     BLUE = "blue",
     GREEN = "green",
@@ -14,8 +14,10 @@ export enum ColorEnum {
     CYAN = "cyan",
     MAGENTA = "magenta",
     GOLD = "gold",
+    UNKNOWN = "unknown",
 }
 
-export function colorFromString(status: string): ColorEnum | undefined {
-    return Object.values(ColorEnum).find((s) => s === status);
+export function colorFromString(status: string): ColorEnum {
+    const color = Object.values(ColorEnum).find((s) => s === status);
+    return color ?? ColorEnum.UNKNOWN;
 }
