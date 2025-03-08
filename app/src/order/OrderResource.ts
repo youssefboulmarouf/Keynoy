@@ -28,7 +28,7 @@ router.post("/", async  (req: Request, res: Response) => {
         .status(201)
         .json(
             await orderService.add(
-                OrderJson.from(req.body)
+                OrderJson.fromRequest(req.body)
             )
         );
 });
@@ -39,7 +39,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         .json(
             await orderService.update(
                 Number(req.params.id),
-                OrderJson.from(req.body)
+                OrderJson.fromRequest(req.body)
             )
         );
 });
