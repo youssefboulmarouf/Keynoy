@@ -42,7 +42,7 @@ jobs:
         run: mysqladmin ping -h 127.0.0.1 -uroot -proot
 
       - name: Apply Database Migrations
-        run: cd app;npx prisma migrate deploy;npx prisma db push
+        run: cd app;npx prisma migrate deploy;npx prisma db push;npx prisma db seed
         env:
           DATABASE_URL: ${{ env.DATABASE_URL }}
 
