@@ -1,5 +1,6 @@
 import {OrderTypeEnum, orderTypeFromString} from "./OrderTypeEnum";
 import {OrderStatusEnum, orderStatusFromString} from "./OrderStatusEnum";
+import {OrderLineJson} from "./OrderLineJson";
 
 export class OrderJson {
     private readonly id: number;
@@ -9,6 +10,7 @@ export class OrderJson {
     private readonly orderStatus: OrderStatusEnum;
     private readonly totalPrice: number;
     private readonly date: Date;
+    private readonly orderLines: OrderLineJson[];
 
     constructor(
         id: number,
@@ -17,7 +19,8 @@ export class OrderJson {
         orderType: string,
         orderStatus: string,
         totalPrice: number,
-        date: Date
+        date: Date,
+        orderLines: OrderLineJson[]
     ) {
         this.id = id;
         this.customerId = customerId;
@@ -26,13 +29,12 @@ export class OrderJson {
         this.orderStatus = orderStatusFromString(orderStatus);
         this.totalPrice = totalPrice;
         this.date = date;
-
+        this.orderLines = orderLines;
     }
 
     public getId(): number {
         return this.id;
     }
-
 
     public getCustomerId(): number {
         return this.customerId;
@@ -58,7 +60,11 @@ export class OrderJson {
         return this.date;
     }
 
-    public static from(body: any): OrderJson {
+    public getOrderLines(): OrderLineJson[] {
+        return this.orderLines;
+    }
+
+    public static fromRequest(body: any): OrderJson {
         return new OrderJson(
             body.id,
             body.customerId,
@@ -66,7 +72,21 @@ export class OrderJson {
             body.orderType,
             body.orderStatus,
             body.totalPrice,
-            body.date
+            body.date,
+            body.orderLines.map((ol: any) => OrderLineJson.from(ol)),
+        )
+    }
+
+    public static fromDb(body: any, orderLines: OrderLineJson[]): OrderJson {
+        return new OrderJson(
+            body.id,
+            body.customerId,
+            body.supplierId,
+            body.orderType,
+            body.orderStatus,
+            body.totalPrice,
+            body.date,
+            orderLines
         )
     }
 }
