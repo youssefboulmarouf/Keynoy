@@ -4,8 +4,10 @@ export enum OrderStatusEnum {
     FINISHED = "finished",
     SHIPPED = "shipped",
     DELIVERED = "delivered",
+    UNKNOWN = "unknown",
 }
 
-export function orderStatusFromString(status: string): OrderStatusEnum | undefined {
-    return Object.values(OrderStatusEnum).find((s) => s === status);
+export function orderStatusFromString(status: string): OrderStatusEnum {
+    const orderStatus = Object.values(OrderStatusEnum).find((s) => s === status);
+    return orderStatus ?? OrderStatusEnum.UNKNOWN;
 }
