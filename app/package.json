@@ -9,6 +9,9 @@
     "test": "export NODE_ENV=test && dotenv -e .env.test -- npx prisma migrate reset --force && dotenv -e .env.test -- jest --runInBand",
     "github-test": "NODE_ENV=test jest --runInBand"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
