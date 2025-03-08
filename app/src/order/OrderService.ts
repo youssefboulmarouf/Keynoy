@@ -1,47 +1,65 @@
-import { Request, Response } from "express";
+import {BaseService} from "../utilities/BaseService";
+import {OrderJson} from "./OrderJson";
+import {OrderTypeEnum} from "./OrderTypeEnum";
+import {OrderStatusEnum} from "./OrderStatusEnum";
 
-export const getOrders = (req: Request, res: Response) => {
-    console.log("getProducts");
-    res.json([{ id: 1, name: "Laptop" }, { id: 2, name: "Phone" }]);
-};
-
-export const getOrderById = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+export class OrderService extends BaseService {
+    constructor() {
+        super();
     }
 
-    console.log("getProductById: ", productId);
-    res.status(201).json({ message: `Product Id : ${productId}` });
-};
+    async get(): Promise<OrderJson[]> {
+        const data = await this.prisma.order.findMany();
+        return data.map((c: any) => OrderJson.from(c));
+    };
 
-export const addOrder = (req: Request, res: Response) => {
-    console.log("addProduct");
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} added successfully` });
-};
+    async getById(orderId: number): Promise<OrderJson> {
+        return OrderJson.from(
+            await this.prisma.order.findUnique({
+                    where: { id: orderId }
+            })
+        );
+    };
 
-export const updateOrder = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
+    async add(order: OrderJson): Promise<OrderJson> {
+        // TODO: add logic for products
+        // TODO: add logic for expenses
+        return OrderJson.from(
+            await this.prisma.order.create({
+                data: {
+                    customerId: order.getCustomerId(),
+                    supplierId: order.getSupplierId(),
+                    orderType: order.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : order.getOrderType(),
+                    orderStatus: order.getOrderStatus() == OrderStatusEnum.UNKNOWN ? '' : order.getOrderStatus(),
+                    totalPrice: order.getTotalPrice(),
+                    date: order.getDate()
+                }
+            })
+        );
+    };
 
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async update(orderId: number, order: any): Promise<OrderJson> {
+        // TODO: add logic for products
+        // TODO: add logic for expenses
+        // TODO: add logic for deliveries
+        return OrderJson.from(
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    customerId: order.getCustomerId(),
+                    supplierId: order.getSupplierId(),
+                    orderType: order.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : order.getOrderType(),
+                    orderStatus: order.getOrderStatus() == OrderStatusEnum.UNKNOWN ? '' : order.getOrderStatus(),
+                    totalPrice: order.getTotalPrice(),
+                    date: order.getDate()
+                }
+            })
+        );
     }
 
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} updated successfully` });
-}
-
-export const deleteOrder = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async delete(orderId: number): Promise<void> {
+        await this.prisma.order.delete({
+            where: { id: orderId }
+        });
     }
-
-    res.status(201).json({ message: `Product ${req.body.message} deleted successfully` });
 }
