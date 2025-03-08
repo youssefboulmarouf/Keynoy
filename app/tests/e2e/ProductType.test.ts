@@ -7,17 +7,6 @@ const prisma = new PrismaClient();
 describe("Product Type API E2E Tests", () => {
     let ptId: number;
 
-    // Before all tests, clear test database
-    beforeAll(async () => {
-        await prisma.productType.deleteMany(); // Clears test data
-
-        const response = await request(app)
-            .post("/api/product-types")
-            .send({ id: null, name: "Bag" });
-
-        ptId = response.body.id;
-    });
-
     // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
@@ -33,6 +22,7 @@ describe("Product Type API E2E Tests", () => {
         expect(response.body).toHaveProperty("id");
         expect(response.body.id).not.toBeNull();
         expect(response.body.name).toEqual("Paint");
+        ptId = response.body.id;
     });
 
     test("Should retrieve all product types", async () => {
@@ -47,7 +37,7 @@ describe("Product Type API E2E Tests", () => {
         const response = await request(app).get(`/api/product-types/${ptId}`);
 
         expect(response.status).toBe(200);
-        expect(response.body.name).toBe("Bag");
+        expect(response.body.name).toBe("Paint");
     });
 
     test("Should update a product type", async () => {

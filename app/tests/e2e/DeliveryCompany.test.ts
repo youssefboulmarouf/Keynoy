@@ -7,17 +7,6 @@ const prisma = new PrismaClient();
 describe("Delivery Company API E2E Tests", () => {
     let dcId: number;
 
-    // Before all tests, clear test database
-    beforeAll(async () => {
-        await prisma.deliveryCompany.deleteMany(); // Clears test data
-
-        const response = await request(app)
-            .post("/api/delivery-companies")
-            .send({ id: null, name: "Alice" });
-
-        dcId = response.body.id;
-    });
-
     // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
@@ -33,6 +22,7 @@ describe("Delivery Company API E2E Tests", () => {
         expect(response.body).toHaveProperty("id");
         expect(response.body.id).not.toBeNull();
         expect(response.body.name).toEqual("Bob");
+        dcId = response.body.id;
     });
 
     test("Should retrieve all delivery companies", async () => {
@@ -47,7 +37,7 @@ describe("Delivery Company API E2E Tests", () => {
         const response = await request(app).get(`/api/delivery-companies/${dcId}`);
 
         expect(response.status).toBe(200);
-        expect(response.body.name).toBe("Alice");
+        expect(response.body.name).toBe("Bob");
     });
 
     test("Should update a delivery company", async () => {

@@ -7,17 +7,6 @@ const prisma = new PrismaClient();
 describe("Supplier API E2E Tests", () => {
     let supplierId: number;
 
-    // Before all tests, clear test database
-    beforeAll(async () => {
-        await prisma.supplier.deleteMany(); // Clears test data
-
-        const response = await request(app)
-            .post("/api/suppliers")
-            .send({ id: null, name: "sup1" });
-
-        supplierId = response.body.id;
-    });
-
     // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
@@ -33,6 +22,7 @@ describe("Supplier API E2E Tests", () => {
         expect(response.body).toHaveProperty("id");
         expect(response.body.id).not.toBeNull();
         expect(response.body.name).toEqual("sup2");
+        supplierId = response.body.id;
     });
 
     test("Should retrieve all suppliers", async () => {
@@ -47,7 +37,7 @@ describe("Supplier API E2E Tests", () => {
         const response = await request(app).get(`/api/suppliers/${supplierId}`);
 
         expect(response.status).toBe(200);
-        expect(response.body.name).toBe("sup1");
+        expect(response.body.name).toBe("sup2");
     });
 
     test("Should update a supplier", async () => {

@@ -7,17 +7,6 @@ const prisma = new PrismaClient();
 describe("Customer API E2E Tests", () => {
     let customerId: number;
 
-    // Before all tests, clear test database
-    beforeAll(async () => {
-        await prisma.customer.deleteMany(); // Clears test data
-
-        const response = await request(app)
-            .post("/api/customers")
-            .send({ id: null, name: "Alice", phone: "555666777", location: "Miami" });
-
-        customerId = response.body.id;
-    });
-
     // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
@@ -35,6 +24,7 @@ describe("Customer API E2E Tests", () => {
         expect(response.body.name).toEqual("Bob");
         expect(response.body.phone).toEqual("111222333");
         expect(response.body.location).toEqual("Morocco");
+        customerId = response.body.id;
     });
 
     test("Should retrieve all customers", async () => {
@@ -49,7 +39,7 @@ describe("Customer API E2E Tests", () => {
         const response = await request(app).get(`/api/customers/${customerId}`);
 
         expect(response.status).toBe(200);
-        expect(response.body.name).toBe("Alice");
+        expect(response.body.name).toBe("Bob");
     });
 
     test("Should update a customer", async () => {
