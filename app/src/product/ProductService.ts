@@ -56,4 +56,19 @@ export class ProductService extends BaseService {
             where: { id: productId }
         });
     }
+
+    async updateQuantity(productId: number, quantityDiff: number): Promise<void> {
+        const product = await this.getById(productId);
+        await this.prisma.product.update({
+            where: { id: productId },
+            data: {
+                name: product.getName(),
+                size: product.getSize(),
+                productTypeId: product.getProductTypeId(),
+                color: product.getColor() == ColorEnum.UNKNOWN ? '' : product.getColor(),
+                threshold: product.getThreshold(),
+                totalQuantity: (product.getTotalQuantity() + quantityDiff)
+            }
+        })
+    }
 }
