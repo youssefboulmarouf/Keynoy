@@ -34,20 +34,16 @@ model Delivery {
 
   deliveryCompany DeliveryCompany? @relation(fields: [dcid], references: [id])
   order           Order?           @relation(fields: [orderId], references: [id])
-  expenses        Expenses[]
 }
 
 // EXPENSES
-model Expenses {
+model Expense {
   id         Int      @id @default(autoincrement())
   name       String
   totalPrice Decimal
   date       DateTime
   orderId    Int?
   deliveryId Int?
-
-  order     Order?    @relation(fields: [orderId], references: [id])
-  delivery  Delivery? @relation(fields: [deliveryId], references: [id])
 }
 
 // ORDERS
@@ -65,7 +61,6 @@ model Order {
 
   orderLines   OrderLine[]
   deliveries   Delivery[]
-  expenses     Expenses[]
 }
 
 model OrderLine {
@@ -75,13 +70,13 @@ model OrderLine {
   unitPrice Decimal
 
   order     Order    @relation(fields: [orderId], references: [id])
-  product   Products @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
   @@id([orderId, productId])
 }
 
 // PRODUCTS
-model Products {
+model Product {
   id            Int    @id @default(autoincrement())
   name          String
   size          String?
@@ -97,7 +92,7 @@ model ProductType {
   id        Int    @id @default(autoincrement())
   name      String
 
-  products  Products[]
+  products  Product[]
 }
 
 // SUPPLIERS
