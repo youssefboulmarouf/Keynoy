@@ -55,25 +55,19 @@ model Order {
   id            Int       @id @default(autoincrement())
   customerId    Int?
   supplierId    Int?
-  orderTypeId   Int?
-  orderStatusId Int?
+  orderType     String
+  orderStatus   String
   totalPrice    Decimal
   date          DateTime
 
   customer     Customer?  @relation(fields: [customerId], references: [id])
   supplier     Supplier?  @relation(fields: [supplierId], references: [id])
-  orderStatus  OrderStatus? @relation(fields: [orderStatusId], references: [id])
 
   orderLines   OrderLine[]
   deliveries   Delivery[]
   expenses     Expenses[]
 }
-model OrderStatus {
-  id      Int    @id @default(autoincrement())
-  name    String
 
-  orders  Order[]
-}
 model OrderLine {
   orderId   Int
   productId Int
@@ -92,12 +86,11 @@ model Products {
   name          String
   size          String?
   productTypeId Int
-  colorId       Int?
+  color         String
   threshold     Int
   totalQuantity Int
 
   productType   ProductType @relation(fields: [productTypeId], references: [id])
-  color         Color?       @relation(fields: [colorId], references: [id])
   orderLines    OrderLine[]
 }
 model ProductType {
@@ -105,12 +98,6 @@ model ProductType {
   name      String
 
   products  Products[]
-}
-model Color {
-  id  Int       @id @default(autoincrement())
-  name     String    @unique
-
-  products Products[]
 }
 
 // SUPPLIERS
