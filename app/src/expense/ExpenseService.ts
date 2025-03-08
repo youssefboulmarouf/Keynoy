@@ -1,47 +1,56 @@
-import { Request, Response } from "express";
+import {BaseService} from "../utilities/BaseService";
+import {ExpenseJson} from "./ExpenseJson";
 
-export const getExpenses = (req: Request, res: Response) => {
-    console.log("getProducts");
-    res.json([{ id: 1, name: "Laptop" }, { id: 2, name: "Phone" }]);
-};
-
-export const getExpenseById = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+export class ExpenseService extends BaseService {
+    constructor() {
+        super();
     }
 
-    console.log("getProductById: ", productId);
-    res.status(201).json({ message: `Product Id : ${productId}` });
-};
+    async get(): Promise<ExpenseJson[]> {
+        const data = await this.prisma.expense.findMany();
+        return data.map((c: any) => ExpenseJson.from(c));
+    };
 
-export const addExpense = (req: Request, res: Response) => {
-    console.log("addProduct");
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} added successfully` });
-};
+    async getById(expenseId: number): Promise<ExpenseJson> {
+        return ExpenseJson.from(
+            await this.prisma.expense.findUnique({
+                    where: { id: expenseId }
+            })
+        );
+    };
 
-export const updateExpense = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
+    async add(expense: ExpenseJson): Promise<ExpenseJson> {
+        return ExpenseJson.from(
+            await this.prisma.expense.create({
+                data: {
+                    name: expense.getName(),
+                    totalPrice: expense.getTotalPrice(),
+                    date: expense.getDate(),
+                    orderId: expense.getOrderId(),
+                    deliveryId: expense.getDeliveryId()
+                }
+            })
+        );
+    };
 
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async update(expenseId: number, expense: any): Promise<ExpenseJson> {
+        return ExpenseJson.from(
+            await this.prisma.expense.update({
+                where: { id: expenseId },
+                data: {
+                    name: expense.getName(),
+                    totalPrice: expense.getTotalPrice(),
+                    date: expense.getDate(),
+                    orderId: expense.getOrderId(),
+                    deliveryId: expense.getDeliveryId()
+                }
+            })
+        );
     }
 
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} updated successfully` });
-}
-
-export const deleteExpense = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async delete(expenseId: number): Promise<void> {
+        await this.prisma.expense.delete({
+            where: { id: expenseId }
+        });
     }
-
-    res.status(201).json({ message: `Product ${req.body.message} deleted successfully` });
 }
