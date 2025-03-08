@@ -1,15 +1,52 @@
-import express from "express";
-import {addProduct, getProducts, getProductById, updateProduct, deleteProduct} from "./ProductService";
+import express, {Request, Response} from "express";
+import {ProductService} from "./ProductService";
+import {ProductJson} from "./ProductJson";
 
 const router = express.Router();
+const productService = new ProductService();
 
-router.get("/", getProducts);
-router.get("/:id", getProductById);
+router.get("/", async (req: Request, res: Response) => {
+    res
+        .status(200)
+        .json(
+            await productService.get()
+        );
+});
 
-router.post("/", addProduct);
+router.get("/:id", async (req: Request, res: Response) => {
+    res
+        .status(200)
+        .json(
+            await productService.getById(
+                Number(req.params.id)
+            )
+        );
+});
 
-router.put("/:id", updateProduct);
+router.post("/", async  (req: Request, res: Response) => {
+    res
+        .status(201)
+        .json(
+            await productService.add(
+                ProductJson.from(req.body)
+            )
+        );
+});
 
-router.delete("/:id", deleteProduct);
+router.put("/:id", async (req: Request, res: Response) => {
+    res
+        .status(200)
+        .json(
+            await productService.update(
+                Number(req.params.id),
+                ProductJson.from(req.body)
+            )
+        );
+});
+
+router.delete("/:id", async (req: Request, res: Response) => {
+    await productService.delete(Number(req.params.id));
+    res.status(204).send();
+});
 
 export default router;

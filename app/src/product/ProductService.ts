@@ -1,47 +1,59 @@
-import { Request, Response } from "express";
+import {BaseService} from "../utilities/BaseService";
+import {ProductJson} from "./ProductJson";
+import {ColorEnum} from "./ColorEnum";
 
-export const getProducts = (req: Request, res: Response) => {
-    console.log("getProducts");
-    res.json([{ id: 1, name: "Laptop" }, { id: 2, name: "Phone" }]);
-};
-
-export const getProductById = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+export class ProductService extends BaseService {
+    constructor() {
+        super();
     }
 
-    console.log("getProductById: ", productId);
-    res.status(201).json({ message: `Product Id : ${productId}` });
-};
+    async get(): Promise<ProductJson[]> {
+        const data = await this.prisma.products.findMany();
+        return data.map((c: any) => ProductJson.from(c));
+    };
 
-export const addProduct = (req: Request, res: Response) => {
-    console.log("addProduct");
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} added successfully` });
-};
+    async getById(productId: number): Promise<ProductJson> {
+        return ProductJson.from(
+            await this.prisma.products.findUnique({
+                    where: { id: productId }
+            })
+        );
+    };
 
-export const updateProduct = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
+    async add(product: ProductJson): Promise<ProductJson> {
+        return ProductJson.from(
+            await this.prisma.products.create({
+                data: {
+                    name: product.getName(),
+                    size: product.getSize(),
+                    productTypeId: product.getProductTypeId(),
+                    color: product.getColor() == ColorEnum.UNKNOWN ? '' : product.getColor(),
+                    threshold: product.getThreshold(),
+                    totalQuantity: product.getTotalQuantity()
+                }
+            })
+        );
+    };
 
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async update(productId: number, product: any): Promise<ProductJson> {
+        return ProductJson.from(
+            await this.prisma.products.update({
+                where: { id: productId },
+                data: {
+                    name: product.getName(),
+                    size: product.getSize(),
+                    productTypeId: product.getProductTypeId(),
+                    color: product.getColor() == ColorEnum.UNKNOWN ? '' : product.getColor(),
+                    threshold: product.getThreshold(),
+                    totalQuantity: product.getTotalQuantity()
+                }
+            })
+        );
     }
 
-    console.log("body: ", req.body);
-    res.status(201).json({ message: `Product ${req.body.message} updated successfully` });
-}
-
-export const deleteProduct = (req: Request, res: Response) => {
-    const productId = Number(req.params.id);
-
-    if (productId === 0) {
-        res.status(404).json({ message: "Product not found" });
-        return;
+    async delete(productId: number): Promise<void> {
+        await this.prisma.products.delete({
+            where: { id: productId }
+        });
     }
-
-    res.status(201).json({ message: `Product ${req.body.message} deleted successfully` });
 }
