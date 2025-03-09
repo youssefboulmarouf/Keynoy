@@ -53,4 +53,10 @@ export class ExpenseService extends BaseService {
             where: { id: expenseId }
         });
     }
+
+    async deleteByOrderId(orderId: number): Promise<void> {
+        await this.prisma.expense.deleteMany({
+            where: { orderId: orderId }
+        });
+    }
 }
