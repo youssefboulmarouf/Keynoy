@@ -25,14 +25,13 @@ model DeliveryCompany {
   deliveries Delivery[]
 }
 model Delivery {
-  id            Int      @id @default(autoincrement())
-  dcid          Int?
-  orderId       Int?
+  orderId       Int @id
+  dcId          Int
+  shippingDate  DateTime?
   deliveryDate  DateTime?
-  pickupDate    DateTime?
   price         Decimal
 
-  deliveryCompany DeliveryCompany? @relation(fields: [dcid], references: [id])
+  deliveryCompany DeliveryCompany? @relation(fields: [dcId], references: [id])
   order           Order?           @relation(fields: [orderId], references: [id])
 }
 
