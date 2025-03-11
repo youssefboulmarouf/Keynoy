@@ -14,15 +14,18 @@ export class OrderService extends BaseService {
     private readonly orderLineService: OrderLineService;
     private readonly expenseService: ExpenseService;
     private readonly productService: ProductService;
+    private readonly logger: Logger;
 
     constructor() {
         super();
         this.orderLineService = new OrderLineService();
         this.expenseService = new ExpenseService();
         this.productService = new ProductService();
+        this.logger = new Logger(OrderService.name);
     }
 
     async get(): Promise<OrderJson[]> {
+        this.logger.log(`Get all orders`);
         const prismaOrders = await this.prisma.order.findMany();
 
         const allOrders: OrderJson[] = []
@@ -38,6 +41,7 @@ export class OrderService extends BaseService {
     };
 
     async getById(orderId: number): Promise<OrderJson> {
+        this.logger.log(`Get order by [id:${orderId}]`);
         const prismaOrder = await this.prisma.order.findUnique({
             where: { id: orderId }
         });
@@ -49,6 +53,7 @@ export class OrderService extends BaseService {
     };
 
     async add(order: OrderJson): Promise<OrderJson> {
+        this.logger.log(`Create new order`, order);
         const prismaOrder: any = await this.prisma.order.create({
             data: {
                 customerId: order.getCustomerId(),
@@ -59,6 +64,7 @@ export class OrderService extends BaseService {
                 date: order.getDate()
             }
         });
+        this.logger.log(`Created order with [id: ${prismaOrder.id}]`);
 
         const savedOrder = OrderJson.fromDb(
             prismaOrder,
@@ -66,6 +72,7 @@ export class OrderService extends BaseService {
         );
         
         if (savedOrder.getOrderType() === OrderTypeEnum.BUY) {
+            this.logger.log(`Adding Expense for BUY order`);
             await this.expenseService.add(new ExpenseJson(
                 0,
                 "Buy Order",
@@ -88,18 +95,8 @@ export class OrderService extends BaseService {
         this.logger.log(`Update order with [id=${orderId}]`);
         const existingOrder = await this.getById(orderId);
 
-        // TODO: add logic to increase/decrease products based on order status
-            // Increase product quantity
-            // for (const line of savedOrder.getOrderLines()) {
-            //     await this.productService.updateQuantity(line.getProductId(), line.getQuantity());
-            // }
-            //
-            // Decrease product quantity
-            // for (const line of savedOrder.getOrderLines()) {
-            //     await this.productService.updateQuantity(line.getProductId(), (-line.getQuantity()));
-            // }
-        // TODO: add logic for deliveries
-        await this.orderLineService.delete(orderId);
+        this.logger.log(`Update existing order`, existingOrder);
+        this.logger.log(`Order updated data`, order);
 
         await this.updateProductQuantitiesMaybe(existingOrder);
 
