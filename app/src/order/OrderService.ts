@@ -7,6 +7,8 @@ import {OrderLineService} from "./OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
 import {ProductService} from "../product/ProductService";
+import Logger from "../utilities/Logger";
+import {DeliveryJson} from "./DeliveryJson";
 
 export class OrderService extends BaseService {
     private readonly orderLineService: OrderLineService;
@@ -60,9 +62,9 @@ export class OrderService extends BaseService {
 
         const savedOrder = OrderJson.fromDb(
             prismaOrder,
-            await this.orderLineService.addList(order.getOrderLines())
+            await this.orderLineService.addList(order.getOrderLines(), prismaOrder.id)
         );
-
+        
         if (savedOrder.getOrderType() === OrderTypeEnum.BUY) {
             await this.expenseService.add(new ExpenseJson(
                 0,
@@ -72,12 +74,19 @@ export class OrderService extends BaseService {
                 savedOrder.getId(),
                 0
             ));
-        }
 
-        return savedOrder
+            this.logger.log(`Increasing product quantity for new BUY order`);
+            await this.increaseProductQuantity(savedOrder.getOrderLines());
+        } else if (savedOrder.getOrderType() === OrderTypeEnum.SELL) {
+            this.logger.log(`Decreasing product quantity for new SELL order`);
+            await this.decreaseProductQuantity(savedOrder.getOrderLines());
+        }
+        return savedOrder;
     };
 
     async update(orderId: number, order: OrderJson): Promise<OrderJson> {
+        this.logger.log(`Update order with [id=${orderId}]`);
+        const existingOrder = await this.getById(orderId);
 
         // TODO: add logic to increase/decrease products based on order status
             // Increase product quantity
@@ -92,12 +101,7 @@ export class OrderService extends BaseService {
         // TODO: add logic for deliveries
         await this.orderLineService.delete(orderId);
 
-        const savedOrderLines: OrderLineJson[] = []
-        for (const line of order.getOrderLines()) {
-            savedOrderLines.push(
-                await this.orderLineService.add(line)
-            )
-        }
+        await this.updateProductQuantitiesMaybe(existingOrder);
 
         const prismaOrder = await this.prisma.order.update({
             where: { id: orderId },
@@ -111,13 +115,113 @@ export class OrderService extends BaseService {
             }
         });
 
+        const savedOrderLines: OrderLineJson[] = await this.updateOrderLinesMaybe(existingOrder);
+
         return OrderJson.fromDb(prismaOrder, savedOrderLines);
     }
 
     async delete(orderId: number): Promise<void> {
-        await this.orderLineService.delete(orderId);
-        await this.prisma.order.delete({
-            where: { id: orderId }
-        });
+        this.logger.log(`Delete order with [id=${orderId}]`);
+        const existingOrder = await this.getById(orderId);
+
+        if (existingOrder.getOrderStatus() === OrderStatusEnum.CONFIRMED) {
+            this.logger.log(`Order status is confirmed, order and related entities will be deleted`);
+            if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+                this.logger.log(`Deleting Expense for BUY order`);
+                await this.expenseService.deleteByOrderId(orderId);
+            }
+
+            await this.updateProductQuantitiesMaybe(existingOrder);
+
+            this.logger.log(`Deleting order lines`);
+            await this.orderLineService.delete(orderId);
+
+            this.logger.log(`Deleting order`);
+            await this.prisma.order.delete({
+                where: { id: orderId }
+            });
+        } else {
+            this.logger.log(`Order with [status=${existingOrder.getOrderStatus()}] doesn't allow deleting`);
+        }
+
+    }
+
+    async shipped(deliveryJson: DeliveryJson) {
+        this.logger.log(`Adding delivery details to order with [id=${deliveryJson.getOrderId()}]`);
+        const existingOrder = await this.getById(deliveryJson.getOrderId());
+
+        if (existingOrder.getOrderStatus() != OrderStatusEnum.SHIPPED || existingOrder.getOrderStatus() != OrderStatusEnum.DELIVERED) {
+            this.logger.log(`Update order status to shipped`);
+            await this.prisma.order.update({
+                where: { id: existingOrder.getId() },
+                data: {
+                    customerId: existingOrder.getCustomerId(),
+                    supplierId: existingOrder.getSupplierId(),
+                    orderType: existingOrder.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : existingOrder.getOrderType(),
+                    orderStatus: OrderStatusEnum.SHIPPED,
+                    totalPrice: existingOrder.getTotalPrice(),
+                    date: existingOrder.getDate()
+                }
+            });
+
+            await this.prisma.delivery.create({
+                data: {
+                    orderId: deliveryJson.getOrderId(),
+                    dcId: deliveryJson.getDcId(),
+                    shippingDate: deliveryJson.getShippingDate(),
+                    deliveryDate: deliveryJson.getDeliveryDate(),
+                    price: deliveryJson.getPrice()
+                }
+            });
+        } else {
+            this.logger.log(`Order with [id=${existingOrder.getId()}] already have [status=${existingOrder.getOrderStatus()}]`);
+        }
+    }
+
+    private async updateProductQuantitiesMaybe(existingOrder: OrderJson): Promise<void> {
+        if (existingOrder.getOrderStatus() === OrderStatusEnum.CONFIRMED) {
+            this.logger.log(`Order status is confirmed, products quantity will be updated`);
+            if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+                this.logger.log(`Decreasing product quantity for updated BUY order`);
+                await this.decreaseProductQuantity(existingOrder.getOrderLines());
+            } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
+                this.logger.log(`Increasing product quantity for updated SELL order`);
+                await this.increaseProductQuantity(existingOrder.getOrderLines());
+            }
+        } else {
+            this.logger.log(`Order with [status=${existingOrder.getOrderStatus()}] doesn't allow updating product quantities`);
+        }
+    }
+
+    private async updateOrderLinesMaybe(existingOrder: OrderJson): Promise<OrderLineJson[]> {
+        let savedOrderLines: OrderLineJson[] = existingOrder.getOrderLines();
+
+        if (existingOrder.getOrderStatus() === OrderStatusEnum.CONFIRMED) {
+            this.logger.log(`Updating order lines`);
+            await this.orderLineService.delete(existingOrder.getId());
+            savedOrderLines = await this.orderLineService.addList(existingOrder.getOrderLines(), existingOrder.getId());
+        } else {
+            this.logger.log(`Order with [status=${existingOrder.getOrderStatus()}] doesn't allow updating oder lines`);
+        }
+
+        return savedOrderLines;
+    }
+
+    private async increaseProductQuantity(orderLines: OrderLineJson[]): Promise<void> {
+        await Promise.all(
+            orderLines.map(async (line) => {
+                this.logger.log(`Increasing quantity of product with [id= ${line.getProductId()}] by [${line.getQuantity()}]`);
+                await this.productService.updateQuantity(line.getProductId(), line.getQuantity());
+            })
+        )
+    }
+
+    private async decreaseProductQuantity(orderLines: OrderLineJson[]): Promise<void> {
+        await Promise.all(
+            orderLines.map(async (line) => {
+                this.logger.log(`Decreasing quantity of product with [id= ${line.getProductId()}] by [${-line.getQuantity()}]`);
+                await this.productService.updateQuantity(line.getProductId(), -line.getQuantity());
+            })
+        )
     }
 }
