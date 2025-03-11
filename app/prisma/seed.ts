@@ -9,6 +9,7 @@ async function main() {
     await prisma.$executeRawUnsafe(`
     INSERT INTO DeliveryCompany (name) VALUES
       ('Ozone'),
+      ('Alta'),
       ('In Person');
   `);
 
