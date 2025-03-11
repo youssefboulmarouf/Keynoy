@@ -1,5 +1,5 @@
 export class OrderLineJson {
-    private readonly orderId: number;
+    private orderId: number;
     private readonly productId: number;
     private readonly quantity: number;
     private readonly unitPrice: number;
@@ -16,6 +16,9 @@ export class OrderLineJson {
         this.unitPrice = unitPrice;
     }
 
+    public setOrderId(orderId: number): void {
+        this.orderId = orderId;
+    }
 
     public getOrderId(): number {
         return this.orderId;
@@ -29,16 +32,16 @@ export class OrderLineJson {
         return this.quantity;
     }
 
-    public getInitPrice(): number {
+    public getUnitPrice(): number {
         return this.unitPrice;
     }
 
     public static from(body: any): OrderLineJson {
         return new OrderLineJson(
-            body.orderId,
-            body.productId,
-            body.quantity,
-            body.unitPrice,
+            Number(body.orderId),
+            Number(body.productId),
+            Number(body.quantity),
+            Number(body.unitPrice),
         )
     }
 }

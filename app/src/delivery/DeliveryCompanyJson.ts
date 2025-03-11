@@ -20,7 +20,7 @@ export class DeliveryCompanyJson {
 
     public static from(body: any): DeliveryCompanyJson {
         return new DeliveryCompanyJson(
-            body.id,
+            Number(body.id),
             body.name
         )
     }

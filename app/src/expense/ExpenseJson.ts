@@ -48,12 +48,12 @@ export class ExpenseJson {
 
     public static from(body: any): ExpenseJson {
         return new ExpenseJson(
-            body.id,
+            Number(body.id),
             body.name,
-            body.totalPrice,
+            Number(body.totalPrice),
             body.date,
-            body.orderId,
-            body.deliveryId
+            Number(body.orderId),
+            Number(body.deliveryId)
         )
     }
 }

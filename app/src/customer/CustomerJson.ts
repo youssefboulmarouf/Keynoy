@@ -34,7 +34,7 @@ export class CustomerJson {
 
     public static from(body: any): CustomerJson {
         return new CustomerJson(
-            body.id,
+            Number(body.id),
             body.name,
             body.phone,
             body.location,

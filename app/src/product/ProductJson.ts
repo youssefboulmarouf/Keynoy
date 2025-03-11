@@ -59,13 +59,13 @@ export class ProductJson {
 
     public static from(body: any): ProductJson {
         return new ProductJson(
-            body.id,
+            Number(body.id),
             body.name,
             body.size,
-            body.productTypeId,
+            Number(body.productTypeId),
             body.color,
-            body.threshold,
-            body.totalQuantity
+            Number(body.threshold),
+            Number(body.totalQuantity)
         )
     }
 }

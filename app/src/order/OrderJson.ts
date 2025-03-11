@@ -66,12 +66,12 @@ export class OrderJson {
 
     public static fromRequest(body: any): OrderJson {
         return new OrderJson(
-            body.id,
-            body.customerId,
-            body.supplierId,
+            Number(body.id),
+            Number(body.customerId),
+            Number(body.supplierId),
             body.orderType,
             body.orderStatus,
-            body.totalPrice,
+            Number(body.totalPrice),
             body.date,
             body.orderLines.map((ol: any) => OrderLineJson.from(ol)),
         )
@@ -79,12 +79,12 @@ export class OrderJson {
 
     public static fromDb(body: any, orderLines: OrderLineJson[]): OrderJson {
         return new OrderJson(
-            body.id,
-            body.customerId,
-            body.supplierId,
+            Number(body.id),
+            Number(body.customerId),
+            Number(body.supplierId),
             body.orderType,
             body.orderStatus,
-            body.totalPrice,
+            Number(body.totalPrice),
             body.date,
             orderLines
         )
