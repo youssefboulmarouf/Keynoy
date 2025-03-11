@@ -20,7 +20,7 @@ export class ProductTypeJson {
 
     public static from(body: any): ProductTypeJson {
         return new ProductTypeJson(
-            body.id,
+            Number(body.id),
             body.name
         )
     }
