@@ -25,7 +25,7 @@ export class OrderLineService extends BaseService {
                     orderId: orderLine.getOrderId(),
                     productId: orderLine.getProductId(),
                     quantity: orderLine.getQuantity(),
-                    unitPrice: orderLine.getInitPrice(),
+                    unitPrice: orderLine.getUnitPrice(),
                 }
             })
         );
@@ -51,11 +51,12 @@ export class OrderLineService extends BaseService {
         });
     }
 
-    async addList(orderLines: OrderLineJson[]): Promise<OrderLineJson[]> {
-        const savedOrderLines: OrderLineJson[] = []
-        for (const line of orderLines) {
+    async addList(orderLines: OrderLineJson[], orderId: number): Promise<OrderLineJson[]> {
+        const savedOrderLines: OrderLineJson[] = [];
+        await Promise.all(orderLines.map(async (line) => {
+            line.setOrderId(orderId);
             savedOrderLines.push(await this.add(line))
-        }
+        }));
         return savedOrderLines;
     };
 }
