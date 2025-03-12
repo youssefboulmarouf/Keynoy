@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// TODO: add 404 & 400 test cases
 describe("Customer API E2E Tests", () => {
     let customerId: number;
 
