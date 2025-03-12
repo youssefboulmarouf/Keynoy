@@ -48,8 +48,8 @@ class Logger {
     }
 
     error(message: string, error?: any) {
-        const formatedMessage = this.formatMessage("error", message);
-        console.error(formatedMessage, error || "");
+        const formatedMessage = this.formatMessage("error", message, error.stack);
+        console.error(formatedMessage, error);
         this.writeToFile("error", formatedMessage);
     }
 }
