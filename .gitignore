@@ -4,6 +4,7 @@ app/.env
 app/.env.test
 app/node_modules/
 app/logs/
+app/src/logs/
 app/dist/
 app/prisma/migrations/
 
