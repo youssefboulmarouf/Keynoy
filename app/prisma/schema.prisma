@@ -41,8 +41,8 @@ model Expense {
   name       String
   totalPrice Decimal
   date       DateTime
-  orderId    Int?
-  deliveryId Int?
+  orderId    Int? @unique
+  deliveryId Int? @unique
 }
 
 // ORDERS
