@@ -1,14 +1,11 @@
 import {BaseService} from "../utilities/BaseService";
 import {CustomerJson} from "./CustomerJson";
 import AppError from "../utilities/AppError";
-import Logger from "../utilities/Logger";
 
 export class CustomerService extends BaseService {
-    private readonly logger: Logger;
 
     constructor() {
-        super();
-        this.logger = new Logger(CustomerService.name);
+        super(CustomerService.name);
     }
 
     async get(): Promise<CustomerJson[]> {
