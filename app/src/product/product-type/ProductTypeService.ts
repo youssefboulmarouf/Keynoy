@@ -20,7 +20,7 @@ export class ProductTypeService extends BaseService {
             where: { id: productTypeId }
         });
 
-        if (!productTypeId) {
+        if (!productTypeData) {
             throw new AppError("Not Found", 404, `Product type with [id:${productTypeId}] not found`);
         }
 
