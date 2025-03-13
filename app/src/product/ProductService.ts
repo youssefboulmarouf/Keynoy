@@ -1,26 +1,35 @@
 import {BaseService} from "../utilities/BaseService";
 import {ProductJson} from "./ProductJson";
 import {ColorEnum} from "./ColorEnum";
+import AppError from "../utilities/AppError";
 
 export class ProductService extends BaseService {
     constructor() {
-        super();
+        super(ProductService.name);
     }
 
     async get(): Promise<ProductJson[]> {
+        this.logger.log(`Get all products`);
         const data = await this.prisma.product.findMany();
         return data.map((c: any) => ProductJson.from(c));
     };
 
     async getById(productId: number): Promise<ProductJson> {
-        return ProductJson.from(
-            await this.prisma.product.findUnique({
-                    where: { id: productId }
-            })
-        );
+        this.logger.log(`Get product by [id:${productId}]`);
+
+        const productData = await this.prisma.product.findUnique({
+            where: { id: productId }
+        });
+
+        if (!productData) {
+            throw new AppError("Not Found", 404, `Product with [id:${productId}] not found`);
+        }
+
+        return ProductJson.from(productData);
     };
 
     async add(product: ProductJson): Promise<ProductJson> {
+        this.logger.log(`Create new product`, product);
         return ProductJson.from(
             await this.prisma.product.create({
                 data: {
@@ -36,6 +45,17 @@ export class ProductService extends BaseService {
     };
 
     async update(productId: number, product: any): Promise<ProductJson> {
+        this.logger.log(`Update product with [id=${productId}]`);
+
+        if (productId != product.getId()) {
+            throw new AppError("Bad Request", 400, `Product id mismatch`);
+        }
+
+        const existingProduct = this.getById(productId);
+
+        this.logger.log(`Update existing product`, existingProduct);
+        this.logger.log(`Product updated data`, product);
+
         return ProductJson.from(
             await this.prisma.product.update({
                 where: { id: productId },
@@ -52,6 +72,8 @@ export class ProductService extends BaseService {
     }
 
     async delete(productId: number): Promise<void> {
+        this.logger.log(`Delete product with [id=${productId}]`);
+
         await this.prisma.product.delete({
             where: { id: productId }
         });
