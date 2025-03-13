@@ -10,6 +10,7 @@ import {OrderLineJson} from "../../src/order/OrderLineJson";
 
 const prisma = new PrismaClient();
 
+// TODO: add 404 & 400 test cases
 describe("Order API E2E Tests", () => {
     let customer: CustomerJson;
     let supplier: SupplierJson;
