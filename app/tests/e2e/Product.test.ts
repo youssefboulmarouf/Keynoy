@@ -1,23 +1,22 @@
-import request from "supertest";
-import { app, stopServer } from "../../src";
+import { stopServer } from "../../src";
 import { PrismaClient } from "@prisma/client";
+import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
 
 const prisma = new PrismaClient();
 
-// TODO: add 404 & 400 test cases
 describe("Product API E2E Tests", () => {
     let productId: number;
 
-    // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
-        stopServer(); // Stop Express server
+        stopServer();
     });
 
     test("Should create a new product", async () => {
-        const response = await request(app)
-            .post("/api/products")
-            .send({ id: null, name: "product 1", size: "Size 1", productTypeId: 1, color: "red", threshold: 0, totalQuantity: 1 });
+        const response = await createEntity(
+            "/api/products",
+            { id: null, name: "product 1", size: "Size 1", productTypeId: 1, color: "red", threshold: 0, totalQuantity: 1 }
+        );
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty("id");
@@ -32,7 +31,7 @@ describe("Product API E2E Tests", () => {
     });
 
     test("Should retrieve all products", async () => {
-        const response = await request(app).get("/api/products");
+        const response = await getEntity("/api/products");
 
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBeTruthy();
@@ -40,7 +39,7 @@ describe("Product API E2E Tests", () => {
     });
 
     test("Should get a product by ID", async () => {
-        const response = await request(app).get(`/api/products/${productId}`);
+        const response = await getEntity(`/api/products/${productId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toEqual("product 1");
@@ -51,10 +50,17 @@ describe("Product API E2E Tests", () => {
         expect(response.body.totalQuantity).toEqual(1);
     });
 
+    test("Should get 404 when product not found", async () => {
+        const response = await getEntity(`/api/products/99`);
+
+        expect(response.status).toBe(404);
+    });
+
     test("Should update a product", async () => {
-        const response = await request(app)
-            .put(`/api/products/${productId}`)
-            .send({ id: productId, name: "product 111", size: "Size 111", productTypeId: 2, color: "green", threshold: 10, totalQuantity: 15 });
+        const response = await updateEntity(
+            `/api/products/${productId}`,
+            { id: productId, name: "product 111", size: "Size 111", productTypeId: 2, color: "green", threshold: 10, totalQuantity: 15 }
+        );
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("product 111");
@@ -65,8 +71,20 @@ describe("Product API E2E Tests", () => {
         expect(response.body.totalQuantity).toEqual(15);
     });
 
+    test("Should get 400 when product id mismatch", async () => {
+        const response = await updateEntity(
+            `/api/products/99`,
+            { id: productId, name: "product 111", size: "Size 111", productTypeId: 2, color: "green", threshold: 10, totalQuantity: 15 }
+        );
+
+        expect(response.status).toBe(400);
+    });
+
     test("Should delete a product", async () => {
-        const response = await request(app).delete(`/api/products/${productId}`);
+        let response = await deleteEntity(`/api/products/${productId}`);
         expect(response.status).toBe(204);
+
+        response = await getEntity(`/api/products/${productId}`);
+        expect(response.status).toBe(404);
     });
 });

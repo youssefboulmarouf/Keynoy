@@ -1,23 +1,20 @@
 import request from "supertest";
 import { app, stopServer } from "../../src";
 import { PrismaClient } from "@prisma/client";
+import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
 
 const prisma = new PrismaClient();
 
-// TODO: add 404 & 400 test cases
 describe("Supplier API E2E Tests", () => {
     let supplierId: number;
 
-    // After all tests, disconnect Prisma
     afterAll(async () => {
         await prisma.$disconnect();
-        stopServer(); // Stop Express server
+        stopServer();
     });
 
     test("Should create a new supplier", async () => {
-        const response = await request(app)
-            .post("/api/suppliers")
-            .send({ id: null, name: "sup2" });
+        const response = await createEntity("/api/suppliers", { id: null, name: "sup2" });
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty("id");
@@ -27,7 +24,7 @@ describe("Supplier API E2E Tests", () => {
     });
 
     test("Should retrieve all suppliers", async () => {
-        const response = await request(app).get("/api/suppliers");
+        const response = await getEntity("/api/suppliers");
 
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBeTruthy();
@@ -35,23 +32,42 @@ describe("Supplier API E2E Tests", () => {
     });
 
     test("Should get a supplier by ID", async () => {
-        const response = await request(app).get(`/api/suppliers/${supplierId}`);
+        const response = await getEntity(`/api/suppliers/${supplierId}`);
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("sup2");
     });
 
+    test("Should get 404 when supplier not found", async () => {
+        const response = await getEntity(`/api/suppliers/99`);
+
+        expect(response.status).toBe(404);
+    });
+
     test("Should update a supplier", async () => {
-        const response = await request(app)
-            .put(`/api/suppliers/${supplierId}`)
-            .send({ id: supplierId, name: "sup33" });
+        const response = await updateEntity(
+            `/api/suppliers/${supplierId}`,
+            { id: supplierId, name: "sup33" }
+        );
 
         expect(response.status).toBe(200);
         expect(response.body.name).toBe("sup33");
     });
 
+    test("Should get 400 when supplier id mismatch", async () => {
+        const response = await updateEntity(
+            `/api/suppliers/99`,
+            { id: supplierId, name: "sup33" }
+        );
+
+        expect(response.status).toBe(400);
+    });
+
     test("Should delete a supplier", async () => {
-        const response = await request(app).delete(`/api/suppliers/${supplierId}`);
+        let response = await deleteEntity(`/api/suppliers/${supplierId}`);
         expect(response.status).toBe(204);
+
+        response = await getEntity(`/api/suppliers/${supplierId}`);
+        expect(response.status).toBe(404);
     });
 });
