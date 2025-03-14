@@ -146,33 +146,38 @@ export class OrderService extends BaseService {
         this.logger.log(`Adding delivery details to order with [id=${deliveryJson.getOrderId()}]`);
         const existingOrder = await this.getById(deliveryJson.getOrderId());
 
-        if (existingOrder.getOrderStatus() != OrderStatusEnum.SHIPPED && existingOrder.getOrderStatus() != OrderStatusEnum.DELIVERED) {
-            this.logger.log(`Update order status to shipped`);
-            await this.prisma.order.update({
-                where: { id: existingOrder.getId() },
-                data: {
-                    customerId: existingOrder.getCustomerId(),
-                    supplierId: existingOrder.getSupplierId(),
-                    orderType: existingOrder.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : existingOrder.getOrderType(),
-                    orderStatus: OrderStatusEnum.SHIPPED,
-                    totalPrice: existingOrder.getTotalPrice(),
-                    date: existingOrder.getDate()
-                }
-            });
-
-            this.logger.log(`Delivery entry created`);
-            await this.prisma.delivery.create({
-                data: {
-                    orderId: deliveryJson.getOrderId(),
-                    dcId: deliveryJson.getDcId(),
-                    shippingDate: deliveryJson.getShippingDate(),
-                    deliveryDate: deliveryJson.getDeliveryDate(),
-                    price: deliveryJson.getPrice()
-                }
-            });
-        } else {
-            this.logger.log(`Order with [id=${existingOrder.getId()}] already have [status=${existingOrder.getOrderStatus()}]`);
+        if (!this.canBeShipped(existingOrder.getOrderStatus())) {
+            // TODO: test ship not allowed
+            throw new AppError(
+                "Bad Request",
+                400,
+                `Order with [status=${existingOrder.getOrderStatus()}] cannot be shipped`
+            );
         }
+
+        this.logger.log(`Update order status to shipped`);
+        await this.prisma.order.update({
+            where: { id: existingOrder.getId() },
+            data: {
+                customerId: existingOrder.getCustomerId(),
+                supplierId: existingOrder.getSupplierId(),
+                orderType: existingOrder.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : existingOrder.getOrderType(),
+                orderStatus: OrderStatusEnum.SHIPPED,
+                totalPrice: existingOrder.getTotalPrice(),
+                date: existingOrder.getDate()
+            }
+        });
+
+        this.logger.log(`Delivery entry created`);
+        await this.prisma.delivery.create({
+            data: {
+                orderId: deliveryJson.getOrderId(),
+                dcId: deliveryJson.getDcId(),
+                shippingDate: deliveryJson.getShippingDate(),
+                deliveryDate: deliveryJson.getDeliveryDate(),
+                price: deliveryJson.getPrice()
+            }
+        });
     }
 
     async delivered(deliveryJson: DeliveryJson) {
