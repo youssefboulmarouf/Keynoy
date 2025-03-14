@@ -82,17 +82,18 @@ describe("Order API E2E Tests", () => {
                 customerId: customer.getId(),
                 supplierId: supplier.getId(),
                 orderType: OrderTypeEnum.SELL,
-                orderStatus: OrderStatusEnum.DELIVERED,
+                orderStatus: OrderStatusEnum.CONFIRMED,
                 totalPrice: 25,
                 date: date,
                 orderLines: [ol]
             });
 
         expect(response.status).toBe(200);
+        expect(response.body.id).toEqual(orderId);
         expect(response.body.customerId).toEqual(customer.getId());
         expect(response.body.supplierId).toEqual(supplier.getId());
         expect(response.body.orderType).toEqual(OrderTypeEnum.SELL);
-        expect(response.body.orderStatus).toEqual(OrderStatusEnum.DELIVERED);
+        expect(response.body.orderStatus).toEqual(OrderStatusEnum.CONFIRMED);
         expect(Number(response.body.totalPrice)).toEqual(25);
         expect(new Date(response.body.date)).toEqual(date);
 
