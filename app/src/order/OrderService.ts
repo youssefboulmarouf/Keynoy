@@ -290,4 +290,8 @@ export class OrderService extends BaseService {
             })
         )
     }
+
+    private canBeShipped(existingOrder: OrderStatusEnum): boolean {
+        return (existingOrder === OrderStatusEnum.FINISHED || existingOrder === OrderStatusEnum.IN_PROGRESS)
+    }
 }
