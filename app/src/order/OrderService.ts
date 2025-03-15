@@ -23,7 +23,6 @@ export class OrderService extends BaseService {
     }
 
     async get(): Promise<OrderJson[]> {
-        // TODO: test get all orders
         this.logger.log(`Get all orders`);
         const prismaOrders = await this.prisma.order.findMany();
 
@@ -40,7 +39,6 @@ export class OrderService extends BaseService {
     };
 
     async getById(orderId: number): Promise<OrderJson> {
-        // TODO: test get order by id
         this.logger.log(`Get order by [id:${orderId}]`);
         const orderData = await this.prisma.order.findUnique({
             where: { id: orderId }
@@ -57,11 +55,9 @@ export class OrderService extends BaseService {
     };
 
     async add(order: OrderJson): Promise<OrderJson> {
-        // TODO: test post order
         this.logger.log(`Create new order`, order);
 
         if (order.getOrderLines().length == 0) {
-            // TODO: test post order with empty order line
             throw new AppError("Bad Request", 400, `Order cannot have empty order lines`);
         }
 
@@ -90,16 +86,13 @@ export class OrderService extends BaseService {
     };
 
     async update(orderId: number, order: OrderJson): Promise<OrderJson> {
-        // TODO: test update order
         this.logger.log(`Update order with [id=${orderId}]`);
 
         if (orderId != order.getId()) {
-            // TODO: test update order withe id mismatch
             throw new AppError("Bad Request", 400, `Order id mismatch`);
         }
 
         if (order.getOrderLines().length == 0) {
-            // TODO: test update order with empty order line
             throw new AppError("Bad Request", 400, `Order cannot have empty order lines`);
         }
 
@@ -108,7 +101,6 @@ export class OrderService extends BaseService {
         this.logger.log(`Update existing order`, existingOrder);
         this.logger.log(`Order updated data`, order);
 
-        // TODO: test reversin order expense and product quntities
         await this.reverseProductAndExpenseUpdates(existingOrder);
 
         const prismaOrder = await this.prisma.order.update({
@@ -235,8 +227,6 @@ export class OrderService extends BaseService {
 
     private async updateProductAndExpense(savedOrder: OrderJson) {
         if (savedOrder.getOrderType() === OrderTypeEnum.BUY) {
-            // TODO: test post order, then check expenses
-            // TODO: test post order, then check product quantities
             this.logger.log(`Adding Expense for BUY order`);
             await this.expenseService.add(new ExpenseJson(
                 0,
@@ -261,15 +251,12 @@ export class OrderService extends BaseService {
             this.logger.log(`Order status is confirmed, products quantity will be updated`);
 
             if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
-                // TODO: test update order, then check expenses
-                // TODO: test update order, then check product quantities
                 this.logger.log(`Deleting expense for order by id=${existingOrder.getId()}`);
                 await this.expenseService.deleteByOrderId(existingOrder.getId());
 
                 this.logger.log(`Decreasing product quantity for updated BUY order`);
                 await this.decreaseProductQuantity(existingOrder.getOrderLines());
             } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
-                // TODO: test update order, then check product quantities
                 this.logger.log(`Increasing product quantity for updated SELL order`);
                 await this.increaseProductQuantity(existingOrder.getOrderLines());
             }
