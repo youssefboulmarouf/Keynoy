@@ -31,25 +31,25 @@ class Logger {
 
     log(message: string, ...args: any[]) {
         const formatedMessage = this.formatMessage("log", message, args);
-        console.log(formatedMessage);
+        //console.log(formatedMessage);
         this.writeToFile("log", formatedMessage);
     }
 
     info(message: string, ...args: any[]) {
         const formatedMessage = this.formatMessage("info", message, args);
-        console.info(formatedMessage);
+        //console.info(formatedMessage);
         this.writeToFile("info", formatedMessage);
     }
 
     warn(message: string, ...args: any[]) {
         const formatedMessage = this.formatMessage("warn", message, args);
-        console.warn(formatedMessage);
+        //console.warn(formatedMessage);
         this.writeToFile("warn", formatedMessage);
     }
 
     error(message: string, error?: any) {
         const formatedMessage = this.formatMessage("error", message, error.stack);
-        console.error(formatedMessage, error);
+        //console.error(formatedMessage, error);
         this.writeToFile("error", formatedMessage);
     }
 }
