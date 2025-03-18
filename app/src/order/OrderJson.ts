@@ -1,5 +1,5 @@
 import {OrderTypeEnum, orderTypeFromString} from "./OrderTypeEnum";
-import {OrderStatusEnum, orderStatusFromString} from "./OrderStatusEnum";
+import {OrderStatusEnum, orderStatusFromNumber} from "./OrderStatusEnum";
 import {OrderLineJson} from "./OrderLineJson";
 
 export class OrderJson {
@@ -17,7 +17,7 @@ export class OrderJson {
         customerId: number,
         supplierId: number,
         orderType: string,
-        orderStatus: string,
+        orderStatus: number,
         totalPrice: number,
         date: Date,
         orderLines: OrderLineJson[]
@@ -26,7 +26,7 @@ export class OrderJson {
         this.customerId = customerId;
         this.supplierId = supplierId;
         this.orderType = orderTypeFromString(orderType);
-        this.orderStatus = orderStatusFromString(orderStatus);
+        this.orderStatus = orderStatusFromNumber(orderStatus);
         this.totalPrice = totalPrice;
         this.date = date;
         this.orderLines = orderLines;
