@@ -1,5 +1,4 @@
-import request from "supertest";
-import { app, stopServer } from "../../src";
+import { stopServer } from "../../src";
 import { PrismaClient } from "@prisma/client";
 import {createEntity, getEntity, updateEntity} from "./TestHelper";
 import {CustomerJson} from "../../src/customer/CustomerJson";
@@ -11,7 +10,6 @@ import {ProductJson} from "../../src/product/ProductJson";
 
 const prisma = new PrismaClient();
 
-// TODO: add 404 & 400 test cases
 describe("Order API E2E Tests", () => {
     let customer: CustomerJson;
     let supplier: SupplierJson;
@@ -20,8 +18,8 @@ describe("Order API E2E Tests", () => {
     let orderDate: Date;
     let ol: OrderLineJson;
     const initialProductQuantity = 100;
-    const addedProductQuantity = 10;
-    const updatedProductQuantity = 10;
+    const boughtProductQuantity = 20;
+    const soldProductQuantity = 10;
 
     beforeAll(async () => {
         const customerResponse = await createEntity(
@@ -48,8 +46,93 @@ describe("Order API E2E Tests", () => {
         stopServer();
     });
 
-    test("Should create a new order", async () => {
-        ol = new OrderLineJson(0, product.getId(), addedProductQuantity, 0.4);
+    test("Should get 400 when order lines is empty", async () => {
+        const response = await createEntity(
+            "/api/orders",
+            {
+                id: null,
+                customerId: customer.getId(),
+                supplierId: supplier.getId(),
+                orderType: OrderTypeEnum.BUY,
+                orderStatus: OrderStatusEnum.CONFIRMED,
+                totalPrice: 4,
+                date: new Date(),
+                orderLines: []
+            }
+        );
+
+        expect(response.status).toBe(400);
+    });
+
+    test("Should get 400 when order status is not confirmed", async () => {
+        const response = await createEntity(
+            "/api/orders",
+            {
+                id: null,
+                customerId: customer.getId(),
+                supplierId: supplier.getId(),
+                orderType: OrderTypeEnum.BUY,
+                orderStatus: OrderStatusEnum.SHIPPED,
+                totalPrice: 4,
+                date: new Date(),
+                orderLines: [new OrderLineJson(0, 0, 0, 0)]
+            }
+        );
+
+        expect(response.status).toBe(400);
+    });
+
+    test("Should create a new sell order", async () => {
+        ol = new OrderLineJson(0, product.getId(), soldProductQuantity, 0.4);
+        orderDate = new Date();
+
+        const response = await createEntity(
+            "/api/orders",
+            {
+                id: null,
+                customerId: customer.getId(),
+                supplierId: supplier.getId(),
+                orderType: OrderTypeEnum.SELL,
+                orderStatus: OrderStatusEnum.CONFIRMED,
+                totalPrice: 4,
+                date: orderDate,
+                orderLines: [ol]
+            }
+        );
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty("id");
+        expect(response.body.id).not.toBeNull();
+        expect(response.body.customerId).toEqual(customer.getId());
+        expect(response.body.supplierId).toEqual(supplier.getId());
+        expect(response.body.orderType).toEqual(OrderTypeEnum.SELL);
+        expect(response.body.orderStatus).toEqual(OrderStatusEnum.CONFIRMED);
+        expect(Number(response.body.totalPrice)).toEqual(4);
+        expect(new Date(response.body.date)).toEqual(orderDate);
+
+        expect(response.body.orderLines[0].orderId).toEqual(response.body.id);
+        expect(response.body.orderLines[0].productId).toEqual(ol.getProductId());
+        expect(response.body.orderLines[0].quantity).toEqual(ol.getQuantity());
+        expect(Number(response.body.orderLines[0].unitPrice)).toEqual(ol.getUnitPrice());
+
+        orderId = response.body.id;
+    });
+
+    test("Should not create a new expense after a sell order", async () => {
+        const expenseResponse = await getEntity("/api/expenses");
+        expect(expenseResponse.status).toBe(200);
+        expect(expenseResponse.body.length).toEqual(0);
+    })
+
+    test("Should decrease product quantity after a sell order", async () => {
+        const productResponse = await getEntity(`/api/products/${product.getId()}`);
+        expect(productResponse.status).toBe(200);
+        expect(productResponse.body.name).toEqual(product.getName());
+        expect(productResponse.body.totalQuantity).toEqual(initialProductQuantity - soldProductQuantity);
+    })
+
+    test("Should create a new buy order", async () => {
+        ol = new OrderLineJson(0, product.getId(), boughtProductQuantity, 0.4);
         orderDate = new Date();
 
         const response = await createEntity(
@@ -93,134 +176,37 @@ describe("Order API E2E Tests", () => {
         expect(new Date(expenseResponse.body[0].date)).toEqual(orderDate);
         expect(expenseResponse.body[0].orderId).toEqual(orderId);
         expect(expenseResponse.body[0].deliveryId).toEqual(0);
-    })
+    });
 
     test("Should increase product quantity after a buy order", async () => {
         const productResponse = await getEntity(`/api/products/${product.getId()}`);
         expect(productResponse.status).toBe(200);
         expect(productResponse.body.name).toEqual(product.getName());
-        expect(productResponse.body.totalQuantity).toEqual(initialProductQuantity + addedProductQuantity);
-    })
-
-    test("Should update an order", async () => {
-        ol = new OrderLineJson(0, product.getId(), updatedProductQuantity, 0.5);
-        const date = new Date();
-
-        const response = await updateEntity(`/api/orders/${orderId}`,
-            {
-                id: orderId,
-                customerId: customer.getId(),
-                supplierId: supplier.getId(),
-                orderType: OrderTypeEnum.SELL,
-                orderStatus: OrderStatusEnum.CONFIRMED,
-                totalPrice: 25,
-                date: date,
-                orderLines: [ol]
-            }
-        );
-
-        expect(response.status).toBe(200);
-        expect(response.body.id).toEqual(orderId);
-        expect(response.body.customerId).toEqual(customer.getId());
-        expect(response.body.supplierId).toEqual(supplier.getId());
-        expect(response.body.orderType).toEqual(OrderTypeEnum.SELL);
-        expect(response.body.orderStatus).toEqual(OrderStatusEnum.CONFIRMED);
-        expect(Number(response.body.totalPrice)).toEqual(25);
-        expect(new Date(response.body.date)).toEqual(date);
-
-        expect(response.body.orderLines[0].orderId).toEqual(response.body.id);
-        expect(response.body.orderLines[0].productId).toEqual(ol.getProductId());
-        expect(response.body.orderLines[0].quantity).toEqual(ol.getQuantity());
-        expect(Number(response.body.orderLines[0].unitPrice)).toEqual(ol.getUnitPrice());
-
-        orderDate = new Date(response.body.date);
+        expect(productResponse.body.totalQuantity).toEqual(initialProductQuantity - soldProductQuantity + boughtProductQuantity);
     });
 
-    test("Should get 400 when order id mismatch", async () => {
-        const response = await updateEntity(`/api/orders/99`,
-            {
-                id: orderId,
-                customerId: customer.getId(),
-                supplierId: supplier.getId(),
-                orderType: OrderTypeEnum.SELL,
-                orderStatus: OrderStatusEnum.CONFIRMED,
-                totalPrice: 25,
-                date: new Date(),
-                orderLines: []
-            }
-        );
-
-        expect(response.status).toBe(400);
-    })
-
-    test("Should get 400 when update empty order lines", async () => {
-        const response = await updateEntity(`/api/orders/${orderId}`,
-            {
-                id: orderId,
-                customerId: customer.getId(),
-                supplierId: supplier.getId(),
-                orderType: OrderTypeEnum.SELL,
-                orderStatus: OrderStatusEnum.CONFIRMED,
-                totalPrice: 25,
-                date: new Date(),
-                orderLines: []
-            }
-        );
-
-        expect(response.status).toBe(400);
-    })
-
-    test("Should remove expense after a updating buy order to sell order", async () => {
-        const expenseResponse = await getEntity("/api/expenses");
-        expect(expenseResponse.status).toBe(200);
-        expect(expenseResponse.body.length).toEqual(0);
-    })
-
-    test("Should decrease product quantity after after a updating buy order to sell order", async () => {
-        const productResponse = await getEntity(`/api/products/${product.getId()}`);
-        expect(productResponse.status).toBe(200);
-        expect(productResponse.body.name).toEqual(product.getName());
-        expect(productResponse.body.totalQuantity).toEqual(initialProductQuantity - updatedProductQuantity);
-    })
-
-    test("Should get an order by id", async () => {
-        const response = await getEntity(`/api/orders/${orderId}`);
-
-        expect(response.status).toBe(200);
-        expect(response.body.id).toEqual(orderId);
-        expect(response.body.customerId).toEqual(customer.getId());
-        expect(response.body.supplierId).toEqual(supplier.getId());
-        expect(response.body.orderType).toEqual(OrderTypeEnum.SELL);
-        expect(response.body.orderStatus).toEqual(OrderStatusEnum.CONFIRMED);
-        expect(Number(response.body.totalPrice)).toEqual(25);
-        expect(new Date(response.body.date)).toEqual(orderDate);
-
-        expect(response.body.orderLines[0].orderId).toEqual(orderId);
-        expect(response.body.orderLines[0].productId).toEqual(ol.getProductId());
-        expect(response.body.orderLines[0].quantity).toEqual(ol.getQuantity());
-        expect(Number(response.body.orderLines[0].unitPrice)).toEqual(ol.getUnitPrice());
-    });
-
-    test("Should get 404 when order id not found", async () => {
-        const response = await getEntity(`/api/orders/99`);
-        expect(response.status).toBe(404);
-    });
-
-    test("Should get 400 when order lines is empty", async () => {
-        const response = await createEntity(
-            "/api/orders",
-            {
-                id: null,
-                customerId: customer.getId(),
-                supplierId: supplier.getId(),
-                orderType: OrderTypeEnum.BUY,
-                orderStatus: OrderStatusEnum.CONFIRMED,
-                totalPrice: 4,
-                date: new Date(),
-                orderLines: []
-            }
-        );
-
+    test("Should get 400 updating order with status higher than FINISHED", async () => {
+        const response = await updateEntity(`/api/orders/${orderId}/status/${OrderStatusEnum.DELIVERED}`,{});
         expect(response.status).toBe(400);
     });
+
+    test("Should update order status", async () => {
+        const response = await updateEntity(`/api/orders/${orderId}/status/${OrderStatusEnum.FINISHED}`,{});
+        expect(response.status).toBe(201);
+
+        const getResponse = await getEntity(`/api/orders/${orderId}`);
+        expect(getResponse.body.id).toEqual(orderId);
+        expect(getResponse.body.orderStatus).toEqual(OrderStatusEnum.FINISHED);
+    });
+
+    test("Should get 400 if updating order with lower status", async () => {
+        const response = await updateEntity(`/api/orders/${orderId}/status/${OrderStatusEnum.IN_PROGRESS}`,{});
+        expect(response.status).toBe(400);
+    });
+
+    test("Should get 500 if updating order with unknown status", async () => {
+        const response = await updateEntity(`/api/orders/${orderId}/status/99`,{});
+        expect(response.status).toBe(500);
+    });
+
 });
