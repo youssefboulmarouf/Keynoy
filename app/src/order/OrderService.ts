@@ -85,45 +85,33 @@ export class OrderService extends BaseService {
         return savedOrder;
     };
 
-    async update(orderId: number, order: OrderJson): Promise<OrderJson> {
-        this.logger.log(`Update order with [id=${orderId}]`);
+    async update(orderId: number, orderStatus: OrderStatusEnum): Promise<void> {
+        this.logger.log(`Update order status of order with [id=${orderId}]`);
 
-        if (orderId != order.getId()) {
-            throw new AppError("Bad Request", 400, `Order id mismatch`);
-        }
-
-        if (order.getOrderLines().length == 0) {
-            throw new AppError("Bad Request", 400, `Order cannot have empty order lines`);
+        if (orderStatus > OrderStatusEnum.FINISHED) {
+            throw new AppError("Bad Request", 400, `Wrong order status ${statusToString(orderStatus)}`);
         }
 
         const existingOrder = await this.getById(orderId);
 
+        if (orderStatus < existingOrder.getOrderStatus()) {
+            throw new AppError("Bad Request", 400, `Order already have status ${statusToString(existingOrder.getOrderStatus())}`);
+        }
+
         this.logger.log(`Update existing order`, existingOrder);
-        this.logger.log(`Order updated data`, order);
+        this.logger.log(`New order status:`, statusToString(orderStatus));
 
-        await this.reverseProductAndExpenseUpdates(existingOrder);
-
-        const prismaOrder = await this.prisma.order.update({
+        await this.prisma.order.update({
             where: { id: orderId },
             data: {
-                customerId: order.getCustomerId(),
-                supplierId: order.getSupplierId(),
-                orderType: order.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : order.getOrderType(),
-                orderStatus: order.getOrderStatus() == OrderStatusEnum.UNKNOWN ? '' : order.getOrderStatus(),
-                totalPrice: order.getTotalPrice(),
-                date: order.getDate()
+                customerId: existingOrder.getCustomerId(),
+                supplierId: existingOrder.getSupplierId(),
+                orderType: existingOrder.getOrderType(),
+                orderStatus: orderStatus,
+                totalPrice: existingOrder.getTotalPrice(),
+                date: existingOrder.getDate()
             }
         });
-
-        // TODO: test update order then order line
-        await this.updateOrderLinesMaybe(existingOrder.getOrderStatus(), order);
-        const savedOrderLines: OrderLineJson[] = await this.orderLineService.getById(orderId);
-        const updatedOrder = OrderJson.fromDb(prismaOrder, savedOrderLines);
-
-        // TODO: test update order
-        await this.updateProductAndExpense(updatedOrder);
-
-        return updatedOrder;
     }
 
     async delete(orderId: number): Promise<void> {
@@ -263,18 +251,6 @@ export class OrderService extends BaseService {
         } else {
             // TODO: test update order then check expenses and quantities not applied
             this.logger.log(`Order with [status=${existingOrder.getOrderStatus()}] doesn't allow updating product quantities`);
-        }
-    }
-
-    private async updateOrderLinesMaybe(existingOrderStatus: OrderStatusEnum, newOrder: OrderJson) {
-        if (existingOrderStatus === OrderStatusEnum.CONFIRMED) {
-            // TODO: test updating order with order line
-            this.logger.log(`Updating order lines`);
-            await this.orderLineService.delete(newOrder.getId());
-            await this.orderLineService.addList(newOrder.getOrderLines(), newOrder.getId());
-        } else {
-            // TODO: test updating order but no order line update
-            this.logger.log(`Order with [status=${existingOrderStatus}] doesn't allow updating oder lines`);
         }
     }
 
