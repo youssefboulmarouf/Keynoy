@@ -65,8 +65,8 @@ export class OrderService extends BaseService {
             data: {
                 customerId: order.getCustomerId(),
                 supplierId: order.getSupplierId(),
-                orderType: order.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : order.getOrderType(),
-                orderStatus: order.getOrderStatus() == OrderStatusEnum.UNKNOWN ? '' : order.getOrderStatus(),
+                orderType: order.getOrderType(),
+                orderStatus: order.getOrderStatus(),
                 totalPrice: order.getTotalPrice(),
                 date: order.getDate()
             }
@@ -167,7 +167,7 @@ export class OrderService extends BaseService {
             data: {
                 customerId: existingOrder.getCustomerId(),
                 supplierId: existingOrder.getSupplierId(),
-                orderType: existingOrder.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : existingOrder.getOrderType(),
+                orderType: existingOrder.getOrderType(),
                 orderStatus: OrderStatusEnum.SHIPPED,
                 totalPrice: existingOrder.getTotalPrice(),
                 date: existingOrder.getDate()
@@ -205,7 +205,7 @@ export class OrderService extends BaseService {
             data: {
                 customerId: existingOrder.getCustomerId(),
                 supplierId: existingOrder.getSupplierId(),
-                orderType: existingOrder.getOrderType() == OrderTypeEnum.UNKNOWN ? '' : existingOrder.getOrderType(),
+                orderType: existingOrder.getOrderType(),
                 orderStatus: OrderStatusEnum.DELIVERED,
                 totalPrice: existingOrder.getTotalPrice(),
                 date: existingOrder.getDate()
