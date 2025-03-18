@@ -1,14 +1,21 @@
+import AppError from "../utilities/AppError";
+
 export enum OrderStatusEnum {
-    CONFIRMED = "confirmed",
-    IN_PROGRESS = "in progress",
-    FINISHED = "finished",
-    SHIPPED = "shipped",
-    DELIVERED = "delivered",
-    RETURNED = "returned",
-    UNKNOWN = "unknown",
+    CONFIRMED = 1,
+    IN_PROGRESS = 2,
+    FINISHED = 3,
+    SHIPPED = 4,
+    DELIVERED = 5,
+    RETURNED = 6,
 }
 
-export function orderStatusFromString(status: string): OrderStatusEnum {
-    const orderStatus = Object.values(OrderStatusEnum).find((s) => s === status);
-    return orderStatus ?? OrderStatusEnum.UNKNOWN;
+export function orderStatusFromNumber(status: number): OrderStatusEnum {
+    if (Object.values(OrderStatusEnum).includes(status)) {
+        return status as OrderStatusEnum;
+    }
+    throw new AppError("Runtime Error", 500, `Invalid OrderStatusEnum value: ${status}`);
+}
+
+export function statusToString(orderStatus: OrderStatusEnum): string {
+    return OrderStatusEnum[orderStatus];
 }

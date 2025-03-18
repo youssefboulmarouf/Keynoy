@@ -51,7 +51,7 @@ model Order {
   customerId    Int?
   supplierId    Int?
   orderType     String
-  orderStatus   String
+  orderStatus   Int
   totalPrice    Decimal
   date          DateTime
 
