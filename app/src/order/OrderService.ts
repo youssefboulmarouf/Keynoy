@@ -61,6 +61,10 @@ export class OrderService extends BaseService {
             throw new AppError("Bad Request", 400, `Order cannot have empty order lines`);
         }
 
+        if (order.getOrderStatus() != OrderStatusEnum.CONFIRMED) {
+            throw new AppError("Bad Request", 400, `Wrong order status ${statusToString(order.getOrderStatus())}`);
+        }
+
         const orderData: any = await this.prisma.order.create({
             data: {
                 customerId: order.getCustomerId(),
