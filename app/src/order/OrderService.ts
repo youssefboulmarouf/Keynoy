@@ -1,7 +1,7 @@
 import {BaseService} from "../utilities/BaseService";
 import {OrderJson} from "./OrderJson";
 import {OrderTypeEnum} from "./OrderTypeEnum";
-import {OrderStatusEnum} from "./OrderStatusEnum";
+import {OrderStatusEnum, statusToString} from "./OrderStatusEnum";
 import {OrderLineJson} from "./OrderLineJson";
 import {OrderLineService} from "./OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
