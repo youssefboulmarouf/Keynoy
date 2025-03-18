@@ -1,10 +1,13 @@
+import AppError from "../utilities/AppError";
+
 export enum OrderTypeEnum {
     BUY = "buy",
     SELL = "sell",
-    UNKNOWN = "unknown",
 }
 
 export function orderTypeFromString(status: string): OrderTypeEnum {
-    const orderType = Object.values(OrderTypeEnum).find((s) => s === status);
-    return orderType ?? OrderTypeEnum.UNKNOWN;
+    if (Object.values(OrderTypeEnum).includes(status as OrderTypeEnum)) {
+        return status as OrderTypeEnum;
+    }
+    throw new AppError("Runtime Error", 500, `Invalid OrderTypeEnum value: ${status}. Expected 'buy' or 'sell'.`);
 }
