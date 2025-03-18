@@ -83,7 +83,6 @@ export class OrderService extends BaseService {
             await this.orderLineService.addList(order.getOrderLines(), orderData.id)
         );
 
-        // TODO: test post order expense and product
         await this.updateProductAndExpense(savedOrder);
 
         return savedOrder;
