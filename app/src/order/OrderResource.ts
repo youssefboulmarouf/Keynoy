@@ -3,6 +3,7 @@ import {OrderService} from "./OrderService";
 import {OrderJson} from "./OrderJson";
 import {DeliveryJson} from "./DeliveryJson";
 import handleAsync from "../utilities/HandleAsync";
+import {orderStatusFromNumber} from "./OrderStatusEnum";
 
 const router = express.Router();
 const orderService = new OrderService();
@@ -47,21 +48,6 @@ router.post("/",
     )
 );
 
-router.put("/:id",
-    handleAsync(
-        async (req: Request, res: Response) => {
-            res
-                .status(200)
-                .json(
-                    await orderService.update(
-                        Number(req.params.id),
-                        OrderJson.fromRequest(req.body)
-                    )
-                );
-        }
-    )
-);
-
 router.delete("/:id",
     handleAsync(
         async (req: Request, res: Response) => {
@@ -71,7 +57,19 @@ router.delete("/:id",
     )
 );
 
-router.post("/:id/shipped",
+router.put("/:id/status/:status",
+    handleAsync(
+        async  (req: Request, res: Response) => {
+            await orderService.update(
+                Number(req.params.id),
+                orderStatusFromNumber(Number(req.params.status))
+            );
+            res.status(201).send();
+        }
+    )
+);
+
+router.post("/:id/delivery",
     handleAsync(
         async  (req: Request, res: Response) => {
             res
@@ -85,7 +83,7 @@ router.post("/:id/shipped",
     )
 );
 
-router.post("/:id/delivered",
+router.put("/:id/delivery",
     handleAsync(
         async  (req: Request, res: Response) => {
             res
