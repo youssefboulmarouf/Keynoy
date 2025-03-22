@@ -227,6 +227,18 @@ export class OrderService extends BaseService {
                 price: deliveryJson.getPrice()
             }
         });
+
+        if (deliveryJson.getPrice() > 0) {
+            // TODO: test expense created
+            this.logger.log(`Adding Expense for BUY order`);
+            await this.expenseService.add(new ExpenseJson(
+                0,
+                "Order Delivery",
+                deliveryJson.getPrice(),
+                deliveryJson.getDeliveryDate(),
+                deliveryJson.getOrderId()
+            ));
+        }
     }
 
     private async updateProductAndExpense(savedOrder: OrderJson) {
