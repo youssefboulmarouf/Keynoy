@@ -118,13 +118,17 @@ export class OrderService extends BaseService {
     }
 
     async delete(orderId: number): Promise<void> {
-        // TODO: test delete order
         this.logger.log(`Delete order with [id=${orderId}]`);
         const existingOrder = await this.getById(orderId);
 
         if (existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED) {
             // TODO: test delete not allowed
             throw new AppError("Bad Request", 400, `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`);
+            throw new AppError(
+                "Bad Request",
+                400,
+                `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`
+            );
         }
 
         this.logger.log(`Order status is confirmed, order and related entities will be deleted`);
@@ -165,6 +169,7 @@ export class OrderService extends BaseService {
             }
         });
 
+        // TODO: test delivery created
         this.logger.log(`Delivery entry created`);
         await this.prisma.delivery.create({
             data: {
@@ -230,7 +235,6 @@ export class OrderService extends BaseService {
             this.logger.log(`Increasing product quantity for new BUY order`);
             await this.increaseProductQuantity(savedOrder.getOrderLines());
         } else if (savedOrder.getOrderType() === OrderTypeEnum.SELL) {
-            // TODO: test post order, then check product quantities
             this.logger.log(`Decreasing product quantity for new SELL order`);
             await this.decreaseProductQuantity(savedOrder.getOrderLines());
         }
