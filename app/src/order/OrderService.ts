@@ -261,22 +261,17 @@ export class OrderService extends BaseService {
     }
 
     private async reverseProductAndExpenseUpdates(existingOrder: OrderJson): Promise<void> {
-        if (existingOrder.getOrderStatus() === OrderStatusEnum.CONFIRMED) {
-            this.logger.log(`Order status is confirmed, products quantity will be updated`);
+        this.logger.log(`Order status is confirmed, products quantity will be updated`);
 
-            if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
-                this.logger.log(`Deleting expense for order by id=${existingOrder.getId()}`);
-                await this.expenseService.deleteByOrderId(existingOrder.getId());
+        if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+            this.logger.log(`Deleting expense for order by id=${existingOrder.getId()}`);
+            await this.expenseService.deleteByOrderId(existingOrder.getId());
 
-                this.logger.log(`Decreasing product quantity for updated BUY order`);
-                await this.decreaseProductQuantity(existingOrder.getOrderLines());
-            } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
-                this.logger.log(`Increasing product quantity for updated SELL order`);
-                await this.increaseProductQuantity(existingOrder.getOrderLines());
-            }
-        } else {
-            // TODO: test update order then check expenses and quantities not applied
-            this.logger.log(`Order with [status=${existingOrder.getOrderStatus()}] doesn't allow updating product quantities`);
+            this.logger.log(`Decreasing product quantity for updated BUY order`);
+            await this.decreaseProductQuantity(existingOrder.getOrderLines());
+        } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
+            this.logger.log(`Increasing product quantity for updated SELL order`);
+            await this.increaseProductQuantity(existingOrder.getOrderLines());
         }
     }
 
