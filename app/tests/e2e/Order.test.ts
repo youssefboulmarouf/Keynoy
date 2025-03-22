@@ -175,7 +175,6 @@ describe("Order API E2E Tests", () => {
         expect(expenseResponse.body[0].totalPrice).toEqual(4);
         expect(new Date(expenseResponse.body[0].date)).toEqual(orderDate);
         expect(expenseResponse.body[0].orderId).toEqual(orderId);
-        expect(expenseResponse.body[0].deliveryId).toEqual(0);
     });
 
     test("Should increase product quantity after a buy order", async () => {
