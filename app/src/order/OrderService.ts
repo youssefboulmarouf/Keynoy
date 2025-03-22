@@ -143,7 +143,7 @@ export class OrderService extends BaseService {
         this.logger.log(`Adding delivery details to order with [id=${deliveryJson.getOrderId()}]`);
         const existingOrder = await this.getById(deliveryJson.getOrderId());
 
-        if (!this.canBeShipped(existingOrder.getOrderStatus())) {
+        if (existingOrder.getOrderStatus() > OrderStatusEnum.FINISHED) {
             // TODO: test ship not allowed
             throw new AppError(
                 "Bad Request",
@@ -272,9 +272,5 @@ export class OrderService extends BaseService {
                 await this.productService.updateQuantity(line.getProductId(), -line.getQuantity());
             })
         )
-    }
-
-    private canBeShipped(existingOrder: OrderStatusEnum): boolean {
-        return (existingOrder === OrderStatusEnum.FINISHED || existingOrder === OrderStatusEnum.IN_PROGRESS)
     }
 }
