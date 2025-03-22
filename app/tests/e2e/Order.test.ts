@@ -1,6 +1,6 @@
 import { stopServer } from "../../src";
 import { PrismaClient } from "@prisma/client";
-import {createEntity, getEntity, updateEntity} from "./TestHelper";
+import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
 import {CustomerJson} from "../../src/customer/CustomerJson";
 import {SupplierJson} from "../../src/supplier/SupplierJson";
 import {OrderTypeEnum} from "../../src/order/OrderTypeEnum";
@@ -204,9 +204,140 @@ describe("Order API E2E Tests", () => {
         expect(response.status).toBe(400);
     });
 
+    test("Should get 404 when updating non existing order", async () => {
+        const response = await updateEntity(`/api/orders/99/status/${OrderStatusEnum.IN_PROGRESS}`,{});
+        expect(response.status).toBe(404);
+    });
+
     test("Should get 500 if updating order with unknown status", async () => {
         const response = await updateEntity(`/api/orders/${orderId}/status/99`,{});
         expect(response.status).toBe(500);
     });
 
+    test("Should get 404 if deleting non existing order", async () => {
+        const response = await deleteEntity(`/api/orders/99`);
+        expect(response.status).toBe(404);
+    });
+
+    test("Should get 404 deleting non confirmed order", async () => {
+        const response = await deleteEntity(`/api/orders/${orderId}`);
+        expect(response.status).toBe(400);
+    });
+
+    test("Should delete buy order and adjust product quantity and expense", async () => {
+        const createProductResponse = await createEntity(
+            "/api/products",
+            { id: null, name: "new product", size: "Size", productTypeId: 1, color: "red", threshold: 0, totalQuantity: initialProductQuantity }
+        )
+
+        const newProduct = ProductJson.from(createProductResponse.body);
+
+        const orderLine = new OrderLineJson(0, newProduct.getId(), boughtProductQuantity, 0.4);
+        orderDate = new Date();
+
+        const createOrderResponse = await createEntity(
+            "/api/orders",
+            {
+                id: null,
+                customerId: customer.getId(),
+                supplierId: supplier.getId(),
+                orderType: OrderTypeEnum.BUY,
+                orderStatus: OrderStatusEnum.CONFIRMED,
+                totalPrice: 4,
+                date: orderDate,
+                orderLines: [orderLine]
+            }
+        );
+
+        expect(createOrderResponse.status).toBe(201);
+        expect(createOrderResponse.body).toHaveProperty("id");
+        expect(createOrderResponse.body.id).not.toBeNull();
+
+        const newOrderId = createOrderResponse.body.id;
+
+        // Check product quantity increase
+        let getProductResponse = await getEntity(`/api/products/${newProduct.getId()}`);
+        expect(getProductResponse.status).toBe(200);
+        expect(getProductResponse.body.name).toEqual(newProduct.getName());
+        expect(getProductResponse.body.totalQuantity).toEqual(initialProductQuantity + boughtProductQuantity);
+
+        // Check expense
+        let expenseResponse = await getEntity("/api/expenses");
+        expect(expenseResponse.status).toBe(200);
+        expect(expenseResponse.body.length).toBeGreaterThan(1);
+        let expense = expenseResponse.body.filter((r: any) => r.orderId === newOrderId);
+        expect(expense.length).toEqual(1);
+
+        // Delete Order
+        const deleteOrderResponse = await deleteEntity(`/api/orders/${newOrderId}`);
+        expect(deleteOrderResponse.status).toBe(204);
+
+        // Check product quantity decrease
+        getProductResponse = await getEntity(`/api/products/${newProduct.getId()}`);
+        expect(getProductResponse.status).toBe(200);
+        expect(getProductResponse.body.name).toEqual(newProduct.getName());
+        expect(getProductResponse.body.totalQuantity).toEqual(initialProductQuantity);
+
+        // Check expense
+        expenseResponse = await getEntity("/api/expenses");
+        expect(expenseResponse.status).toBe(200);
+        expect(expenseResponse.body.length).toEqual(1);
+        expense = expenseResponse.body.filter((r: any) => r.orderId === newOrderId);
+        expect(expense.length).toEqual(0);
+    });
+
+    test("Should delete sell order and adjust product quantity with no expense", async () => {
+        const createProductResponse = await createEntity(
+            "/api/products",
+            { id: null, name: "new product", size: "Size", productTypeId: 1, color: "red", threshold: 0, totalQuantity: initialProductQuantity }
+        )
+
+        const newProduct = ProductJson.from(createProductResponse.body);
+
+        const orderLine = new OrderLineJson(0, newProduct.getId(), soldProductQuantity, 0.4);
+        orderDate = new Date();
+
+        const createOrderResponse = await createEntity(
+            "/api/orders",
+            {
+                id: null,
+                customerId: customer.getId(),
+                supplierId: supplier.getId(),
+                orderType: OrderTypeEnum.SELL,
+                orderStatus: OrderStatusEnum.CONFIRMED,
+                totalPrice: 4,
+                date: orderDate,
+                orderLines: [orderLine]
+            }
+        );
+
+        expect(createOrderResponse.status).toBe(201);
+        expect(createOrderResponse.body).toHaveProperty("id");
+        expect(createOrderResponse.body.id).not.toBeNull();
+
+        const newOrderId = createOrderResponse.body.id;
+
+        // Check product quantity increase
+        let getProductResponse = await getEntity(`/api/products/${newProduct.getId()}`);
+        expect(getProductResponse.status).toBe(200);
+        expect(getProductResponse.body.name).toEqual(newProduct.getName());
+        expect(getProductResponse.body.totalQuantity).toEqual(initialProductQuantity - soldProductQuantity);
+
+        // Check expense
+        let expenseResponse = await getEntity("/api/expenses");
+        expect(expenseResponse.status).toBe(200);
+        expect(expenseResponse.body.length).toEqual(1);
+        let expense = expenseResponse.body.filter((r: any) => r.orderId === newOrderId);
+        expect(expense.length).toEqual(0);
+
+        // Delete Order
+        const deleteOrderResponse = await deleteEntity(`/api/orders/${newOrderId}`);
+        expect(deleteOrderResponse.status).toBe(204);
+
+        // Check product quantity decrease
+        getProductResponse = await getEntity(`/api/products/${newProduct.getId()}`);
+        expect(getProductResponse.status).toBe(200);
+        expect(getProductResponse.body.name).toEqual(newProduct.getName());
+        expect(getProductResponse.body.totalQuantity).toEqual(initialProductQuantity);
+    });
 });
