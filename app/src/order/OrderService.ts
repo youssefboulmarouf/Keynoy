@@ -154,6 +154,16 @@ export class OrderService extends BaseService {
             );
         }
 
+        if (existingOrder.getOrderType() == OrderTypeEnum.SELL) {
+            // TODO: test ship not allowed
+            throw new AppError(
+                "Bad Request",
+                400,
+                `Order with [type=${existingOrder.getOrderType()}] cannot be shipped`
+            );
+        }
+
+        // TODO: test order update
         this.logger.log(`Update order status to shipped`);
         await this.prisma.order.update({
             where: { id: existingOrder.getId() },
