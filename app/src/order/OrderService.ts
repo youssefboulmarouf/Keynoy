@@ -122,8 +122,6 @@ export class OrderService extends BaseService {
         const existingOrder = await this.getById(orderId);
 
         if (existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED) {
-            // TODO: test delete not allowed
-            throw new AppError("Bad Request", 400, `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`);
             throw new AppError(
                 "Bad Request",
                 400,
