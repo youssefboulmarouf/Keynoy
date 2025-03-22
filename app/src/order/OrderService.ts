@@ -224,8 +224,7 @@ export class OrderService extends BaseService {
                 "Buy Order",
                 savedOrder.getTotalPrice(),
                 savedOrder.getDate(),
-                savedOrder.getId(),
-                0
+                savedOrder.getId()
             ));
 
             this.logger.log(`Increasing product quantity for new BUY order`);

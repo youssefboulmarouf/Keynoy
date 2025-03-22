@@ -35,8 +35,7 @@ export class ExpenseService extends BaseService {
                     name: expense.getName(),
                     totalPrice: expense.getTotalPrice(),
                     date: expense.getDate(),
-                    orderId: expense.getOrderId(),
-                    deliveryId: expense.getDeliveryId()
+                    orderId: expense.getOrderId()
                 }
             })
         );
@@ -61,8 +60,7 @@ export class ExpenseService extends BaseService {
                     name: expense.getName(),
                     totalPrice: expense.getTotalPrice(),
                     date: expense.getDate(),
-                    orderId: expense.getOrderId(),
-                    deliveryId: expense.getDeliveryId()
+                    orderId: expense.getOrderId()
                 }
             })
         );
