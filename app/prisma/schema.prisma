@@ -22,9 +22,9 @@ model DeliveryCompany {
   id   Int    @id @default(autoincrement())
   name String
 
-  deliveries Delivery[]
+  deliveries Shipping[]
 }
-model Delivery {
+model Shipping {
   orderId       Int @id
   dcId          Int
   shippingDate  DateTime?
@@ -58,7 +58,7 @@ model Order {
   supplier     Supplier?  @relation(fields: [supplierId], references: [id])
 
   orderLines   OrderLine[]
-  deliveries   Delivery[]
+  deliveries   Shipping[]
 }
 
 model OrderLine {

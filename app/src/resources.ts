@@ -6,6 +6,7 @@ import CustomerResource from "./customer/CustomerResource";
 import DeliveryCompanyResource from "./delivery/DeliveryCompanyResource";
 import OrderResource from "./order/OrderResource";
 import ExpenseResource from "./expense/ExpenseResource";
+import ShippingResource from "./shipping/ShippingResource";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.use("/orders", OrderResource);
+router.use("/shipping", ShippingResource);
 router.use("/products", ProductResource);
 router.use("/product-types", ProductTypeResource);
 router.use("/expenses", ExpenseResource);
