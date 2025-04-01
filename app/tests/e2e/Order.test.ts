@@ -22,6 +22,12 @@ describe("Order API E2E Tests", () => {
     const soldProductQuantity = 10;
 
     beforeAll(async () => {
+        // Removing all expenses from other tests
+        const expenses = await getEntity("/api/expenses");
+        await Promise.all(
+            expenses.body.map(async (ex: any) => await deleteEntity(`/api/expenses/${ex.id}`))
+        )
+
         const customerResponse = await createEntity(
             "/api/customers",
             { id: null, name: "Bob", phone: "111222333", location: "Morocco" }

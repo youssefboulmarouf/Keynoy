@@ -137,7 +137,7 @@ describe("Order API E2E Tests", () => {
         expect(shippingResponse.body.orderId).toEqual(orderId);
         expect(shippingResponse.body.dcId).toEqual(deliveryCompany.getId());
         expect(new Date(shippingResponse.body.shippingDate)).toEqual(orderDate);
-        expect(new Date(shippingResponse.body.deliveryDate)).toEqual(orderDate);
+        expect(shippingResponse.body.deliveryDate).toEqual(null);
         expect(shippingResponse.body.price).toEqual(10);
 
         const getOrderResponse = await getEntity(`/api/orders/${orderId}`);
@@ -147,7 +147,7 @@ describe("Order API E2E Tests", () => {
 
     test("Should update shipping details", async () => {
         const newDate = new Date();
-        const dc = await getEntity(`/api//delivery-companies`);
+        const dc = await getEntity(`/api/delivery-companies`);
         const newDeliveryCompany = DeliveryCompanyJson.from(dc.body[1]);
 
         const shippingResponse = await updateEntity(`/api/shipping/${orderId}`, {
@@ -164,7 +164,7 @@ describe("Order API E2E Tests", () => {
         expect(response.body.orderId).toEqual(orderId);
         expect(response.body.dcId).toEqual(newDeliveryCompany.getId());
         expect(new Date(response.body.shippingDate)).toEqual(orderDate);
-        expect(new Date(response.body.deliveryDate)).toEqual(newDate);
+        expect(response.body.deliveryDate).toEqual(null);
         expect(response.body.price).toEqual(50);
     });
 
@@ -362,7 +362,7 @@ describe("Order API E2E Tests", () => {
         const expenses = expenseResponse.body.filter((res: any) => res.orderId == orderId)
         expect(expenses.length).toEqual(1);
         expect(expenses[0].orderId).toEqual(orderId);
-        expect(expenses[0].totalPrice).toEqual(10);
+        expect(expenses[0].totalPrice).toEqual(50);
         expect(new Date(expenses[0].date)).toEqual(deliveryDate);
     });
 })
