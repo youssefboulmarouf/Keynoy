@@ -12,7 +12,7 @@ model Customer {
   id         Int    @id @default(autoincrement())
   name       String
   phone      String
-  location   String?
+  location   String
 
   orders     Order[]
 }
@@ -29,7 +29,7 @@ model Shipping {
   dcId          Int
   shippingDate  DateTime?
   deliveryDate  DateTime?
-  price         Decimal
+  price         Decimal @db.Decimal(10, 2)
 
   deliveryCompany DeliveryCompany? @relation(fields: [dcId], references: [id])
   order           Order?           @relation(fields: [orderId], references: [id])
@@ -39,7 +39,7 @@ model Shipping {
 model Expense {
   id         Int      @id @default(autoincrement())
   name       String
-  totalPrice Decimal
+  totalPrice Decimal @db.Decimal(10, 2)
   date       DateTime
   orderId    Int?
 }
@@ -47,11 +47,11 @@ model Expense {
 // ORDERS
 model Order {
   id            Int       @id @default(autoincrement())
-  customerId    Int?
-  supplierId    Int?
+  customerId    Int
+  supplierId    Int
   orderType     String
   orderStatus   Int
-  totalPrice    Decimal
+  totalPrice    Decimal @db.Decimal(10, 2)
   date          DateTime
 
   customer     Customer?  @relation(fields: [customerId], references: [id])
@@ -65,7 +65,7 @@ model OrderLine {
   orderId   Int
   productId Int
   quantity  Int
-  unitPrice Decimal
+  unitPrice Decimal @db.Decimal(10, 2)
 
   order     Order    @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
@@ -100,12 +100,3 @@ model Supplier {
 
   orders  Order[]
 }
-
-
-
-
-
-
-
-
-
