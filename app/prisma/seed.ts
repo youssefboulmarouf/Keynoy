@@ -7,11 +7,11 @@ async function main() {
 
     // Insert Delivery Companies
     await prisma.$executeRawUnsafe(`
-    INSERT INTO DeliveryCompany (name) VALUES
-      ('Ozone'),
-      ('Alta'),
-      ('In Person');
-  `);
+    INSERT INTO Company (name, type, location, phone) VALUES
+      ('Ozone', 'SHIPPER', 'Rabat', ''),
+      ('Alta', 'SHIPPER', 'Sale', ''),
+      ('In Person', 'SHIPPER', '', '');
+    `);
 
     // Insert Product Types
     await prisma.$executeRawUnsafe(`
@@ -77,7 +77,7 @@ async function main() {
       ('Calque', '', 12, '', 0, 0),
       ('Scotche', '', 13, '', 0, 0),
       ('Decapot', '', 14, '', 0, 0);
-  `);
+    `);
 
     console.log("Seeding completed successfully!");
 }
