@@ -65,7 +65,7 @@ export class ShippingService extends BaseService {
                 orderId: shippingJson.getOrderId(),
                 dcId: shippingJson.getDcId(),
                 shippingDate: shippingJson.getShippingDate(),
-                deliveryDate: shippingJson.getDeliveryDate(),
+                deliveryDate: null,
                 price: shippingJson.getPrice()
             }
         });
@@ -93,7 +93,7 @@ export class ShippingService extends BaseService {
                 orderId: shippingJson.getOrderId(),
                 dcId: shippingJson.getDcId(),
                 shippingDate: shippingJson.getShippingDate(),
-                deliveryDate: shippingJson.getDeliveryDate(),
+                deliveryDate: null,
                 price: shippingJson.getPrice()
             }
         });
@@ -145,26 +145,28 @@ export class ShippingService extends BaseService {
 
         await this.updateOrder(existingOrder, OrderStatusEnum.DELIVERED);
 
+        const existingShippingDetails = await this.getById(shippingJson.getOrderId());
+
         this.logger.log(`Delivery entry updated`);
         await this.prisma.shipping.update({
-            where: { orderId: shippingJson.getOrderId() },
+            where: { orderId: existingShippingDetails.getOrderId() },
             data: {
-                orderId: shippingJson.getOrderId(),
-                dcId: shippingJson.getDcId(),
-                shippingDate: shippingJson.getShippingDate(),
+                orderId: existingShippingDetails.getOrderId(),
+                dcId: existingShippingDetails.getDcId(),
+                shippingDate: existingShippingDetails.getShippingDate(),
                 deliveryDate: shippingJson.getDeliveryDate(),
-                price: shippingJson.getPrice()
+                price: existingShippingDetails.getPrice()
             }
         });
 
         if (shippingJson.getPrice() > 0) {
-            this.logger.log(`Adding Expense for BUY order`);
+            this.logger.log(`Adding Delivery Expense for SELL order`);
             await this.expenseService.add(new ExpenseJson(
                 0,
                 "Order Delivery",
-                shippingJson.getPrice(),
-                shippingJson.getDeliveryDate(),
-                shippingJson.getOrderId()
+                existingShippingDetails.getPrice(),
+                shippingJson.getDeliveryDate() || new Date(),
+                existingShippingDetails.getOrderId()
             ));
         }
     }

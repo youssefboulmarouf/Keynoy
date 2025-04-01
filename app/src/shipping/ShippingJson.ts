@@ -2,14 +2,14 @@ export class ShippingJson {
     private readonly orderId: number;
     private readonly dcId: number;
     private readonly shippingDate: Date;
-    private readonly deliveryDate: Date;
+    private readonly deliveryDate: Date | null;
     private readonly price: number;
 
     constructor(
         orderId: number,
         dcId: number,
         shippingDate: Date,
-        deliveryDate: Date,
+        deliveryDate: Date | null,
         price: number
     ) {
         this.orderId = orderId;
@@ -31,7 +31,7 @@ export class ShippingJson {
         return this.shippingDate;
     }
 
-    public getDeliveryDate(): Date {
+    public getDeliveryDate(): Date | null {
         return this.deliveryDate;
     }
 
