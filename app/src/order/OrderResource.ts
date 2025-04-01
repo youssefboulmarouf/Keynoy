@@ -1,7 +1,6 @@
 import express, {Request, Response} from "express";
 import {OrderService} from "./OrderService";
 import {OrderJson} from "./OrderJson";
-import {DeliveryJson} from "./DeliveryJson";
 import handleAsync from "../utilities/HandleAsync";
 import {orderStatusFromNumber} from "./OrderStatusEnum";
 
