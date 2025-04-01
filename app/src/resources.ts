@@ -1,12 +1,10 @@
 import express, { Request, Response } from "express";
 import ProductResource from "./product/ProductResource";
 import ProductTypeResource from "./product/product-type/ProductTypeResource";
-import SupplierResource from "./supplier/SupplierResource";
-import CustomerResource from "./customer/CustomerResource";
-import DeliveryCompanyResource from "./delivery/DeliveryCompanyResource";
 import OrderResource from "./order/OrderResource";
 import ExpenseResource from "./expense/ExpenseResource";
 import ShippingResource from "./shipping/ShippingResource";
+import CompanyResource from "./company/CompanyResource";
 
 const router = express.Router();
 
@@ -19,8 +17,6 @@ router.use("/shipping", ShippingResource);
 router.use("/products", ProductResource);
 router.use("/product-types", ProductTypeResource);
 router.use("/expenses", ExpenseResource);
-router.use("/suppliers", SupplierResource);
-router.use("/customers", CustomerResource);
-router.use("/delivery-companies", DeliveryCompanyResource);
+router.use("/companies", CompanyResource);
 
 export default router;

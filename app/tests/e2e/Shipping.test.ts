@@ -1,36 +1,35 @@
 import {PrismaClient} from "@prisma/client";
 import {stopServer} from "../../src";
 import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
-import {CustomerJson} from "../../src/customer/CustomerJson";
-import {SupplierJson} from "../../src/supplier/SupplierJson";
 import {ProductJson} from "../../src/product/ProductJson";
 import {OrderTypeEnum} from "../../src/order/OrderTypeEnum";
 import {OrderStatusEnum} from "../../src/order/OrderStatusEnum";
 import {OrderLineJson} from "../../src/order/OrderLineJson";
-import {DeliveryCompanyJson} from "../../src/delivery/DeliveryCompanyJson";
+import {CompanyJson} from "../../src/company/CompanyJson";
+import {CompanyTypeEnum} from "../../src/company/CompanyTypeEnum";
 
 const prisma = new PrismaClient();
 
 describe("Order API E2E Tests", () => {
-    let customer: CustomerJson;
-    let supplier: SupplierJson;
+    let customer: CompanyJson;
+    let supplier: CompanyJson;
     let product: ProductJson;
-    let deliveryCompany: DeliveryCompanyJson;
+    let shipper: CompanyJson;
     let orderDate: Date;
     let orderId: number;
 
     beforeAll(async () => {
         const customerResponse = await createEntity(
-            "/api/customers",
-            { id: null, name: "Bob", phone: "111222333", location: "Morocco" }
+            "/api/companies",
+            { id: null, name: "Bob", type: CompanyTypeEnum.CUSTOMER, phone: "111222333", location: "Morocco" }
         );
-        customer = CustomerJson.from(customerResponse.body);
+        customer = CompanyJson.from(customerResponse.body);
 
         const supplierResponse = await createEntity(
-            "/api/suppliers",
-            { id: null, name: "Sup" }
+            "/api/companies",
+            { id: null, name: "Sup", type: CompanyTypeEnum.SUPPLIER, phone: "111222333", location: "Morocco" }
         );
-        supplier = SupplierJson.from(supplierResponse.body);
+        supplier = CompanyJson.from(supplierResponse.body);
 
         const productResponse = await createEntity(
             "/api/products",
@@ -38,8 +37,9 @@ describe("Order API E2E Tests", () => {
         )
         product = ProductJson.from(productResponse.body);
 
-        const dc = await getEntity(`/api//delivery-companies`);
-        deliveryCompany = DeliveryCompanyJson.from(dc.body[0]);
+        const shipperResponse = await getEntity("/api/companies/shippers");
+        shipper = CompanyJson.from(shipperResponse.body[0]);
+        console.log("shipper: ", shipper)
 
         orderDate = new Date();
         const orderLine = new OrderLineJson(0, product.getId(), 50, 0.4);
@@ -67,7 +67,7 @@ describe("Order API E2E Tests", () => {
     test("Should get 400 when shipping order with status lower than finished", async () => {
         const shippingResponse = await createEntity(`/api/shipping/`, {
             orderId: orderId,
-            dcId: deliveryCompany.getId(),
+            dcId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 1
@@ -79,7 +79,7 @@ describe("Order API E2E Tests", () => {
     test("Should get 400 when shipping id mismatch", async () => {
         const shippingResponse = await updateEntity(`/api/shipping/99`, {
             orderId: orderId,
-            dcId: deliveryCompany.getId(),
+            dcId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 1
@@ -113,7 +113,7 @@ describe("Order API E2E Tests", () => {
 
         const deliveryResponse = await createEntity(`/api/shipping/`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            dcId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 1
@@ -128,14 +128,14 @@ describe("Order API E2E Tests", () => {
 
         const shippingResponse = await createEntity(`/api/shipping/`, {
             orderId: orderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: orderDate,
-            deliveryDate: orderDate,
+            deliveryDate: null,
             price: 10
         });
         expect(shippingResponse.status).toBe(201);
         expect(shippingResponse.body.orderId).toEqual(orderId);
-        expect(shippingResponse.body.dcId).toEqual(deliveryCompany.getId());
+        expect(shippingResponse.body.shipperId).toEqual(shipper.getId());
         expect(new Date(shippingResponse.body.shippingDate)).toEqual(orderDate);
         expect(shippingResponse.body.deliveryDate).toEqual(null);
         expect(shippingResponse.body.price).toEqual(10);
@@ -147,12 +147,12 @@ describe("Order API E2E Tests", () => {
 
     test("Should update shipping details", async () => {
         const newDate = new Date();
-        const dc = await getEntity(`/api/delivery-companies`);
-        const newDeliveryCompany = DeliveryCompanyJson.from(dc.body[1]);
+        const dc = await getEntity(`/api/companies`);
+        const newShipper = CompanyJson.from(dc.body[1]);
 
         const shippingResponse = await updateEntity(`/api/shipping/${orderId}`, {
             orderId: orderId,
-            dcId: newDeliveryCompany.getId(),
+            shipperId: newShipper.getId(),
             shippingDate: orderDate,
             deliveryDate: newDate,
             price: 50
@@ -162,7 +162,7 @@ describe("Order API E2E Tests", () => {
 
         const response = await getEntity(`/api/shipping/${orderId}`);
         expect(response.body.orderId).toEqual(orderId);
-        expect(response.body.dcId).toEqual(newDeliveryCompany.getId());
+        expect(response.body.shipperId).toEqual(newShipper.getId());
         expect(new Date(response.body.shippingDate)).toEqual(orderDate);
         expect(response.body.deliveryDate).toEqual(null);
         expect(response.body.price).toEqual(50);
@@ -193,7 +193,7 @@ describe("Order API E2E Tests", () => {
 
         const shippingResponse = await createEntity(`/api/shipping/`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -202,7 +202,7 @@ describe("Order API E2E Tests", () => {
 
         const deliveredResponse = await updateEntity(`/api/shipping/${newOrderId}/delivered`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -211,7 +211,7 @@ describe("Order API E2E Tests", () => {
 
         const updateDeliveredResponse = await updateEntity(`/api/shipping/${newOrderId}`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -244,7 +244,7 @@ describe("Order API E2E Tests", () => {
 
         const shippingResponse = await createEntity(`/api/shipping/`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -253,7 +253,7 @@ describe("Order API E2E Tests", () => {
 
         const deliveredResponse = await updateEntity(`/api/shipping/${newOrderId}/delivered`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -289,7 +289,7 @@ describe("Order API E2E Tests", () => {
 
         const shippingResponse = await createEntity(`/api/shipping/`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -306,7 +306,7 @@ describe("Order API E2E Tests", () => {
     test("Should get 400 when delivering order with id mismatch", async () => {
         const deliveredResponse = await updateEntity(`/api/shipping/99/delivered`, {
             orderId: orderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -339,7 +339,7 @@ describe("Order API E2E Tests", () => {
 
         const deliveredResponse = await updateEntity(`/api/shipping/${newOrderId}/delivered`, {
             orderId: newOrderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: new Date(),
             price: 0
@@ -351,7 +351,7 @@ describe("Order API E2E Tests", () => {
         const deliveryDate = new Date();
         const deliveredResponse = await updateEntity(`/api/shipping/${orderId}/delivered`, {
             orderId: orderId,
-            dcId: deliveryCompany.getId(),
+            shipperId: shipper.getId(),
             shippingDate: new Date(),
             deliveryDate: deliveryDate,
             price: 10

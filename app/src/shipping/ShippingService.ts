@@ -63,7 +63,7 @@ export class ShippingService extends BaseService {
         const data = await this.prisma.shipping.create({
             data: {
                 orderId: shippingJson.getOrderId(),
-                dcId: shippingJson.getDcId(),
+                shipperId: shippingJson.getShipperId(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: null,
                 price: shippingJson.getPrice()
@@ -91,7 +91,7 @@ export class ShippingService extends BaseService {
             where: { orderId: shippingJson.getOrderId() },
             data: {
                 orderId: shippingJson.getOrderId(),
-                dcId: shippingJson.getDcId(),
+                shipperId: shippingJson.getShipperId(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: null,
                 price: shippingJson.getPrice()
@@ -152,7 +152,7 @@ export class ShippingService extends BaseService {
             where: { orderId: existingShippingDetails.getOrderId() },
             data: {
                 orderId: existingShippingDetails.getOrderId(),
-                dcId: existingShippingDetails.getDcId(),
+                shipperId: existingShippingDetails.getShipperId(),
                 shippingDate: existingShippingDetails.getShippingDate(),
                 deliveryDate: shippingJson.getDeliveryDate(),
                 price: existingShippingDetails.getPrice()

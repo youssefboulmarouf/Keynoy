@@ -1,18 +1,18 @@
 import { stopServer } from "../../src";
 import { PrismaClient } from "@prisma/client";
 import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
-import {CustomerJson} from "../../src/customer/CustomerJson";
-import {SupplierJson} from "../../src/supplier/SupplierJson";
 import {OrderTypeEnum} from "../../src/order/OrderTypeEnum";
 import {OrderStatusEnum} from "../../src/order/OrderStatusEnum";
 import {OrderLineJson} from "../../src/order/OrderLineJson";
 import {ProductJson} from "../../src/product/ProductJson";
+import {CompanyJson} from "../../src/company/CompanyJson";
+import {CompanyTypeEnum} from "../../src/company/CompanyTypeEnum";
 
 const prisma = new PrismaClient();
 
 describe("Order API E2E Tests", () => {
-    let customer: CustomerJson;
-    let supplier: SupplierJson;
+    let customer: CompanyJson;
+    let supplier: CompanyJson;
     let product: ProductJson;
     let orderId: number;
     let orderDate: Date;
@@ -29,16 +29,16 @@ describe("Order API E2E Tests", () => {
         )
 
         const customerResponse = await createEntity(
-            "/api/customers",
-            { id: null, name: "Bob", phone: "111222333", location: "Morocco" }
+            "/api/companies",
+            { id: null, name: "Bob", type: CompanyTypeEnum.CUSTOMER, phone: "111222333", location: "Morocco" }
         );
-        customer = CustomerJson.from(customerResponse.body);
+        customer = CompanyJson.from(customerResponse.body);
 
         const supplierResponse = await createEntity(
-            "/api/suppliers",
-            { id: null, name: "Sup" }
+            "/api/companies",
+            { id: null, name: "Sup", type: CompanyTypeEnum.SUPPLIER, phone: "111222333", location: "Morocco" }
         );
-        supplier = SupplierJson.from(supplierResponse.body);
+        supplier = CompanyJson.from(supplierResponse.body);
 
         const productResponse = await createEntity(
             "/api/products",
