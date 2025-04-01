@@ -69,32 +69,4 @@ router.put("/:id/status/:status",
     )
 );
 
-router.post("/:id/delivery",
-    handleAsync(
-        async  (req: Request, res: Response) => {
-            res
-                .status(201)
-                .json(
-                    await orderService.shipped(
-                        DeliveryJson.from(req.body)
-                    )
-                );
-        }
-    )
-);
-
-router.put("/:id/delivery",
-    handleAsync(
-        async  (req: Request, res: Response) => {
-            res
-                .status(201)
-                .json(
-                    await orderService.delivered(
-                        DeliveryJson.from(req.body)
-                    )
-                );
-        }
-    )
-);
-
 export default router;

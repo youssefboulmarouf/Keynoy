@@ -7,7 +7,6 @@ import {OrderLineService} from "./OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
 import {ProductService} from "../product/ProductService";
-import {DeliveryJson} from "./DeliveryJson";
 import AppError from "../utilities/AppError";
 
 export class OrderService extends BaseService {
@@ -139,106 +138,6 @@ export class OrderService extends BaseService {
         await this.prisma.order.delete({
             where: { id: orderId }
         });
-    }
-
-    async shipped(deliveryJson: DeliveryJson) {
-        this.logger.log(`Adding delivery details to order with [id=${deliveryJson.getOrderId()}]`);
-        const existingOrder = await this.getById(deliveryJson.getOrderId());
-
-        if (existingOrder.getOrderStatus() > OrderStatusEnum.FINISHED) {
-            // TODO: test ship not allowed
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [status=${existingOrder.getOrderStatus()}] cannot be shipped`
-            );
-        }
-
-        if (existingOrder.getOrderType() == OrderTypeEnum.SELL) {
-            // TODO: test ship not allowed
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [type=${existingOrder.getOrderType()}] cannot be shipped`
-            );
-        }
-
-        // TODO: test order update
-        this.logger.log(`Update order status to shipped`);
-        await this.prisma.order.update({
-            where: { id: existingOrder.getId() },
-            data: {
-                customerId: existingOrder.getCustomerId(),
-                supplierId: existingOrder.getSupplierId(),
-                orderType: existingOrder.getOrderType(),
-                orderStatus: OrderStatusEnum.SHIPPED,
-                totalPrice: existingOrder.getTotalPrice(),
-                date: existingOrder.getDate()
-            }
-        });
-
-        // TODO: test delivery created
-        this.logger.log(`Delivery entry created`);
-        await this.prisma.delivery.create({
-            data: {
-                orderId: deliveryJson.getOrderId(),
-                dcId: deliveryJson.getDcId(),
-                shippingDate: deliveryJson.getShippingDate(),
-                deliveryDate: deliveryJson.getDeliveryDate(),
-                price: deliveryJson.getPrice()
-            }
-        });
-    }
-
-    async delivered(deliveryJson: DeliveryJson) {
-        this.logger.log(`Updating delivery details to order with [id=${deliveryJson.getOrderId()}]`);
-        const existingOrder = await this.getById(deliveryJson.getOrderId());
-
-        if (existingOrder.getOrderStatus() != OrderStatusEnum.SHIPPED) {
-            // TODO: test ship not allowed
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [status=${existingOrder.getOrderStatus()}] not shipped yet`
-            );
-        }
-
-        this.logger.log(`Update order status to delivered`);
-        await this.prisma.order.update({
-            where: { id: existingOrder.getId() },
-            data: {
-                customerId: existingOrder.getCustomerId(),
-                supplierId: existingOrder.getSupplierId(),
-                orderType: existingOrder.getOrderType(),
-                orderStatus: OrderStatusEnum.DELIVERED,
-                totalPrice: existingOrder.getTotalPrice(),
-                date: existingOrder.getDate()
-            }
-        });
-
-        this.logger.log(`Delivery entry updated`);
-        await this.prisma.delivery.update({
-            where: { orderId: deliveryJson.getOrderId() },
-            data: {
-                orderId: deliveryJson.getOrderId(),
-                dcId: deliveryJson.getDcId(),
-                shippingDate: deliveryJson.getShippingDate(),
-                deliveryDate: deliveryJson.getDeliveryDate(),
-                price: deliveryJson.getPrice()
-            }
-        });
-
-        if (deliveryJson.getPrice() > 0) {
-            // TODO: test expense created
-            this.logger.log(`Adding Expense for BUY order`);
-            await this.expenseService.add(new ExpenseJson(
-                0,
-                "Order Delivery",
-                deliveryJson.getPrice(),
-                deliveryJson.getDeliveryDate(),
-                deliveryJson.getOrderId()
-            ));
-        }
     }
 
     private async updateProductAndExpense(savedOrder: OrderJson) {
