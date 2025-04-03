@@ -17,6 +17,7 @@ export class OrderLineService extends BaseService {
         const data = await this.prisma.orderLine.findMany({
             where: { orderId: orderId }
         });
+
         return data.map((c: any) => OrderLineJson.from(c));
     };
 

@@ -1,6 +1,9 @@
 import {BaseService} from "../../utilities/BaseService";
 import {ProductTypeJson} from "./ProductTypeJson";
-import AppError from "../../utilities/AppError";
+import AppError from "../../utilities/errors/AppError";
+import NotFoundError from "../../utilities/errors/NotFoundError";
+import BadRequestError from "../../utilities/errors/BadRequestError";
+import {CompanyTypeEnum} from "../../company/CompanyTypeEnum";
 
 export class ProductTypeService extends BaseService {
     constructor() {
@@ -20,9 +23,7 @@ export class ProductTypeService extends BaseService {
             where: { id: productTypeId }
         });
 
-        if (!productTypeData) {
-            throw new AppError("Not Found", 404, `Product type with [id:${productTypeId}] not found`);
-        }
+        NotFoundError.throwIf(!productTypeData, `Product type with [id:${productTypeId}] not found`);
 
         return ProductTypeJson.from(productTypeData);
     }
@@ -41,9 +42,7 @@ export class ProductTypeService extends BaseService {
     async update(productTypeId: number, productType: any): Promise<ProductTypeJson> {
         this.logger.log(`Update product type with [id=${productTypeId}]`);
 
-        if (productTypeId != productType.getId()) {
-            throw new AppError("Bad Request", 400, `Product type id mismatch`);
-        }
+        BadRequestError.throwIf(productTypeId != productType.getId(), `Product type id mismatch`);
 
         const existingPt = this.getById(productTypeId);
 

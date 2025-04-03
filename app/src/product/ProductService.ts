@@ -1,7 +1,10 @@
 import {BaseService} from "../utilities/BaseService";
 import {ProductJson} from "./ProductJson";
 import {ColorEnum} from "./ColorEnum";
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
+import NotFoundError from "../utilities/errors/NotFoundError";
+import BadRequestError from "../utilities/errors/BadRequestError";
+import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class ProductService extends BaseService {
     constructor() {
@@ -20,10 +23,7 @@ export class ProductService extends BaseService {
         const productData = await this.prisma.product.findUnique({
             where: { id: productId }
         });
-
-        if (!productData) {
-            throw new AppError("Not Found", 404, `Product with [id:${productId}] not found`);
-        }
+        NotFoundError.throwIf(!productData, `Product with [id:${productId}] not found`);
 
         return ProductJson.from(productData);
     };
@@ -47,9 +47,7 @@ export class ProductService extends BaseService {
     async update(productId: number, product: any): Promise<ProductJson> {
         this.logger.log(`Update product with [id=${productId}]`);
 
-        if (productId != product.getId()) {
-            throw new AppError("Bad Request", 400, `Product id mismatch`);
-        }
+        BadRequestError.throwIf(productId != product.getId(), `Product id mismatch`);
 
         const existingProduct = this.getById(productId);
 

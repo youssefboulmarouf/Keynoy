@@ -1,12 +1,15 @@
 import {BaseService} from "../utilities/BaseService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
 import {ShippingJson} from "./ShippingJson";
 import {OrderService} from "../order/OrderService";
 import {OrderStatusEnum} from "../order/OrderStatusEnum";
 import {OrderTypeEnum} from "../order/OrderTypeEnum";
 import {OrderJson} from "../order/OrderJson";
+import NotFoundError from "../utilities/errors/NotFoundError";
+import BadRequestError from "../utilities/errors/BadRequestError";
+import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class ShippingService extends BaseService {
     private readonly expenseService: ExpenseService;
@@ -30,9 +33,7 @@ export class ShippingService extends BaseService {
             where: { orderId: orderId }
         });
 
-        if (!data) {
-            throw new AppError("Not Found", 404, `Shipping details by [orderId:${orderId}] not found`);
-        }
+        NotFoundError.throwIf(!data, `Shipping details by [orderId:${orderId}] not found`);
 
         return ShippingJson.from(data);
     };
@@ -41,21 +42,15 @@ export class ShippingService extends BaseService {
         this.logger.log(`Adding shipping details to order with [id=${shippingJson.getOrderId()}]`);
         const existingOrder = await this.orderService.getById(shippingJson.getOrderId());
 
-        if (existingOrder.getOrderStatus() != OrderStatusEnum.FINISHED) {
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [status=${existingOrder.getOrderStatus()}] cannot be shipped`
-            );
-        }
+        BadRequestError.throwIf(
+            existingOrder.getOrderStatus() != OrderStatusEnum.FINISHED,
+            `Order with [status=${existingOrder.getOrderStatus()}] cannot be shipped`
+        );
 
-        if (existingOrder.getOrderType() == OrderTypeEnum.BUY) {
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [type=${existingOrder.getOrderType()}] cannot be shipped`
-            );
-        }
+        BadRequestError.throwIf(
+            existingOrder.getOrderType() == OrderTypeEnum.BUY,
+            `Order with [type=${existingOrder.getOrderType()}] cannot be shipped`
+        );
 
         await this.updateOrder(existingOrder, OrderStatusEnum.SHIPPED);
 
@@ -76,15 +71,10 @@ export class ShippingService extends BaseService {
     async update(orderId: number, shippingJson: ShippingJson): Promise<void> {
         this.logger.log(`Updating shipping details of order with [id=${shippingJson.getOrderId()}]`);
 
-        if (orderId != shippingJson.getOrderId()) {
-            throw new AppError("Bad Request", 400, `Shipping id mismatch`);
-        }
+        BadRequestError.throwIf(orderId != shippingJson.getOrderId(), `Shipping id mismatch`);
 
         const existingOrder = await this.orderService.getById(shippingJson.getOrderId());
-
-        if (existingOrder.getOrderStatus() == OrderStatusEnum.DELIVERED) {
-            throw new AppError("Bad Request", 400, `Order is delivered`);
-        }
+        BadRequestError.throwIf(existingOrder.getOrderStatus() == OrderStatusEnum.DELIVERED, `Order is delivered`);
 
         this.logger.log(`Delivery entry updated`);
         await this.prisma.shipping.update({
@@ -103,9 +93,10 @@ export class ShippingService extends BaseService {
         this.logger.log(`Deleting shipping details of order with [id=${orderId}]`);
         const existingOrder = await this.orderService.getById(orderId);
 
-        if (existingOrder.getOrderStatus() == OrderStatusEnum.DELIVERED) {
-            throw new AppError("Bad Request", 400, `Delivered order cannot be deleted`);
-        }
+        BadRequestError.throwIf(
+            existingOrder.getOrderStatus() == OrderStatusEnum.DELIVERED,
+            `Delivered order cannot be deleted`
+        );
 
         this.logger.log(`Update order status to finished`);
         await this.prisma.order.update({
@@ -129,19 +120,13 @@ export class ShippingService extends BaseService {
     async delivered(orderId: number, shippingJson: ShippingJson) {
         this.logger.log(`Updating delivery details to order with [id=${shippingJson.getOrderId()}]`);
 
-        if (orderId != shippingJson.getOrderId()) {
-            throw new AppError("Bad Request", 400, `Shipping id mismatch`);
-        }
+        BadRequestError.throwIf(orderId != shippingJson.getOrderId(), `Shipping id mismatch`);
 
         const existingOrder = await this.orderService.getById(shippingJson.getOrderId());
-
-        if (existingOrder.getOrderStatus() != OrderStatusEnum.SHIPPED) {
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [status=${existingOrder.getOrderStatus()}] not be delivered`
-            );
-        }
+        BadRequestError.throwIf(
+            existingOrder.getOrderStatus() != OrderStatusEnum.SHIPPED,
+            `Order with [status=${existingOrder.getOrderStatus()}] not be delivered`
+        );
 
         await this.updateOrder(existingOrder, OrderStatusEnum.DELIVERED);
 

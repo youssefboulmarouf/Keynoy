@@ -1,4 +1,4 @@
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
 
 export enum OrderTypeEnum {
     BUY = "buy",

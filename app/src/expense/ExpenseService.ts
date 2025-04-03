@@ -1,6 +1,9 @@
 import {BaseService} from "../utilities/BaseService";
 import {ExpenseJson} from "./ExpenseJson";
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
+import NotFoundError from "../utilities/errors/NotFoundError";
+import BadRequestError from "../utilities/errors/BadRequestError";
+import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class ExpenseService extends BaseService {
     constructor() {
@@ -15,14 +18,11 @@ export class ExpenseService extends BaseService {
 
     async getById(expenseId: number): Promise<ExpenseJson> {
         this.logger.log(`Get expense by [id:${expenseId}]`);
-
         const expenseData = await this.prisma.expense.findUnique({
             where: { id: expenseId }
         });
 
-        if (!expenseData) {
-            throw new AppError("Not Found", 404, `Expense with [id:${expenseId}] not found`);
-        }
+        NotFoundError.throwIf(!expenseData, `Expense with [id:${expenseId}] not found`);
 
         return ExpenseJson.from(expenseData);
     };
@@ -44,9 +44,7 @@ export class ExpenseService extends BaseService {
     async update(expenseId: number, expense: any): Promise<ExpenseJson> {
         this.logger.log(`Update expense with [id=${expenseId}]`);
 
-        if (expenseId != expense.getId()) {
-            throw new AppError("Bad Request", 400, `Expense id mismatch`);
-        }
+        BadRequestError.throwIf(expenseId != expense.getId(), `Expense id mismatch`);
 
         const existingExpense = this.getById(expenseId);
 

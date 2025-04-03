@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import AppError from "./AppError";
+import AppError from "./errors/AppError";
 import Logger from "./Logger";
 
 const logger = new Logger("HandleAsync");

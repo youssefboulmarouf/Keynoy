@@ -1,7 +1,9 @@
 import {BaseService} from "../utilities/BaseService";
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
 import {CompanyTypeEnum} from "./CompanyTypeEnum";
 import {CompanyJson} from "./CompanyJson";
+import NotFoundError from "../utilities/errors/NotFoundError";
+import BadRequestError from "../utilities/errors/BadRequestError";
 
 export class CompanyService extends BaseService {
 
@@ -43,9 +45,7 @@ export class CompanyService extends BaseService {
             where: { id: companyId }
         });
 
-        if (!companyData) {
-            throw new AppError("Not Found", 404, `Customer with [id:${companyId}] not found`);
-        }
+        NotFoundError.throwIf(!companyData, `Customer with [id:${companyId}] not found`);
 
         return CompanyJson.from(companyData);
     };
@@ -53,9 +53,7 @@ export class CompanyService extends BaseService {
     async add(company: CompanyJson): Promise<CompanyJson> {
         this.logger.log(`Create new company`, company);
 
-        if (company.getType() === CompanyTypeEnum.UNKNOWN) {
-            throw new AppError("Bad Request", 400, `Company cannot be unknown.`);
-        }
+        BadRequestError.throwIf(company.getType() === CompanyTypeEnum.UNKNOWN, `Company cannot be unknown.`);
 
         return CompanyJson.from(
             await this.prisma.company.create({
@@ -72,9 +70,7 @@ export class CompanyService extends BaseService {
     async update(companyId: number, company: CompanyJson): Promise<CompanyJson> {
         this.logger.log(`Update company with [id=${companyId}]`);
 
-        if (companyId != company.getId()) {
-            throw new AppError("Bad Request", 400, `Company id mismatch`);
-        }
+        BadRequestError.throwIf(companyId != company.getId(), `Company id mismatch`);
 
         const existingCompany = this.getById(companyId);
 

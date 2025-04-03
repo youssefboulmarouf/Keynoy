@@ -7,7 +7,10 @@ import {OrderLineService} from "./OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
 import {ProductService} from "../product/ProductService";
-import AppError from "../utilities/AppError";
+import AppError from "../utilities/errors/AppError";
+import NotFoundError from "../utilities/errors/NotFoundError";
+import BadRequestError from "../utilities/errors/BadRequestError";
+import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class OrderService extends BaseService {
     private readonly orderLineService: OrderLineService;
@@ -43,9 +46,7 @@ export class OrderService extends BaseService {
             where: { id: orderId }
         });
 
-        if (!orderData) {
-            throw new AppError("Not Found", 404, `Order with [id:${orderId}] not found`);
-        }
+        NotFoundError.throwIf(!orderData, `Order with [id:${orderId}] not found`);
 
         return OrderJson.fromDb(
             orderData,
@@ -56,13 +57,11 @@ export class OrderService extends BaseService {
     async add(order: OrderJson): Promise<OrderJson> {
         this.logger.log(`Create new order`, order);
 
-        if (order.getOrderLines().length == 0) {
-            throw new AppError("Bad Request", 400, `Order cannot have empty order lines`);
-        }
-
-        if (order.getOrderStatus() != OrderStatusEnum.CONFIRMED) {
-            throw new AppError("Bad Request", 400, `Wrong order status ${statusToString(order.getOrderStatus())}`);
-        }
+        BadRequestError.throwIf(order.getOrderLines().length == 0, `Order cannot have empty order lines`);
+        BadRequestError.throwIf(
+            order.getOrderStatus() != OrderStatusEnum.CONFIRMED,
+            `Wrong order status ${statusToString(order.getOrderStatus())}`
+        );
 
         const orderData: any = await this.prisma.order.create({
             data: {
@@ -90,15 +89,15 @@ export class OrderService extends BaseService {
     async update(orderId: number, orderStatus: OrderStatusEnum): Promise<void> {
         this.logger.log(`Update order status of order with [id=${orderId}]`);
 
-        if (orderStatus > OrderStatusEnum.FINISHED) {
-            throw new AppError("Bad Request", 400, `Wrong order status ${statusToString(orderStatus)}`);
-        }
-
         const existingOrder = await this.getById(orderId);
-
-        if (orderStatus < existingOrder.getOrderStatus()) {
-            throw new AppError("Bad Request", 400, `Order already have status ${statusToString(existingOrder.getOrderStatus())}`);
-        }
+        BadRequestError.throwIf(
+            orderStatus < existingOrder.getOrderStatus(),
+            `Order already have status ${statusToString(existingOrder.getOrderStatus())}`
+        );
+        BadRequestError.throwIf(
+            orderStatus > OrderStatusEnum.FINISHED,
+            `Wrong order status ${statusToString(orderStatus)}`
+        );
 
         this.logger.log(`Update existing order`, existingOrder);
         this.logger.log(`New order status:`, statusToString(orderStatus));
@@ -119,14 +118,10 @@ export class OrderService extends BaseService {
     async delete(orderId: number): Promise<void> {
         this.logger.log(`Delete order with [id=${orderId}]`);
         const existingOrder = await this.getById(orderId);
-
-        if (existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED) {
-            throw new AppError(
-                "Bad Request",
-                400,
-                `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`
-            );
-        }
+        BadRequestError.throwIf(
+            existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED,
+            `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`
+        );
 
         this.logger.log(`Order status is confirmed, order and related entities will be deleted`);
         await this.reverseProductAndExpenseUpdates(existingOrder);
