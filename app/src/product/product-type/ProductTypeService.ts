@@ -1,9 +1,7 @@
 import {BaseService} from "../../utilities/BaseService";
 import {ProductTypeJson} from "./ProductTypeJson";
-import AppError from "../../utilities/errors/AppError";
 import NotFoundError from "../../utilities/errors/NotFoundError";
 import BadRequestError from "../../utilities/errors/BadRequestError";
-import {CompanyTypeEnum} from "../../company/CompanyTypeEnum";
 
 export class ProductTypeService extends BaseService {
     constructor() {

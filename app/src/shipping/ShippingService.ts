@@ -1,7 +1,6 @@
 import {BaseService} from "../utilities/BaseService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
-import AppError from "../utilities/errors/AppError";
 import {ShippingJson} from "./ShippingJson";
 import {OrderService} from "../order/OrderService";
 import {OrderStatusEnum} from "../order/OrderStatusEnum";
@@ -9,7 +8,6 @@ import {OrderTypeEnum} from "../order/OrderTypeEnum";
 import {OrderJson} from "../order/OrderJson";
 import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
-import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class ShippingService extends BaseService {
     private readonly expenseService: ExpenseService;

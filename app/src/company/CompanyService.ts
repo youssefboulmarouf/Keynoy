@@ -1,5 +1,4 @@
 import {BaseService} from "../utilities/BaseService";
-import AppError from "../utilities/errors/AppError";
 import {CompanyTypeEnum} from "./CompanyTypeEnum";
 import {CompanyJson} from "./CompanyJson";
 import NotFoundError from "../utilities/errors/NotFoundError";

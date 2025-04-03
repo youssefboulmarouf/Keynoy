@@ -7,10 +7,8 @@ import {OrderLineService} from "./OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
 import {ProductService} from "../product/ProductService";
-import AppError from "../utilities/errors/AppError";
 import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
-import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class OrderService extends BaseService {
     private readonly orderLineService: OrderLineService;

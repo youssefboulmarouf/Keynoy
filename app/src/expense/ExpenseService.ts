@@ -1,9 +1,7 @@
 import {BaseService} from "../utilities/BaseService";
 import {ExpenseJson} from "./ExpenseJson";
-import AppError from "../utilities/errors/AppError";
 import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
-import {CompanyTypeEnum} from "../company/CompanyTypeEnum";
 
 export class ExpenseService extends BaseService {
     constructor() {
