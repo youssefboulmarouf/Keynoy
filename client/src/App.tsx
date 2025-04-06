@@ -1,18 +1,33 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-// import MosaicaAppBar from "./components/AppBar/MosaicaAppBar";
-// import Home from "./components/Home/Home";
-// import Dashboard from "./components/Dashboard/Dashboard";
-// import Portfolios from "./components/Portfolios/Portfolios";
-// import PortfolioDetails from "./components/Portfolios/detailed-portfolio/PortfolioDetails";
-// import Admin from "./components/Admin/Admin";
-// import { WalletProvider } from "./contexts/WalletContext";
-// import { AppProvider } from "./contexts/AppContext";
-// import CreatePortfolio from "./components/Portfolios/create-portfolio/CreatePortfolio";
-import { ThemeSettings } from "./theme/Theme";
-import "./App.css";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {Container, CssBaseline, styled} from "@mui/material";
+import {ThemeProvider} from "@mui/material/styles";
+import {ThemeSettings} from "./theme/Theme";
+import Sidebar from "./components/sidebar/Sidebar";
+import Header from "./components/header/Header";
+import Box from "@mui/material/Box";
+import Dashboard from "./components/dashboard/Dashboard";
+import Companies from "./components/companies/Companies";
+import Expenses from "./components/expenses/Expenses";
+import Orders from "./components/orders/Orders";
+import ProductTypes from "./components/product-types/ProductTypes";
+import Products from "./components/products/Products";
+
+const PageWrapper = styled("div")(() => ({
+    display: "flex",
+    flexGrow: 1,
+    paddingBottom: "60px",
+    flexDirection: "column",
+    zIndex: 1,
+    width: "100%",
+    backgroundColor: "transparent",
+}));
+
+const MainWrapper = styled("div")(() => ({
+    display: "flex",
+    minHeight: "100vh",
+    width: "100%",
+}));
 
 const App: React.FC = () => {
     const theme = ThemeSettings();
@@ -20,24 +35,33 @@ const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <div className="App">
-                {/*<Router>
-                    <WalletProvider>
-                        <AppProvider>
-                            <MosaicaAppBar />
+            <MainWrapper>
+                <BrowserRouter>
+                    <Sidebar />
+                    <PageWrapper className="page-wrapper">
+                        <Header />
+                        <Container sx={{maxWidth: "100%!important",}}>
+                            <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
+                                <Routes>
+                                    <Route path="/" element={<Dashboard />} />
 
-                            <Routes>
-                                <Route path="/" element={<Home />} />
-                                <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/portfolios" element={<Portfolios />} />
-                                <Route path="/portfolios/details/:portfolioAddress" element={<PortfolioDetails />} />
-                                <Route path="/portfolios/create" element={<CreatePortfolio />} />
-                                <Route path="/admin" element={<Admin />} />
-                            </Routes>
-                        </AppProvider>
-                    </WalletProvider>
-                </Router>*/}
-            </div>
+                                    <Route path="/ventes" element={<Orders type={"sells"}/>} />
+                                    <Route path="/achats" element={<Orders type={"buys"}/>} />
+
+                                    <Route path="/charges" element={<Expenses />} />
+
+                                    <Route path="/produits" element={<Products />} />
+                                    <Route path="/type-produits" element={<ProductTypes />} />
+
+                                    <Route path="/fournisseurs" element={<Companies type={"suppliers"}/>} />
+                                    <Route path="/clients" element={<Companies  type={"customers"}/>} />
+                                    <Route path="/livreurs" element={<Companies  type={"shippers"}/>} />
+                                </Routes>
+                            </Box>
+                        </Container>
+                    </PageWrapper>
+                </BrowserRouter>
+            </MainWrapper>
         </ThemeProvider>
     );
 };
