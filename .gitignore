@@ -8,5 +8,6 @@ app/src/logs/
 app/dist/
 app/prisma/migrations/
 
+client/.env
 client/node_modules/
 client/build/
