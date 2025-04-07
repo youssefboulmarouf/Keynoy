@@ -131,7 +131,8 @@ const Profile: React.FC = () => {
                                 </Stack>
                             </Link>
                         </Box>
-                    </Box>))}
+                    </Box>
+                ))}
                 <Box mt={2}>
                     <Button href="/auth/auth1/login" variant="outlined" color="primary" fullWidth>
                         Logout

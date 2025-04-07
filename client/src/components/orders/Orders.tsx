@@ -7,7 +7,7 @@ const bCrumb = [
         title: "Home",
     },
     {
-        title: "Commande",
+        title: "Commandes",
     },
 ];
 
