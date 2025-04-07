@@ -30,7 +30,6 @@ const ProductTypes: React.FC = () => {
     const { data, isLoading, isError } = useGetProductTypesHook();
 
     const handleOpenDialogType = (type: string) => {
-        console.log("handleAddNewProductType");
         setDialogType(type);
         setOpenDialog(true);
     };
