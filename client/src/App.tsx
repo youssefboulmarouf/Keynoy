@@ -45,17 +45,17 @@ const App: React.FC = () => {
                                 <Routes>
                                     <Route path="/" element={<Dashboard />} />
 
-                                    <Route path="/ventes" element={<Orders type={"sells"}/>} />
-                                    <Route path="/achats" element={<Orders type={"buys"}/>} />
+                                    <Route path="/ventes" element={<Orders type={"Ventes"}/>} />
+                                    <Route path="/achats" element={<Orders type={"Achats"}/>} />
 
                                     <Route path="/charges" element={<Expenses />} />
 
                                     <Route path="/produits" element={<Products />} />
                                     <Route path="/type-produits" element={<ProductTypes />} />
 
-                                    <Route path="/fournisseurs" element={<Companies type={"suppliers"}/>} />
-                                    <Route path="/clients" element={<Companies  type={"customers"}/>} />
-                                    <Route path="/livreurs" element={<Companies  type={"shippers"}/>} />
+                                    <Route path="/fournisseurs" element={<Companies type={"Fournisseurs"}/>} />
+                                    <Route path="/clients" element={<Companies  type={"Clients"}/>} />
+                                    <Route path="/livreurs" element={<Companies  type={"Livreurs"}/>} />
                                 </Routes>
                             </Box>
                         </Container>
