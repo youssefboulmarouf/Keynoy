@@ -11,7 +11,7 @@ export const useGetProductTypesHook = () => {
     });
 };
 
-export const useCreateProductType = () => {
+export const useCreateProductTypeHook = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (productType: ProductTypeJson) => createProductType(productType),
@@ -19,7 +19,7 @@ export const useCreateProductType = () => {
     });
 };
 
-export const useUpdateProductType = () => {
+export const useUpdateProductTypeHook = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (productType: ProductTypeJson) => updateProductType(productType),
@@ -27,7 +27,7 @@ export const useUpdateProductType = () => {
     });
 };
 
-export const useDeleteProductType = () => {
+export const useDeleteProductTypeHook = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (productType: ProductTypeJson) => deleteProductType(productType),
