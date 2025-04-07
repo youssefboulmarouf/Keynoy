@@ -1,7 +1,7 @@
 export enum CompanyTypeEnum {
-    SHIPPER = "SHIPPER",
-    SUPPLIER = "SUPPLIER",
-    CUSTOMER = "CUSTOMER",
+    SHIPPER = "Livreurs",
+    SUPPLIER = "Fournisseurs",
+    CUSTOMER = "Clients",
     UNKNOWN = "UNKNOWN"
 }
 
