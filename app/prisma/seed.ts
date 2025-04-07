@@ -8,9 +8,9 @@ async function main() {
     // Insert Delivery Companies
     await prisma.$executeRawUnsafe(`
     INSERT INTO Company (name, type, location, phone) VALUES
-      ('Ozone', 'SHIPPER', 'Rabat', ''),
-      ('Alta', 'SHIPPER', 'Sale', ''),
-      ('In Person', 'SHIPPER', '', '');
+      ('Ozone', 'Livreurs', 'Rabat', ''),
+      ('Alta', 'Livreurs', 'Sale', ''),
+      ('In Person', 'Livreurs', '', '');
     `);
 
     // Insert Product Types
