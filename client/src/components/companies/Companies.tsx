@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CompanyDialog from "./CompanyDialog";
+import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 
 const bCrumb = [
     {
@@ -30,10 +31,12 @@ interface CompaniesProps {
 const Companies: React.FC<CompaniesProps> = ({type}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [dialogType, setDialogType] = useState<string>("");
+    const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
+    const [concernedCompany, setConcernedCompany] = useState<CompanyJson>({id: 0, name: "", type: "", phone: "", location: ""});
     const { data, isLoading, isError } = useGetCompaniesHook();
 
-    const handleOpenDialogType = (type: string) => {
+    const handleOpenDialogType = (type: ModalTypeEnum, company: CompanyJson) => {
+        setConcernedCompany(company);
         setDialogType(type);
         setOpenDialog(true);
     };
@@ -50,9 +53,9 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
     if (isLoading) {
         listCompanies = <LoadingComponent message="Loading product types" />;
     } else if (isError) {
-        listCompanies = <Typography color="error">Error loading product types</Typography>;
+        listCompanies = <Typography color="error">Error loading {type}</Typography>;
     } else if (filteredCompanies.length === 0) {
-        listCompanies = <Typography>No product types found</Typography>;
+        listCompanies = <Typography>Aucun {type} trouver</Typography>;
     } else {
         listCompanies = (
             <Table>
@@ -66,25 +69,25 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {filteredCompanies.map((type) => (
-                        <TableRow key={type.id}>
-                            <TableCell>{type.id}</TableCell>
-                            <TableCell>{type.name}</TableCell>
-                            <TableCell>{type.phone}</TableCell>
-                            <TableCell>{type.location}</TableCell>
+                    {filteredCompanies.map((comp) => (
+                        <TableRow key={comp.id}>
+                            <TableCell>{comp.id}</TableCell>
+                            <TableCell>{comp.name}</TableCell>
+                            <TableCell>{comp.phone}</TableCell>
+                            <TableCell>{comp.location}</TableCell>
                             <TableCell align="right">
-                                <Tooltip title="Modifier Type Produit">
+                                <Tooltip title="Modifier Partenaire">
                                     <IconButton
                                         color="warning"
-                                        onClick={() => {handleOpenDialogType("Modifier")}}
+                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, comp)}}
                                     >
                                         <EditIcon width={22} />
                                     </IconButton>
                                 </Tooltip>
-                                <Tooltip title="Supprimer Type Produit">
+                                <Tooltip title="Supprimer Partenaire">
                                     <IconButton
                                         color="error"
-                                        onClick={() => {handleOpenDialogType("Supprimer")}}
+                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, comp)}}
                                     >
                                         <DeleteIcon width={22} />
                                     </IconButton>
@@ -107,7 +110,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
                                 callToActionText="Ajouter Partenaire"
-                                callToActionFunction={() => handleOpenDialogType("Ajouter")}
+                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {id: 0, name: "", type: "", phone: "", location: ""})}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
@@ -116,7 +119,14 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                     </CardContent>
                 </Card>
             </Grid>
-            <CompanyDialog dialogType={dialogType} companyType={type} openDialog={openDialog} closeDialog={() => setOpenDialog(false)} />
+
+            <CompanyDialog
+                concernedCompany={concernedCompany}
+                dialogType={dialogType}
+                companyType={type}
+                openDialog={openDialog}
+                closeDialog={() => setOpenDialog(false)}
+            />
         </>
     );
 };

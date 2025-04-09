@@ -43,5 +43,4 @@ export const deleteCompany = async (company: CompanyJson): Promise<void> => {
         console.log(res);
         throw new Error('Failed to update product type');
     }
-    return res.json();
 };
