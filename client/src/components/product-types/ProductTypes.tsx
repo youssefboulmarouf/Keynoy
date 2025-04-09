@@ -12,7 +12,7 @@ import ProductTypeDialog from "./ProductTypeDialog";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import {ProductTypeJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
 
 const bCrumb = [
     {
@@ -27,12 +27,12 @@ const bCrumb = [
 const ProductTypes: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [dialogType, setDialogType] = useState<string>("");
+    const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
     const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0});
     const { data, isLoading, isError } = useGetProductTypesHook();
 
-    const handleOpenDialogType = (type: string, productType: ProductTypeJson) => {
-        setConcernedProductType(productType)
+    const handleOpenDialogType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
+        setConcernedProductType(productType);
         setDialogType(type);
         setOpenDialog(true);
     };
@@ -68,7 +68,7 @@ const ProductTypes: React.FC = () => {
                                 <Tooltip title="Modifier Type Produit">
                                     <IconButton
                                         color="warning"
-                                        onClick={() => {handleOpenDialogType("Modifier", type)}}
+                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, type)}}
                                     >
                                         <EditIcon width={22} />
                                     </IconButton>
@@ -76,7 +76,7 @@ const ProductTypes: React.FC = () => {
                                 <Tooltip title="Supprimer Type Produit">
                                     <IconButton
                                         color="error"
-                                        onClick={() => {handleOpenDialogType("Supprimer", type)}}
+                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, type)}}
                                     >
                                         <DeleteIcon width={22} />
                                     </IconButton>
@@ -99,7 +99,7 @@ const ProductTypes: React.FC = () => {
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
                                 callToActionText="Ajouter Type Produit"
-                                callToActionFunction={() => handleOpenDialogType("Ajouter", {name: "", id: 0})}
+                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0})}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>

@@ -2,7 +2,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {FC, useEffect, useState} from "react";
-import {ProductTypeJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
 import {
     useCreateProductTypeHook,
     useDeleteProductTypeHook,
@@ -12,7 +12,7 @@ import LoadingComponent from "../common/LoadingComponent";
 
 interface ProductTypeDialogProps {
     concernedProductType: ProductTypeJson;
-    dialogType: string;
+    dialogType: ModalTypeEnum;
     openDialog: boolean;
     closeDialog: () => void;
 }
@@ -20,8 +20,8 @@ interface ProductTypeDialogProps {
 const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, dialogType, openDialog, closeDialog}) => {
     const [productTypeName, setProductTypeName] = useState<string>("");
 
-    const { mutate: updateProductType, isPending: pendingUpdate} = useUpdateProductTypeHook();
     const { mutate: createProductType, isPending: pendingAdd} = useCreateProductTypeHook();
+    const { mutate: updateProductType, isPending: pendingUpdate} = useUpdateProductTypeHook();
     const { mutate: deleteProductType, isPending: pendingDelete} = useDeleteProductTypeHook();
 
     useEffect(() => {
@@ -29,12 +29,12 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
     }, [concernedProductType]);
 
     const handleSubmit = () => {
-        if (dialogType === 'Supprimer') {
+        if (dialogType === ModalTypeEnum.DELETE) {
             deleteProductType(
-                { id: concernedProductType.id, name: productTypeName },
+                concernedProductType,
                 { onSuccess: () => { closeDialog() }}
             );
-        } else if (dialogType === 'Ajouter') {
+        } else if (dialogType === ModalTypeEnum.ADD) {
             createProductType(
                 { id: 0, name: productTypeName },
                 { onSuccess: () => { closeDialog() }}
@@ -47,11 +47,11 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
         }
     }
 
-    let actionText = `${dialogType} Type Produit`;
+    const actionText = `${dialogType} Type Produit`;
     let actionButton;
-    if (dialogType === 'Supprimer') {
+    if (dialogType === ModalTypeEnum.DELETE) {
         actionButton = <Button variant="contained" color="error" onClick={handleSubmit}>{actionText}</Button>
-    } else if (dialogType === 'Ajouter') {
+    } else if (dialogType === ModalTypeEnum.ADD) {
         actionButton = <Button variant="contained" color="primary" onClick={handleSubmit}>{actionText}</Button>
     } else {
         actionButton = <Button variant="contained" color="warning" onClick={handleSubmit}>{actionText}</Button>
@@ -72,7 +72,7 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
                     fullWidth
                     value={productTypeName}
                     onChange={(e: any) => setProductTypeName(e.target.value)}
-                    disabled={dialogType === 'Supprimer' || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
             </DialogContent>
             <DialogActions>
