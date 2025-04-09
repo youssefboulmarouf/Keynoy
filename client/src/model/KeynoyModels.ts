@@ -57,6 +57,7 @@ export enum ColorEnum {
     BLUE = "blue",
     GREEN = "green",
     YELLOW = "yellow",
+    GOLD = "gold",
     ORANGE = "orange",
     PURPLE = "purple",
     BLACK = "black",
@@ -66,7 +67,6 @@ export enum ColorEnum {
     BROWN = "brown",
     CYAN = "cyan",
     MAGENTA = "magenta",
-    GOLD = "gold",
     UNKNOWN = "unknown",
 }
 
@@ -86,4 +86,10 @@ export type ShippingJson = {
     shippingDate: Date;
     deliveryDate: Date | null;
     price: number;
+}
+
+export enum ModalTypeEnum {
+    ADD = "Ajouter",
+    UPDATE = "Modifier",
+    DELETE = "Supprimer"
 }
