@@ -1,16 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
-import {
-    Card,
-    CardContent,
-    Grid,
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead, TablePagination,
-    TableRow
-} from "@mui/material";
+import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableCallToActionButton from "../common/TableCallToActionButton";
 import {
@@ -20,8 +10,6 @@ import {
     OrderTypeEnum
 } from "../../model/KeynoyModels";
 import Box from "@mui/material/Box";
-import LoadingComponent from "../common/LoadingComponent";
-import Typography from "@mui/material/Typography";
 import {useGetOrdersHook} from "../../hooks/OrdersHook";
 import {useGetCompaniesHook} from "../../hooks/CompaniesHook";
 import {useGetProductsHook} from "../../hooks/ProductsHook";

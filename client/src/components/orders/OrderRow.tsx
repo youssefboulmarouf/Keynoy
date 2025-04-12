@@ -1,4 +1,4 @@
-import {TableCell, TableRow, Tooltip} from "@mui/material";
+import {TableCell, TableRow} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -6,8 +6,6 @@ import OrderStatusChip from "./OrderStatusChip";
 import OrderLinesTable from "./OrderLinesTable";
 import React from "react";
 import {ModalTypeEnum, OrderJson} from "../../model/KeynoyModels";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteButton from "../common/DeleteButton";
 import EditButton from "../common/EditButton";
 
