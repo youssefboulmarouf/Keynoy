@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import ColorAutocomplete from "./ColorAutocomplete";
 import {useCreateProductHook, useDeleteProductHook, useUpdateProductHook} from "../../hooks/ProductsHook";
+import LoadingComponent from "../common/LoadingComponent";
 
 interface ProductDialogProps {
     concernedProduct: ProductJson;
@@ -13,12 +14,6 @@ interface ProductDialogProps {
     openDialog: boolean;
     closeDialog: () => void;
 }
-
-type ColorProps = {
-    value: ColorEnum;
-    onChange: (value: ColorEnum) => void;
-    label?: string;
-};
 
 const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, dialogType, openDialog, closeDialog}) => {
     const [productName, setProductName] = useState<string>("");
@@ -75,6 +70,8 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
             <DialogTitle sx={{ width: "500px", mt: 2 }}>{actionText}</DialogTitle>
             <DialogContent>
 
+                {(pendingUpdate || pendingAdd || pendingDelete) ? (<LoadingComponent message={''}/>) : ('')}
+
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
                 <TextField fullWidth value={concernedProduct.id === 0 ? "" : concernedProduct.id} disabled/>
 
@@ -83,7 +80,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productName}
                     onChange={(e: any) => setProductName(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Taille Produit</Typography>
@@ -91,7 +88,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productSize}
                     onChange={(e: any) => setProductSize(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Type Produit</Typography>
@@ -105,7 +102,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                         setProductType(newValue)
                     }
                     renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
-                    disabled={dialogType === ModalTypeEnum.DELETE}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Couleur Produit</Typography>
@@ -116,7 +113,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productQuantity}
                     onChange={(e: any) => setProductQuantity(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Seuil Produit</Typography>
@@ -124,7 +121,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productSeuil}
                     onChange={(e: any) => setProductSeuil(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE}
+                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
                 />
             </DialogContent>
             <DialogActions>
