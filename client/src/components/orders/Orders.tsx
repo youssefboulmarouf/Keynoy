@@ -26,8 +26,8 @@ import {useGetOrdersHook} from "../../hooks/OrdersHook";
 import {useGetCompaniesHook} from "../../hooks/CompaniesHook";
 import {useGetProductsHook} from "../../hooks/ProductsHook";
 import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
-import OrderRow from "./OrderRow";
 import OrderFilter from "./OrderFilter";
+import OrdersList from "./OrdersList";
 
 const bCrumb = [
     {
@@ -58,11 +58,6 @@ const getFirstDayOfCurrentMonth = () => {
 const Orders: React.FC<OrdersProps> = ({type}) => {
     const [filters, setFilters] = useState<FilterProps>({searchTerm: "", orderStatus: null, startDate: getFirstDayOfCurrentMonth(), endDate: null});
 
-    const [openRow, setOpenRow] = useState(false);
-    const [rowToOpen, setRowToOpen] = useState<number>(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(0);
-
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
     const [concernedOrder, setConcernedOrder] = useState<OrderJson>(
@@ -85,15 +80,6 @@ const Orders: React.FC<OrdersProps> = ({type}) => {
             }
         }
     }, [ordersData, type]);
-
-    const handleChangePage = (event: any, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: any) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
 
     const handleOpenDialogType = (type: ModalTypeEnum, order: OrderJson) => {
         setConcernedOrder(order)
@@ -134,71 +120,6 @@ const Orders: React.FC<OrdersProps> = ({type}) => {
         return matchesSearch && matchesStatus && matchesStartDate && matchesEndDate;
     });
 
-    let listOrders;
-    if (loadingOrdersData || loadingCompaniesData || loadingProductsData || loadingProductTypesData) {
-        listOrders = <LoadingComponent message="Loading Orders" />;
-    } else if (errorOrdersData || errorCompaniesData || errorProductsData ||errorProductsTypesData) {
-        listOrders = <Typography color="error">Error loading orders</Typography>;
-    } else if (filteredOrders.length === 0) {
-        listOrders = <Typography>No order found</Typography>;
-    } else {
-        listOrders = (
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell />
-                        <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                        {type === "Achats" ? (
-                            <TableCell><Typography variant="h6" fontSize="14px">Fournisseur</Typography></TableCell>
-                        ) : (
-                            <TableCell><Typography variant="h6" fontSize="14px">Client</Typography></TableCell>
-                        )}
-                        <TableCell><Typography variant="h6" fontSize="14px">Status</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
-                        <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {(rowsPerPage > 0
-                        ? filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        : filteredOrders)
-                        .map((order, i) => (
-                            <OrderRow
-                                key={order.id}
-                                order={order}
-                                rowIndex={i + page * rowsPerPage}
-                                type={type}
-                                openRow={openRow}
-                                rowToOpen={rowToOpen}
-                                handleExpandRow={(index) => {
-                                    setOpenRow(!openRow);
-                                    setRowToOpen(index);
-                                }}
-                                getCompanyNameFromOrder={getCompanyNameFromOrder}
-                                getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
-                                productsData={productsData || []}
-                                productTypesData={productTypesData || []}
-                                handleOpenDialogType={handleOpenDialogType}
-                            />
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 25, 50, { label: "All", value: -1 }]}
-                            colSpan={12}
-                            count={filteredOrders.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </TableRow>
-                </TableFooter>
-            </Table>
-        );
-    }
     return (
         <>
             <Breadcrumb title={type} items={bCrumb} />
@@ -216,7 +137,22 @@ const Orders: React.FC<OrdersProps> = ({type}) => {
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
-                            {listOrders}
+                            <OrdersList
+                                loadingOrdersData={loadingOrdersData}
+                                loadingCompaniesData={loadingCompaniesData}
+                                loadingProductsData={loadingProductsData}
+                                loadingProductTypesData={loadingProductTypesData}
+                                errorOrdersData={errorOrdersData}
+                                errorCompaniesData={errorCompaniesData}
+                                errorProductsData={errorProductsData}
+                                errorProductsTypesData={errorProductsTypesData}
+                                type={type}
+                                data={filteredOrders}
+                                companiesData={companiesData || []}
+                                productsData={productsData || []}
+                                productTypesData={productTypesData || []}
+                                handleOpenDialogType={handleOpenDialogType}
+                            />
                         </Box>
                     </CardContent>
                 </Card>
