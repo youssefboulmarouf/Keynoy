@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
-import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow, Tooltip} from "@mui/material";
+import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
@@ -9,11 +9,10 @@ import Box from "@mui/material/Box";
 import {useGetProductsHook} from "../../hooks/ProductsHook";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
 import ProductDialog from "./ProductDialog";
+import EditButton from "../common/EditButton";
+import DeleteButton from "../common/DeleteButton";
 
 const bCrumb = [
     {
@@ -70,46 +69,32 @@ const Products: React.FC = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {filteredProducts.map((type) => (
-                        <TableRow key={type.id}>
-                            <TableCell>{type.id}</TableCell>
-                            <TableCell>{type.name}</TableCell>
-                            <TableCell>{type.size || "-"}</TableCell>
+                    {filteredProducts.map((product) => (
+                        <TableRow key={product.id}>
+                            <TableCell>{product.id}</TableCell>
+                            <TableCell>{product.name}</TableCell>
+                            <TableCell>{product.size || "-"}</TableCell>
                             <TableCell>
-                                {productTypesData?.find(pt => pt.id === type.productTypeId)?.name || ""}
+                                {productTypesData?.find(pt => pt.id === product.productTypeId)?.name}
                             </TableCell>
                             <TableCell>
-                                {(type.color === ColorEnum.UNKNOWN) ? ('') : (
+                                {(product.color === ColorEnum.UNKNOWN) ? ("-") : (
                                     <Box
                                         sx={{
                                             width: 25,
                                             height: 25,
                                             borderRadius: "4px",
-                                            backgroundColor: type.color.toLowerCase(),
+                                            backgroundColor: product.color.toLowerCase(),
                                             border: "1px solid #ccc"
                                         }}
                                     />
                                 )}
                             </TableCell>
-                            <TableCell>{type.totalQuantity}</TableCell>
-                            <TableCell>{type.threshold}</TableCell>
+                            <TableCell>{product.totalQuantity}</TableCell>
+                            <TableCell>{product.threshold}</TableCell>
                             <TableCell align="right">
-                                <Tooltip title="Modifier Type Produit">
-                                    <IconButton
-                                        color="warning"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, type)}}
-                                    >
-                                        <EditIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Supprimer Type Produit">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, type)}}
-                                    >
-                                        <DeleteIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
+                                <EditButton tooltipText={"Modifier Produit"} entity={product} handleOpenDialogType={handleOpenDialogType}/>
+                                <DeleteButton tooltipText={"Supprimer Produit"} entity={product} handleOpenDialogType={handleOpenDialogType}/>
                             </TableCell>
                         </TableRow>
                     ))}

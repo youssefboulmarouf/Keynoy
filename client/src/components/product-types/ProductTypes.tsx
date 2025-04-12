@@ -13,6 +13,8 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
+import EditButton from "../common/EditButton";
+import DeleteButton from "../common/DeleteButton";
 
 const bCrumb = [
     {
@@ -65,22 +67,8 @@ const ProductTypes: React.FC = () => {
                             <TableCell>{type.id}</TableCell>
                             <TableCell>{type.name}</TableCell>
                             <TableCell align="right">
-                                <Tooltip title="Modifier Type Produit">
-                                    <IconButton
-                                        color="warning"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, type)}}
-                                    >
-                                        <EditIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Supprimer Type Produit">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, type)}}
-                                    >
-                                        <DeleteIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
+                                <EditButton tooltipText={"Modifier Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
+                                <DeleteButton tooltipText={"Supprimer Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
                             </TableCell>
                         </TableRow>
                     ))}

@@ -8,6 +8,8 @@ import React from "react";
 import {ModalTypeEnum, OrderJson} from "../../model/KeynoyModels";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteButton from "../common/DeleteButton";
+import EditButton from "../common/EditButton";
 
 interface OrderRowProps {
     order: OrderJson;
@@ -77,22 +79,8 @@ const OrderRow: React.FC<OrderRowProps> = ({
                 <TableCell>{order.totalPrice}</TableCell>
                 <TableCell>{formatDate(order.date)}</TableCell>
                 <TableCell align="right">
-                    <Tooltip title="Modifier Partenaire">
-                        <IconButton
-                            color="warning"
-                            onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, order)}}
-                        >
-                            <EditIcon width={22} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Supprimer Partenaire">
-                        <IconButton
-                            color="error"
-                            onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, order)}}
-                        >
-                            <DeleteIcon width={22} />
-                        </IconButton>
-                    </Tooltip>
+                    <EditButton tooltipText={"Modifier Commande"} entity={order} handleOpenDialogType={handleOpenDialogType} />
+                    <DeleteButton tooltipText={"Supprimer Commande"} entity={order} handleOpenDialogType={handleOpenDialogType} />
                 </TableCell>
             </TableRow>
             <TableRow key={order.id+"line"}>

@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
-import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow, Tooltip} from "@mui/material";
+import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
@@ -8,11 +8,10 @@ import Box from "@mui/material/Box";
 import {useGetCompaniesHook} from "../../hooks/CompaniesHook";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CompanyDialog from "./CompanyDialog";
 import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
+import EditButton from "../common/EditButton";
+import DeleteButton from "../common/DeleteButton";
 
 const bCrumb = [
     {
@@ -76,22 +75,8 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <TableCell>{comp.phone}</TableCell>
                             <TableCell>{comp.location}</TableCell>
                             <TableCell align="right">
-                                <Tooltip title="Modifier Partenaire">
-                                    <IconButton
-                                        color="warning"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.UPDATE, comp)}}
-                                    >
-                                        <EditIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Supprimer Partenaire">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => {handleOpenDialogType(ModalTypeEnum.DELETE, comp)}}
-                                    >
-                                        <DeleteIcon width={22} />
-                                    </IconButton>
-                                </Tooltip>
+                                <EditButton tooltipText={"Modifier Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
+                                <DeleteButton tooltipText={"Supprimer Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
                             </TableCell>
                         </TableRow>
                     ))}
