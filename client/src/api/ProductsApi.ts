@@ -17,7 +17,7 @@ export const createProduct = async (productType: ProductJson): Promise<ProductJs
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to create product type');
+        throw new Error('Failed to create product');
     }
     return res.json();
 };
@@ -30,7 +30,7 @@ export const updateProduct = async (productType: ProductJson): Promise<ProductJs
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to update product type');
+        throw new Error('Failed to update product');
     }
     return res.json();
 };
@@ -41,6 +41,6 @@ export const deleteProduct = async (productType: ProductJson): Promise<void> => 
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to update product type');
+        throw new Error('Failed to delete product');
     }
 };
