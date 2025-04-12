@@ -1,20 +1,14 @@
 import React, {useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
-import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow, Tooltip} from "@mui/material";
+import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
-import LoadingComponent from "../common/LoadingComponent";
 import ProductTypeDialog from "./ProductTypeDialog";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
+import ProductTypesList from "./ProductTypesList";
 
 const bCrumb = [
     {
@@ -43,40 +37,6 @@ const ProductTypes: React.FC = () => {
         pt.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-    let listProductsTypes;
-
-    if (isLoading) {
-        listProductsTypes = <LoadingComponent message="Loading product types" />;
-    } else if (isError) {
-        listProductsTypes = <Typography color="error">Error loading product types</Typography>;
-    } else if (filteredProductTypes.length === 0) {
-        listProductsTypes = <Typography>No product types found</Typography>;
-    } else {
-        listProductsTypes = (
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Type Produits</Typography></TableCell>
-                        <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {filteredProductTypes.map((type) => (
-                        <TableRow key={type.id}>
-                            <TableCell>{type.id}</TableCell>
-                            <TableCell>{type.name}</TableCell>
-                            <TableCell align="right">
-                                <EditButton tooltipText={"Modifier Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
-                                <DeleteButton tooltipText={"Supprimer Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        );
-    }
-
     return (
         <>
             <Breadcrumb title="Product Types" items={bCrumb} />
@@ -91,7 +51,12 @@ const ProductTypes: React.FC = () => {
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
-                            {listProductsTypes}
+                            <ProductTypesList
+                                isLoading={isLoading}
+                                isError={isError}
+                                data={filteredProductTypes}
+                                handleOpenDialogType={handleOpenDialogType}
+                            />
                         </Box>
                     </CardContent>
                 </Card>
