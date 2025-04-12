@@ -1,17 +1,14 @@
 import React, {useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
-import {Card, CardContent, Grid, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
 import Box from "@mui/material/Box";
 import {useGetCompaniesHook} from "../../hooks/CompaniesHook";
-import LoadingComponent from "../common/LoadingComponent";
-import Typography from "@mui/material/Typography";
 import CompanyDialog from "./CompanyDialog";
 import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
+import CompaniesList from "./CompaniesList";
 
 const bCrumb = [
     {
@@ -48,43 +45,6 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
         )
     ) || [];
 
-    let listCompanies;
-    if (isLoading) {
-        listCompanies = <LoadingComponent message="Loading product types" />;
-    } else if (isError) {
-        listCompanies = <Typography color="error">Error loading {type}</Typography>;
-    } else if (filteredCompanies.length === 0) {
-        listCompanies = <Typography>Aucun {type} trouver</Typography>;
-    } else {
-        listCompanies = (
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Nom {type}</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Phone</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Ville</Typography></TableCell>
-                        <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {filteredCompanies.map((comp) => (
-                        <TableRow key={comp.id}>
-                            <TableCell>{comp.id}</TableCell>
-                            <TableCell>{comp.name}</TableCell>
-                            <TableCell>{comp.phone}</TableCell>
-                            <TableCell>{comp.location}</TableCell>
-                            <TableCell align="right">
-                                <EditButton tooltipText={"Modifier Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
-                                <DeleteButton tooltipText={"Supprimer Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        );
-    }
-
     return (
         <>
             <Breadcrumb title={type} items={bCrumb} />
@@ -99,7 +59,13 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
-                            {listCompanies}
+                            <CompaniesList
+                                isLoading={isLoading}
+                                isError={isError}
+                                type={type}
+                                data={filteredCompanies}
+                                handleOpenDialogType={handleOpenDialogType}
+                            />
                         </Box>
                     </CardContent>
                 </Card>
