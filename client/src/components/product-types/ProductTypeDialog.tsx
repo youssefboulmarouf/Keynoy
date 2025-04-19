@@ -1,14 +1,9 @@
-import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Switch, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {FC, useEffect, useState} from "react";
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
-import {
-    useCreateProductTypeHook,
-    useDeleteProductTypeHook,
-    useUpdateProductTypeHook
-} from "../../hooks/ProductTypesHook";
-import LoadingComponent from "../common/LoadingComponent";
+import {useProductTypesContext} from "../../context/ProductTypesContext";
 
 interface ProductTypeDialogProps {
     concernedProductType: ProductTypeJson;
@@ -18,33 +13,24 @@ interface ProductTypeDialogProps {
 }
 
 const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, dialogType, openDialog, closeDialog}) => {
+    const { addProductType, editProductType, removeProductType } = useProductTypesContext();
     const [productTypeName, setProductTypeName] = useState<string>("");
-
-    const { mutate: createProductType, isPending: pendingAdd} = useCreateProductTypeHook();
-    const { mutate: updateProductType, isPending: pendingUpdate} = useUpdateProductTypeHook();
-    const { mutate: deleteProductType, isPending: pendingDelete} = useDeleteProductTypeHook();
+    const [productTypeSellable, setProductTypeSellable] = useState<boolean>(false);
 
     useEffect(() => {
         setProductTypeName(concernedProductType.name);
+        setProductTypeSellable(concernedProductType.sellable);
     }, [concernedProductType]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (dialogType === ModalTypeEnum.DELETE) {
-            deleteProductType(
-                concernedProductType,
-                { onSuccess: () => { closeDialog() }}
-            );
+            removeProductType(concernedProductType);
         } else if (dialogType === ModalTypeEnum.ADD) {
-            createProductType(
-                { id: 0, name: productTypeName },
-                { onSuccess: () => { closeDialog() }}
-            );
+            addProductType({ id: 0, name: productTypeName, sellable: productTypeSellable });
         } else {
-            updateProductType(
-                { id: concernedProductType.id, name: productTypeName },
-                { onSuccess: () => { closeDialog() }}
-            );
+            editProductType({ id: concernedProductType.id, name: productTypeName, sellable: productTypeSellable});
         }
+        closeDialog();
     }
 
     const actionText = `${dialogType} Type Produit`;
@@ -58,12 +44,9 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
     }
 
     return (
-        <Dialog open={openDialog} onClose={() => closeDialog()}>
-            <DialogTitle sx={{ width: "500px", mt: 2 }}>{actionText}</DialogTitle>
+        <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '500px', maxWidth: '500px'}}}>
+            <DialogTitle sx={{ mt: 2 }}>{actionText}</DialogTitle>
             <DialogContent>
-
-                {(pendingUpdate || pendingAdd || pendingDelete) ? (<LoadingComponent message={''}/>) : ('')}
-
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
                 <TextField fullWidth value={concernedProductType.id === 0 ? "" : concernedProductType.id} disabled/>
 
@@ -72,8 +55,18 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
                     fullWidth
                     value={productTypeName}
                     onChange={(e: any) => setProductTypeName(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
+
+                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Vendable</Typography>
+                <Switch
+                    checked={productTypeSellable}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                        setProductTypeSellable(checked)
+                    }
+                    disabled={dialogType === ModalTypeEnum.DELETE}
+                />
+
             </DialogContent>
             <DialogActions>
                 {actionButton}

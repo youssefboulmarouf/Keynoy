@@ -5,21 +5,24 @@ import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/EditButton";
 import DeleteButton from "../common/DeleteButton";
+import ClearIcon from '@mui/icons-material/Clear';
+import CheckIcon from '@mui/icons-material/Check';
+import IconButton from "@mui/material/IconButton";
 
 interface ProductTypesListProps {
-    isLoading: boolean;
-    isError: boolean;
+    loading: boolean;
+    error: Error | null;
     data: ProductTypeJson[];
     handleOpenDialogType: (type: ModalTypeEnum, productType: ProductTypeJson) => void;
 }
 
-const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, isError, data, handleOpenDialogType}) => {
+const ProductTypesList: React.FC<ProductTypesListProps> = ({loading, error, data, handleOpenDialogType}) => {
     let listProductsTypes;
 
-    if (isLoading) {
+    if (loading) {
         listProductsTypes = <LoadingComponent message="Loading product types" />;
-    } else if (isError) {
-        listProductsTypes = <Typography color="error">Error loading product types</Typography>;
+    } else if (error) {
+        listProductsTypes = <Typography color="error">Error loading product types: {error.message}</Typography>;
     } else if (data.length === 0) {
         listProductsTypes = <Typography>No product types found</Typography>;
     } else {
@@ -29,6 +32,7 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, isError, 
                     <TableRow>
                         <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Type Produits</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Vendable</Typography></TableCell>
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -37,6 +41,17 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, isError, 
                         <TableRow key={type.id}>
                             <TableCell>{type.id}</TableCell>
                             <TableCell>{type.name}</TableCell>
+                            <TableCell>
+                                {type.sellable ? (
+                                    <IconButton color="success">
+                                        <CheckIcon width={22} />
+                                    </IconButton>
+                                ) : (
+                                    <IconButton color="error">
+                                        <ClearIcon width={22} />
+                                    </IconButton>
+                                )}
+                            </TableCell>
                             <TableCell align="right">
                                 <EditButton tooltipText={"Modifier Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
                                 <DeleteButton tooltipText={"Supprimer Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>

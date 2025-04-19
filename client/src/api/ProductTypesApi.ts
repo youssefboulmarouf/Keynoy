@@ -5,9 +5,9 @@ export const fetchProductTypes = async (): Promise<ProductTypeJson[]> => {
     if (!res.ok) {
         console.log(res);
         throw new Error('Failed to fetch product types');
-    };
+    }
     return res.json();
-};
+}
 
 export const createProductType = async (productType: ProductTypeJson): Promise<ProductTypeJson> => {
     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/product-types`, {
@@ -20,7 +20,7 @@ export const createProductType = async (productType: ProductTypeJson): Promise<P
         throw new Error('Failed to create product type');
     }
     return res.json();
-};
+}
 
 export const updateProductType = async (productType: ProductTypeJson): Promise<ProductTypeJson> => {
     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/product-types/${productType.id}`, {
@@ -33,7 +33,7 @@ export const updateProductType = async (productType: ProductTypeJson): Promise<P
         throw new Error('Failed to update product type');
     }
     return res.json();
-};
+}
 
 export const deleteProductType = async (productType: ProductTypeJson): Promise<void> => {
     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/product-types/${productType.id}`, {
@@ -43,4 +43,4 @@ export const deleteProductType = async (productType: ProductTypeJson): Promise<v
         console.log(res);
         throw new Error('Failed to update product type');
     }
-};
+}

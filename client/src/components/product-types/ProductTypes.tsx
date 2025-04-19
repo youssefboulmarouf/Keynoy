@@ -5,10 +5,10 @@ import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
 import Box from "@mui/material/Box";
-import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
 import ProductTypeDialog from "./ProductTypeDialog";
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
 import ProductTypesList from "./ProductTypesList";
+import {useProductTypesContext} from "../../context/ProductTypesContext";
 
 const bCrumb = [
     {
@@ -24,8 +24,8 @@ const ProductTypes: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0});
-    const { data, isLoading, isError } = useGetProductTypesHook();
+    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0, sellable: false});
+    const { productTypes, loading, error } = useProductTypesContext();
 
     const handleOpenDialogType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
         setConcernedProductType(productType);
@@ -33,7 +33,7 @@ const ProductTypes: React.FC = () => {
         setOpenDialog(true);
     };
 
-    const filteredProductTypes = data?.filter(pt =>
+    const filteredProductTypes = productTypes?.filter(pt =>
         pt.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
@@ -46,14 +46,15 @@ const ProductTypes: React.FC = () => {
                         <Stack justifyContent="space-between" direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2, md: 4 }}>
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
+                                fullwidth={false}
                                 callToActionText="Ajouter Type Produit"
-                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0})}
+                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0, sellable: false})}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
                             <ProductTypesList
-                                isLoading={isLoading}
-                                isError={isError}
+                                loading={loading}
+                                error={error}
                                 data={filteredProductTypes}
                                 handleOpenDialogType={handleOpenDialogType}
                             />
