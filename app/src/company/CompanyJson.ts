@@ -1,4 +1,5 @@
 import {companyTypeFromString} from "./CompanyTypeEnum";
+import {CompanyDesignJson} from "./CompanyDesignJson";
 
 export class CompanyJson {
     private readonly id: number;
@@ -6,6 +7,7 @@ export class CompanyJson {
     private readonly type: string;
     private readonly phone: string;
     private readonly location: string;
+    private readonly designUrls: CompanyDesignJson[];
 
     constructor(
         id: number,
@@ -13,12 +15,14 @@ export class CompanyJson {
         type: string,
         phone: string,
         location: string,
+        designUrls: CompanyDesignJson[],
     ) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.phone = phone;
         this.location = location;
+        this.designUrls = designUrls;
     }
 
     public getId(): number {
@@ -41,13 +45,29 @@ export class CompanyJson {
         return this.location;
     }
 
-    public static from(body: any): CompanyJson {
+    public getDesignUrls(): CompanyDesignJson[] {
+        return this.designUrls;
+    }
+
+    public static fromObject(body: any): CompanyJson {
         return new CompanyJson(
             Number(body.id),
             body.name,
             companyTypeFromString(body.type),
             body.phone,
             body.location,
+            body.designUrls.map((d: any) => CompanyDesignJson.from(d)),
+        )
+    }
+
+    public static fromObjectAndDesigns(body: any, designs: CompanyDesignJson[]): CompanyJson {
+        return new CompanyJson(
+            Number(body.id),
+            body.name,
+            companyTypeFromString(body.type),
+            body.phone,
+            body.location,
+            designs,
         )
     }
 }
