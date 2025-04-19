@@ -15,7 +15,7 @@ const EditButton: React.FC<EditButtonProps> = ({tooltipText, entity, handleOpenD
         <Tooltip title={tooltipText}>
             <IconButton
                 color="warning"
-                onClick={() => handleOpenDialogType(ModalTypeEnum.DELETE, entity)}
+                onClick={() => handleOpenDialogType(ModalTypeEnum.UPDATE, entity)}
             >
                 <EditIcon width={22} />
             </IconButton>
