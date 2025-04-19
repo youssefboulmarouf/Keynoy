@@ -4,6 +4,20 @@ export type CompanyJson = {
     type: string;
     phone: string;
     location: string;
+    designUrls: CompanyDesignJson[];
+}
+
+export type CompanyDesignJson = {
+    id: number;
+    designName: string;
+    designUrl: string;
+    companyId: number;
+}
+
+export enum CompanyTypeEnum {
+    SHIPPERS =  "Livreurs",
+    SUPPLIERS = "Fournisseurs",
+    CUSTOMERS = "Clients",
 }
 
 export type ExpenseJson = {
@@ -31,8 +45,8 @@ export enum OrderStatusEnum {
 }
 
 export enum OrderTypeEnum {
-    BUY = "buy",
-    SELL = "sell",
+    BUY = "Achats",
+    SELL = "Ventes",
 }
 
 export type OrderJson = {
