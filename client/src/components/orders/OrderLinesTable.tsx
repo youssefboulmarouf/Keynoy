@@ -50,12 +50,12 @@ const OrderLinesTable: React.FC<OrderLinesTableProps> = ({openRow, rowToOpen, ro
                                 </TableCell>
                                 <TableCell>
                                     <Typography color="textSecondary" fontWeight="400">
-                                        {products.find(p => p.id === line.productId)?.name || ""}
+                                        {products.find(p => p.id === line.productId)?.name}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography color="textSecondary" fontWeight="400">
-                                        {productTypes.find(pt => pt.id === products.find(p => p.id === line.productId)?.productTypeId)?.name || ""}
+                                        {productTypes.find(pt => pt.id === products.find(p => p.id === line.productId)?.productTypeId)?.name}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
