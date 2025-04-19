@@ -8,7 +8,8 @@
     "build": "tsc",
     "test": "export NODE_ENV=test && dotenv -e .env.test -- npx prisma migrate reset --force --skip-seed && dotenv -e .env.test -- npx prisma db seed && dotenv -e .env.test -- jest --runInBand",
     "github-test": "NODE_ENV=test jest --runInBand",
-    "init-db": "npx prisma migrate dev --name init; npx prisma db seed"
+    "init-db": "npx prisma migrate dev --name init",
+    "seed-db": "npx prisma db seed"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
