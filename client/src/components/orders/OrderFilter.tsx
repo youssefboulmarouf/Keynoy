@@ -5,6 +5,7 @@ import {OrderStatusEnum} from "../../model/KeynoyModels";
 import {DatePicker} from "@mui/x-date-pickers";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import {mapOrderStatusToString, mapStringToOrderStatus, ORDER_STATUS_STRING_OPTIONS} from "./OrderStatusUtils";
 
 interface FilterProps {
     searchTerm: string;
@@ -18,45 +19,15 @@ interface OrderFiltersProps {
     setFilters: (filters: FilterProps) => void;
 }
 
-const ORDER_STATUS_STRING_OPTIONS = [
-    "Confirmer",
-    "En Cours",
-    "Terminer",
-    "Livrer",
-    "Recu",
-    "Retourner"
-];
-
-const mapStringToOrderStatus = (status: string | null) => {
-    switch (status) {
-        case "Confirmer": return OrderStatusEnum.CONFIRMED;
-        case "En Cours": return OrderStatusEnum.IN_PROGRESS;
-        case "Terminer": return OrderStatusEnum.FINISHED;
-        case "Livrer": return OrderStatusEnum.SHIPPED;
-        case "Recu": return OrderStatusEnum.DELIVERED;
-        case "Retourner": return OrderStatusEnum.RETURNED;
-        default: return null;
-    }
-}
-
-const mapOrderStatusToString = (status: OrderStatusEnum | null) => {
-    switch (status) {
-        case OrderStatusEnum.CONFIRMED: return "Confirmer";
-        case OrderStatusEnum.IN_PROGRESS: return "En Cours";
-        case OrderStatusEnum.FINISHED: return "Terminer";
-        case OrderStatusEnum.SHIPPED: return "Livrer";
-        case OrderStatusEnum.DELIVERED: return "Recu";
-        case OrderStatusEnum.RETURNED: return "Retourner";
-        default: return null;
-    }
-}
-
 const OrderFilter: React.FC<OrderFiltersProps> = ({ filters, setFilters }) => {
     return (
         <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-            <TableSearch searchTerm={filters.searchTerm} setSearchTerm={(newValue) =>
-                setFilters({ ...filters, searchTerm: newValue || "" })
-            } />
+            <TableSearch
+                searchTerm={filters.searchTerm}
+                setSearchTerm={(newValue) =>
+                    setFilters({ ...filters, searchTerm: newValue || "" })
+                }
+            />
             <Autocomplete
                 options={ORDER_STATUS_STRING_OPTIONS}
                 value={mapOrderStatusToString(filters.orderStatus)}
@@ -69,16 +40,21 @@ const OrderFilter: React.FC<OrderFiltersProps> = ({ filters, setFilters }) => {
             />
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
+                {/* TODO : Move date picker to seperated component*/}
                 <DatePicker
                     label="Start Date"
                     value={filters.startDate}
                     onChange={(newValue: Date | null) => setFilters({ ...filters, startDate: newValue })}
+                    minDate={new Date("01/01/2024")}
+                    maxDate={new Date("01/01/2047")}
                 />
 
                 <DatePicker
                     label="End Date"
                     value={filters.endDate}
                     onChange={(newValue: Date | null) => setFilters({ ...filters, endDate: newValue })}
+                    minDate={new Date("01/01/2024")}
+                    maxDate={new Date("01/01/2047")}
                 />
             </LocalizationProvider>
         </Stack>
