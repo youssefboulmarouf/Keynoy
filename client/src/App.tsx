@@ -12,6 +12,11 @@ import Expenses from "./components/expenses/Expenses";
 import Orders from "./components/orders/Orders";
 import ProductTypes from "./components/product-types/ProductTypes";
 import Products from "./components/products/Products";
+import {CompanyTypeEnum, OrderTypeEnum} from "./model/KeynoyModels";
+import {ProductTypesProvider} from "./context/ProductTypesContext";
+import {ProductsProvider} from "./context/ProductsContext";
+import {ColorsProvider} from "./context/ColorsContext";
+import {CompaniesProvider} from "./context/CompaniesContext";
 
 const PageWrapper = styled("div")(() => ({
     display: "flex",
@@ -42,21 +47,29 @@ const App: React.FC = () => {
                         <Header />
                         <Container sx={{maxWidth: "100%!important",}}>
                             <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
-                                <Routes>
-                                    <Route path="/" element={<Dashboard />} />
+                                <CompaniesProvider>
+                                    <ProductTypesProvider>
+                                        <ColorsProvider>
+                                            <ProductsProvider>
+                                                <Routes>
+                                                    <Route path="/" element={<Dashboard />} />
 
-                                    <Route path="/ventes" element={<Orders type={"Ventes"}/>} />
-                                    <Route path="/achats" element={<Orders type={"Achats"}/>} />
+                                                    <Route path="/ventes" element={<Orders type={OrderTypeEnum.SELL}/>} />
+                                                    <Route path="/achats" element={<Orders type={OrderTypeEnum.BUY}/>} />
 
-                                    <Route path="/charges" element={<Expenses />} />
+                                                    <Route path="/charges" element={<Expenses />} />
 
-                                    <Route path="/produits" element={<Products />} />
-                                    <Route path="/type-produits" element={<ProductTypes />} />
+                                                    <Route path="/produits" element={<Products />} />
+                                                    <Route path="/type-produits" element={<ProductTypes />} />
 
-                                    <Route path="/fournisseurs" element={<Companies type={"Fournisseurs"}/>} />
-                                    <Route path="/clients" element={<Companies  type={"Clients"}/>} />
-                                    <Route path="/livreurs" element={<Companies  type={"Livreurs"}/>} />
-                                </Routes>
+                                                    <Route path="/fournisseurs" element={<Companies type={CompanyTypeEnum.SHIPPERS}/>} />
+                                                    <Route path="/clients" element={<Companies  type={CompanyTypeEnum.CUSTOMERS}/>} />
+                                                    <Route path="/livreurs" element={<Companies  type={CompanyTypeEnum.SHIPPERS}/>} />
+                                                </Routes>
+                                            </ProductsProvider>
+                                        </ColorsProvider>
+                                    </ProductTypesProvider>
+                                </CompaniesProvider>
                             </Box>
                         </Container>
                     </PageWrapper>
