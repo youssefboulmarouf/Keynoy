@@ -51,6 +51,12 @@ export type ProductTypeJson = {
     name: string;
 };
 
+export type ColorJson = {
+    id: number;
+    name: string;
+    htmlCode: string;
+}
+
 export enum ColorEnum {
     TRANSPARENT = "transparent",
     RED = "red",
