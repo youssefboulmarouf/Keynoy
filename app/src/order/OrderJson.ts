@@ -10,6 +10,7 @@ export class OrderJson {
     private readonly orderStatus: OrderStatusEnum;
     private readonly totalPrice: number;
     private readonly date: Date;
+    private readonly designUrl: string;
     private readonly orderLines: OrderLineJson[];
 
     constructor(
@@ -20,6 +21,7 @@ export class OrderJson {
         orderStatus: number,
         totalPrice: number,
         date: Date,
+        designUrl: string,
         orderLines: OrderLineJson[]
     ) {
         this.id = id;
@@ -29,6 +31,7 @@ export class OrderJson {
         this.orderStatus = orderStatusFromNumber(orderStatus);
         this.totalPrice = totalPrice;
         this.date = date;
+        this.designUrl = designUrl;
         this.orderLines = orderLines;
     }
 
@@ -60,11 +63,15 @@ export class OrderJson {
         return this.date;
     }
 
+    public getDesignUrl(): string {
+        return this.designUrl;
+    }
+
     public getOrderLines(): OrderLineJson[] {
         return this.orderLines;
     }
 
-    public static fromRequest(body: any): OrderJson {
+    public static fromObject(body: any): OrderJson {
         return new OrderJson(
             Number(body.id),
             Number(body.customerId),
@@ -73,11 +80,12 @@ export class OrderJson {
             body.orderStatus,
             Number(body.totalPrice),
             body.date,
-            body.orderLines.map((ol: any) => OrderLineJson.from(ol)),
+            body.designUrl,
+            body.orderLines.map((ol: any) => OrderLineJson.fromObject(ol)),
         )
     }
 
-    public static fromDb(body: any, orderLines: OrderLineJson[]): OrderJson {
+    public static fromObjectAndLines(body: any, orderLines: OrderLineJson[]): OrderJson {
         return new OrderJson(
             Number(body.id),
             Number(body.customerId),
@@ -86,6 +94,7 @@ export class OrderJson {
             body.orderStatus,
             Number(body.totalPrice),
             body.date,
+            body.designUrl,
             orderLines
         )
     }
