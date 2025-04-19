@@ -22,13 +22,13 @@ export class ShippingService extends BaseService {
     async get(): Promise<ShippingJson[]> {
         this.logger.log(`Get all shipping details`);
         const data = await this.prisma.shipping.findMany();
-        return data.map((c: any) => ShippingJson.from(c));
+        return data.map(ShippingJson.from);
     };
 
     async getById(orderId: number): Promise<ShippingJson> {
         this.logger.log(`Get shipping details by [orderId:${orderId}]`);
         const data = await this.prisma.shipping.findUnique({
-            where: { orderId: orderId }
+            where: { orderId }
         });
 
         NotFoundError.throwIf(!data, `Shipping details by [orderId:${orderId}] not found`);
@@ -76,7 +76,7 @@ export class ShippingService extends BaseService {
 
         this.logger.log(`Delivery entry updated`);
         await this.prisma.shipping.update({
-            where: { orderId: shippingJson.getOrderId() },
+            where: { orderId },
             data: {
                 orderId: shippingJson.getOrderId(),
                 shipperId: shippingJson.getShipperId(),
@@ -97,21 +97,11 @@ export class ShippingService extends BaseService {
         );
 
         this.logger.log(`Update order status to finished`);
-        await this.prisma.order.update({
-            where: { id: existingOrder.getId() },
-            data: {
-                customerId: existingOrder.getCustomerId(),
-                supplierId: existingOrder.getSupplierId(),
-                orderType: existingOrder.getOrderType(),
-                orderStatus: OrderStatusEnum.FINISHED,
-                totalPrice: existingOrder.getTotalPrice(),
-                date: existingOrder.getDate()
-            }
-        });
+        await this.updateOrder(existingOrder, OrderStatusEnum.FINISHED);
 
         this.logger.log(`Deleting shipping details`);
         await this.prisma.shipping.delete({
-            where: { orderId: orderId }
+            where: { orderId }
         });
     }
 
@@ -132,7 +122,7 @@ export class ShippingService extends BaseService {
 
         this.logger.log(`Delivery entry updated`);
         await this.prisma.shipping.update({
-            where: { orderId: existingShippingDetails.getOrderId() },
+            where: { orderId },
             data: {
                 orderId: existingShippingDetails.getOrderId(),
                 shipperId: existingShippingDetails.getShipperId(),
@@ -141,6 +131,8 @@ export class ShippingService extends BaseService {
                 price: existingShippingDetails.getPrice()
             }
         });
+
+        this.logger.log("Shipping marked as delivered");
 
         if (shippingJson.getPrice() > 0) {
             this.logger.log(`Adding Delivery Expense for SELL order`);
