@@ -16,6 +16,7 @@ import {useGetProductsHook} from "../../hooks/ProductsHook";
 import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
 import OrderFilter from "./OrderFilter";
 import OrdersList from "./OrdersList";
+import OrderDialog from "./OrderDialog";
 
 const bCrumb = [
     {
@@ -45,15 +46,12 @@ const getFirstDayOfCurrentMonth = () => {
 
 const Orders: React.FC<OrdersProps> = ({type}) => {
     const [filters, setFilters] = useState<FilterProps>({searchTerm: "", orderStatus: null, startDate: getFirstDayOfCurrentMonth(), endDate: null});
-
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
     const [concernedOrder, setConcernedOrder] = useState<OrderJson>(
         {id: 0, customerId: 0, supplierId: 0, orderType: OrderTypeEnum.BUY, orderStatus: OrderStatusEnum.CONFIRMED, totalPrice: 0, date: new Date(), orderLines: []}
     );
-
     const [listOrder, setListOrder] = useState<OrderJson[]>([]);
-
     const { data: ordersData, isLoading: loadingOrdersData, isError: errorOrdersData } = useGetOrdersHook();
     const { data: companiesData, isLoading: loadingCompaniesData, isError: errorCompaniesData } = useGetCompaniesHook();
     const { data: productsData, isLoading: loadingProductsData, isError: errorProductsData } = useGetProductsHook();
@@ -117,6 +115,7 @@ const Orders: React.FC<OrdersProps> = ({type}) => {
                         <Stack justifyContent="space-between" direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2, md: 4 }}>
                             <OrderFilter filters={filters} setFilters={setFilters}/>
                             <TableCallToActionButton
+                                fullwidth={false}
                                 callToActionText="Ajouter Commande"
                                 callToActionFunction={() => handleOpenDialogType(
                                     ModalTypeEnum.ADD,
@@ -136,15 +135,26 @@ const Orders: React.FC<OrdersProps> = ({type}) => {
                                 errorProductsTypesData={errorProductsTypesData}
                                 type={type}
                                 data={filteredOrders}
-                                companiesData={companiesData || []}
                                 productsData={productsData || []}
                                 productTypesData={productTypesData || []}
                                 handleOpenDialogType={handleOpenDialogType}
+                                getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
+                                getCompanyNameFromOrder={getCompanyNameFromOrder}
                             />
                         </Box>
                     </CardContent>
                 </Card>
             </Grid>
+            <OrderDialog
+                concernedOrder={concernedOrder}
+                type={type}
+                companies={companiesData || []}
+                products={productsData || []}
+                productsType={productTypesData || []}
+                dialogType={dialogType}
+                openDialog={openDialog}
+                closeDialog={() => setOpenDialog(false)}
+            />
         </>
     );
 };
