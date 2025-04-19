@@ -1,11 +1,11 @@
-import {ColorEnum, colorFromString} from "./ColorEnum";
+import {ColorJson} from "../color/ColorJson";
 
 export class ProductJson {
     private readonly id: number;
     private readonly name: string;
     private readonly size: string;
     private readonly productTypeId: number;
-    private readonly color: ColorEnum;
+    private readonly colors: ColorJson[];
     private readonly threshold: number;
     private readonly totalQuantity: number;
 
@@ -14,7 +14,7 @@ export class ProductJson {
         name: string,
         size: string,
         productTypeId: number,
-        color: string,
+        colors: ColorJson[],
         threshold: number,
         totalQuantity: number
     ) {
@@ -22,7 +22,7 @@ export class ProductJson {
         this.name = name;
         this.size = size;
         this.productTypeId = productTypeId;
-        this.color = colorFromString(color);
+        this.colors = colors;
         this.threshold = threshold;
         this.totalQuantity = totalQuantity;
 
@@ -45,8 +45,8 @@ export class ProductJson {
         return this.productTypeId;
     }
 
-    public getColor(): ColorEnum {
-        return this.color;
+    public getColors(): ColorJson[] {
+        return this.colors;
     }
 
     public getThreshold(): number {
@@ -57,13 +57,25 @@ export class ProductJson {
         return this.totalQuantity;
     }
 
-    public static from(body: any): ProductJson {
+    public static fromObject(body: any): ProductJson {
         return new ProductJson(
             Number(body.id),
             body.name,
             body.size,
             Number(body.productTypeId),
-            body.color,
+            body.colors.map(ColorJson.from),
+            Number(body.threshold),
+            Number(body.totalQuantity)
+        )
+    }
+
+    public static fromObjectAndColor(body: any, colors: ColorJson[]): ProductJson {
+        return new ProductJson(
+            Number(body.id),
+            body.name,
+            body.size,
+            Number(body.productTypeId),
+            colors,
             Number(body.threshold),
             Number(body.totalQuantity)
         )
