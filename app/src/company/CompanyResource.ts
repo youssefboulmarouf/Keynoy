@@ -18,42 +18,6 @@ router.get("/",
     )
 );
 
-router.get("/customers",
-    handleAsync(
-        async (req: Request, res: Response) => {
-            res
-                .status(200)
-                .json(
-                    await companyService.getCustomers()
-                );
-        }
-    )
-);
-
-router.get("/suppliers",
-    handleAsync(
-        async (req: Request, res: Response) => {
-            res
-                .status(200)
-                .json(
-                    await companyService.getSuppliers()
-                );
-        }
-    )
-);
-
-router.get("/shippers",
-    handleAsync(
-        async (req: Request, res: Response) => {
-            res
-                .status(200)
-                .json(
-                    await companyService.getShippers()
-                );
-        }
-    )
-);
-
 router.get("/:id",
     handleAsync(
         async (req: Request, res: Response) => {
@@ -75,7 +39,7 @@ router.post("/",
                 .status(201)
                 .json(
                     await companyService.add(
-                        CompanyJson.from(req.body)
+                        CompanyJson.fromObject(req.body)
                     )
                 );
         }
@@ -90,7 +54,7 @@ router.put("/:id",
                 .json(
                     await companyService.update(
                         Number(req.params.id),
-                        CompanyJson.from(req.body)
+                        CompanyJson.fromObject(req.body)
                     )
                 );
         }
