@@ -1,8 +1,8 @@
 import AppError from "../utilities/errors/AppError";
 
 export enum OrderTypeEnum {
-    BUY = "buy",
-    SELL = "sell",
+    BUY = "Achats",
+    SELL = "Ventes",
 }
 
 export function orderTypeFromString(status: string): OrderTypeEnum {
