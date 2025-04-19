@@ -4,12 +4,12 @@ import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
-import {ColorEnum, ModalTypeEnum, ProductJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductJson} from "../../model/KeynoyModels";
 import Box from "@mui/material/Box";
-import {useGetProductsHook} from "../../hooks/ProductsHook";
-import {useGetProductTypesHook} from "../../hooks/ProductTypesHook";
 import ProductDialog from "./ProductDialog";
 import ProductsList from "./ProductsList";
+import {useProductsContext} from "../../context/ProductsContext";
+import {useProductTypesContext} from "../../context/ProductTypesContext";
 
 const bCrumb = [
     {
@@ -26,10 +26,10 @@ const Products: React.FC = () => {
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
     const [concernedProduct, setConcernedProduct] = useState<ProductJson>(
-        {id: 0, name: "", size: "", productTypeId: 0, color: ColorEnum.BLACK, threshold: 0, totalQuantity: 0}
+        {id: 0, name: "", size: "", productTypeId: 0, colors: [], threshold: 0, totalQuantity: 0}
     );
-    const { data: productsData, isLoading: loadingProductsData, isError: errorProductsData } = useGetProductsHook();
-    const { data: productTypesData, isLoading: loadingProductTypesData, isError: errorProductsTypesData } = useGetProductTypesHook();
+    const {products, loading: loadingProductsData, error: errorProductsData} = useProductsContext();
+    const {productTypes, loading: loadingProductTypesData, error: errorProductsTypesData} = useProductTypesContext();
 
     const handleOpenDialogType = (type: ModalTypeEnum, product: ProductJson) => {
         setConcernedProduct(product);
@@ -37,9 +37,9 @@ const Products: React.FC = () => {
         setOpenDialog(true);
     };
 
-    const filteredProducts = productsData?.filter(p =>
+    const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        productTypesData?.find(pt => pt.id === p.productTypeId)?.name.toLowerCase().includes(searchTerm.toLowerCase())
+        productTypes?.find(pt => pt.id === p.productTypeId)?.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
     return (
@@ -51,10 +51,11 @@ const Products: React.FC = () => {
                         <Stack justifyContent="space-between" direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2, md: 4 }}>
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
+                                fullwidth={false}
                                 callToActionText="Ajouter Produit"
                                 callToActionFunction={() => handleOpenDialogType(
                                     ModalTypeEnum.ADD,
-                                    {id: 0, name: "", size: "", productTypeId: 0, color: ColorEnum.BLACK, threshold: 0, totalQuantity: 0}
+                                    {id: 0, name: "", size: "", productTypeId: 0, colors: [], threshold: 0, totalQuantity: 0}
                                 )}
                             />
                         </Stack>
@@ -65,7 +66,7 @@ const Products: React.FC = () => {
                                 errorProductsData={errorProductsData}
                                 errorProductsTypesData={errorProductsTypesData}
                                 data={filteredProducts}
-                                productTypesData={productTypesData}
+                                productTypesData={productTypes}
                                 handleOpenDialogType={handleOpenDialogType}
                             />
                         </Box>
@@ -75,7 +76,7 @@ const Products: React.FC = () => {
 
             <ProductDialog
                 concernedProduct={concernedProduct}
-                productsType={productTypesData || []}
+                productsType={productTypes}
                 dialogType={dialogType}
                 openDialog={openDialog}
                 closeDialog={() => setOpenDialog(false)}

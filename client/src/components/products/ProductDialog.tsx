@@ -1,11 +1,10 @@
 import {FC, useEffect, useState} from "react";
-import {ColorEnum, ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
+import {ColorJson, ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
 import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import ColorAutocomplete from "./ColorAutocomplete";
-import {useCreateProductHook, useDeleteProductHook, useUpdateProductHook} from "../../hooks/ProductsHook";
-import LoadingComponent from "../common/LoadingComponent";
+import ColorGrid from "./ColorGrid";
+import {useProductsContext} from "../../context/ProductsContext";
 
 interface ProductDialogProps {
     concernedProduct: ProductJson;
@@ -21,37 +20,47 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
     const [productSeuil, setProductSeuil] = useState<number>(0);
     const [productQuantity, setProductQuantity] = useState<number>(0);
     const [productType, setProductType] = useState<ProductTypeJson | null>(null);
-    const [color, setColor] = useState<ColorEnum>(ColorEnum.UNKNOWN);
+    const [colors, setColors] = useState<ColorJson[]>([]);
 
-    const { mutate: createProduct, isPending: pendingAdd} = useCreateProductHook();
-    const { mutate: updateProduct, isPending: pendingUpdate} = useUpdateProductHook();
-    const { mutate: deleteProduct, isPending: pendingDelete} = useDeleteProductHook();
+    const {addProduct, editProduct, removeProduct} = useProductsContext();
 
     useEffect(() => {
         setProductName(concernedProduct.name);
         setProductSize(concernedProduct.size);
         setProductSeuil(concernedProduct.threshold);
         setProductQuantity(concernedProduct.totalQuantity);
-        setColor(concernedProduct.color);
+        setColors(concernedProduct.colors);
         setProductType(productsType.find(pt => pt.id === concernedProduct.productTypeId) || null);
+
+        console.log("concernedProduct.colors : ", concernedProduct.colors)
     }, [concernedProduct]);
 
     const handleSubmit = () => {
         if (dialogType === ModalTypeEnum.DELETE) {
-            deleteProduct(
-                concernedProduct,
-                { onSuccess: () => { closeDialog() }}
-            );
+            removeProduct(concernedProduct);
+            closeDialog()
         } else if (dialogType === ModalTypeEnum.ADD) {
-            createProduct(
-                {id: 0, name: productName, size: productSize, productTypeId: productType?.id || 0, color: color, threshold: productSeuil, totalQuantity: productQuantity},
-                { onSuccess: () => { closeDialog() }}
-            );
+            addProduct({
+                id: 0,
+                name: productName,
+                size: productSize,
+                productTypeId: productType?.id ?? 0,
+                colors: colors,
+                threshold: productSeuil,
+                totalQuantity: productQuantity
+            });
+            closeDialog()
         } else {
-            updateProduct(
-                {id: concernedProduct.id, name: productName, size: productSize, productTypeId: productType?.id || 0, color: color, threshold: productSeuil, totalQuantity: productQuantity},
-                { onSuccess: () => { closeDialog() }}
-            );
+            editProduct({
+                id: concernedProduct.id,
+                name: productName,
+                size: productSize,
+                productTypeId: productType?.id ?? 0,
+                colors: colors,
+                threshold: productSeuil,
+                totalQuantity: productQuantity
+            });
+            closeDialog()
         }
     }
 
@@ -66,11 +75,9 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
     }
 
     return (
-        <Dialog open={openDialog} onClose={() => closeDialog()}>
-            <DialogTitle sx={{ width: "500px", mt: 2 }}>{actionText}</DialogTitle>
+        <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '700px', maxWidth: '700px'}}}>
+            <DialogTitle sx={{ mt: 2 }}>{actionText}</DialogTitle>
             <DialogContent>
-
-                {(pendingUpdate || pendingAdd || pendingDelete) ? (<LoadingComponent message={''}/>) : ('')}
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
                 <TextField fullWidth value={concernedProduct.id === 0 ? "" : concernedProduct.id} disabled/>
@@ -80,7 +87,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productName}
                     onChange={(e: any) => setProductName(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Taille Produit</Typography>
@@ -88,7 +95,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productSize}
                     onChange={(e: any) => setProductSize(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Type Produit</Typography>
@@ -102,18 +109,18 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                         setProductType(newValue)
                     }
                     renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Couleur Produit</Typography>
-                <ColorAutocomplete value={color} onChange={setColor} disabled={dialogType === ModalTypeEnum.DELETE}/>
+                <ColorGrid productColors={colors} onChange={setColors} disabled={dialogType === ModalTypeEnum.DELETE}/>
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Quantite Produit</Typography>
                 <TextField
                     fullWidth
                     value={productQuantity}
                     onChange={(e: any) => setProductQuantity(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
 
                 <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Seuil Produit</Typography>
@@ -121,7 +128,7 @@ const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, 
                     fullWidth
                     value={productSeuil}
                     onChange={(e: any) => setProductSeuil(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
+                    disabled={dialogType === ModalTypeEnum.DELETE}
                 />
             </DialogContent>
             <DialogActions>

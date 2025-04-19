@@ -1,8 +1,8 @@
 import React from "react";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
-import {ColorEnum, ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
-import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {ColorEnum, ColorJson, ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
+import {Stack, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/EditButton";
 import DeleteButton from "../common/DeleteButton";
 import Box from "@mui/material/Box";
@@ -10,8 +10,8 @@ import Box from "@mui/material/Box";
 interface ProductsListProps {
     loadingProductsData: boolean;
     loadingProductTypesData: boolean;
-    errorProductsData: boolean;
-    errorProductsTypesData: boolean;
+    errorProductsData: Error | null;
+    errorProductsTypesData: Error | null;
     data: ProductJson[];
     productTypesData: ProductTypeJson[] | undefined;
     handleOpenDialogType: (type: ModalTypeEnum, product: ProductJson) => void;
@@ -31,6 +31,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
     if (loadingProductsData || loadingProductTypesData) {
         listProducts = <LoadingComponent message="Loading products" />;
     } else if (errorProductsData || errorProductsTypesData) {
+        // TODO handles error messages
         listProducts = <Typography color="error">Error loading products</Typography>;
     } else if (data.length === 0) {
         listProducts = <Typography>No product found</Typography>;
@@ -59,17 +60,20 @@ const ProductsList: React.FC<ProductsListProps> = ({
                                 {productTypesData?.find(pt => pt.id === product.productTypeId)?.name}
                             </TableCell>
                             <TableCell>
-                                {(product.color === ColorEnum.UNKNOWN) ? ("-") : (
-                                    <Box
-                                        sx={{
-                                            width: 25,
-                                            height: 25,
-                                            borderRadius: "4px",
-                                            backgroundColor: product.color.toLowerCase(),
-                                            border: "1px solid #ccc"
-                                        }}
-                                    />
-                                )}
+                                <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2, md: 4 }}>
+                                    {product.colors.map((color) => (
+                                        <Box
+                                            key={product.id + color.id}
+                                            sx={{
+                                                width: 25,
+                                                height: 25,
+                                                borderRadius: "4px",
+                                                backgroundColor: '#' + color.htmlCode,
+                                                border: "1px solid #ccc"
+                                            }}
+                                        />
+                                    ))}
+                                </Stack>
                             </TableCell>
                             <TableCell>{product.totalQuantity}</TableCell>
                             <TableCell>{product.threshold}</TableCell>

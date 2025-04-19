@@ -49,6 +49,7 @@ export type OrderJson = {
 export type ProductTypeJson = {
     id: number;
     name: string;
+    sellable: boolean;
 };
 
 export type ColorJson = {
@@ -81,7 +82,7 @@ export type ProductJson = {
     name: string;
     size: string;
     productTypeId: number;
-    color: ColorEnum;
+    colors: ColorJson[];
     threshold: number;
     totalQuantity: number;
 }
