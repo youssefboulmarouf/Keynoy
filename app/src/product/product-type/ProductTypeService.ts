@@ -11,17 +11,17 @@ export class ProductTypeService extends BaseService {
     async get(): Promise<ProductTypeJson[]> {
         this.logger.log(`Get all product types`);
         const data = await this.prisma.productType.findMany();
-        return data.map((c: any) => ProductTypeJson.from(c));
+        return data.map(c => ProductTypeJson.from(c));
     }
 
-    async getById(productTypeId: number): Promise<ProductTypeJson> {
-        this.logger.log(`Get product type by [id:${productTypeId}]`);
+    async getById(id: number): Promise<ProductTypeJson> {
+        this.logger.log(`Get product type by [id:${id}]`);
 
         const productTypeData = await this.prisma.productType.findUnique({
-            where: { id: productTypeId }
+            where: { id }
         });
 
-        NotFoundError.throwIf(!productTypeData, `Product type with [id:${productTypeId}] not found`);
+        NotFoundError.throwIf(!productTypeData, `Product type with [id:${id}] not found`);
 
         return ProductTypeJson.from(productTypeData);
     }
@@ -31,38 +31,39 @@ export class ProductTypeService extends BaseService {
         return ProductTypeJson.from(
             await this.prisma.productType.create({
                 data: {
-                    name: productType.getName()
+                    name: productType.getName(),
+                    sellable: productType.isSellable()
                 }
             })
         );
     }
 
-    async update(productTypeId: number, productType: any): Promise<ProductTypeJson> {
-        this.logger.log(`Update product type with [id=${productTypeId}]`);
+    async update(id: number, productType: ProductTypeJson): Promise<ProductTypeJson> {
+        this.logger.log(`Update product type with [id=${id}]`);
 
-        BadRequestError.throwIf(productTypeId != productType.getId(), `Product type id mismatch`);
+        BadRequestError.throwIf(id != productType.getId(), `Product type id mismatch`);
 
-        const existingPt = this.getById(productTypeId);
+        const existingPt = await this.getById(id);
 
         this.logger.log(`Update existing product type`, existingPt);
         this.logger.log(`Product type updated data`, productType);
 
         return ProductTypeJson.from(
             await this.prisma.productType.update({
-                where: { id: productTypeId },
+                where: { id },
                 data: {
-                    name: productType.getName()
+                    name: productType.getName(),
+                    sellable: productType.isSellable()
                 }
             })
         );
     }
 
-    async delete(productTypeId: number): Promise<void> {
-        this.logger.log(`Delete product type with [id=${productTypeId}]`);
+    async delete(id: number): Promise<void> {
+        this.logger.log(`Delete product type with [id=${id}]`);
 
         await this.prisma.productType.delete({
-            where: { id: productTypeId }
+            where: { id: id }
         });
     }
-
 }
