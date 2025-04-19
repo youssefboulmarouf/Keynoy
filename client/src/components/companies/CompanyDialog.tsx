@@ -1,51 +1,51 @@
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
-import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
+import {CompanyDesignJson, CompanyJson, CompanyTypeEnum, ModalTypeEnum} from "../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
-import {useEffect, useState} from "react";
-import {useCreateCompanyHook, useDeleteCompanyHook, useUpdateCompanyHook} from "../../hooks/CompaniesHook";
-import LoadingComponent from "../common/LoadingComponent";
-
-interface CompanyDialogProps {
-    concernedCompany: CompanyJson
-    dialogType: ModalTypeEnum;
-    companyType: string;
-    openDialog: boolean;
-    closeDialog: () => void;
-}
+import React, {useEffect, useState} from "react";
+import {useCompaniesContext} from "../../context/CompaniesContext";
+import TableCallToActionButton from "../common/TableCallToActionButton";
+import CompanyDesignDialog from "./CompanyDesignDialog";
+import CompanyDesignGrid from "./CompanyDesignGrid";
 
 const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogType, companyType, openDialog, closeDialog}) => {
     const [companyName, setCompanyName] = useState<string>("");
     const [companyPhone, setCompanyPhone] = useState<string>("");
     const [companyLocation, setCompanyLocation] = useState<string>("");
-
-    const { mutate: createCompany, isPending: pendingAdd} = useCreateCompanyHook();
-    const { mutate: updateCompany, isPending: pendingUpdate} = useUpdateCompanyHook();
-    const { mutate: deleteCompany, isPending: pendingDelete} = useDeleteCompanyHook();
+    const [companyDesigns, setCompanyDesigns] = useState<CompanyDesignJson[]>([]);
+    const [openCompanyDesignDialog, setCompanyDesignDialog] = useState<boolean>(false);
+    const {addCompany, editCompany, removeCompany} = useCompaniesContext();
 
     useEffect(() => {
         setCompanyName(concernedCompany.name);
         setCompanyPhone(concernedCompany.phone);
         setCompanyLocation(concernedCompany.location);
+        setCompanyDesigns(concernedCompany.designUrls);
     }, [concernedCompany]);
 
     const handleSubmit = () => {
         if (dialogType === ModalTypeEnum.DELETE) {
-            deleteCompany(
-                concernedCompany,
-                { onSuccess: () => { closeDialog() }}
-            );
+            removeCompany(concernedCompany);
         } else if (dialogType === ModalTypeEnum.ADD) {
-            createCompany(
-                { id: 0, name: companyName, phone: companyPhone, location: companyLocation, type: companyType },
-                { onSuccess: () => { closeDialog() }}
-            );
+            addCompany({
+                id: 0,
+                name: companyName,
+                phone: companyPhone,
+                location: companyLocation,
+                type: companyType,
+                designUrls: companyDesigns
+            });
         } else {
-            updateCompany(
-                { id: concernedCompany.id, name: companyName, phone: companyPhone, location: companyLocation, type: companyType },
-                { onSuccess: () => { closeDialog() }}
-            );
+            editCompany({
+                id: concernedCompany.id,
+                name: companyName,
+                phone: companyPhone,
+                location: companyLocation,
+                type: companyType,
+                designUrls: companyDesigns
+            });
         }
+        closeDialog()
     }
 
     let actionText = `${dialogType} ${companyType}`;
@@ -59,48 +59,78 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
     }
 
     return (
-        <Dialog open={openDialog} onClose={() => closeDialog()}>
-            <DialogTitle sx={{ width: "500px", mt: 2 }}>{actionText}</DialogTitle>
-            <DialogContent>
+        <>
+            <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '700px', maxWidth: '700px'}}}>
+                <DialogTitle sx={{ mt: 2 }}>{actionText}</DialogTitle>
+                <DialogContent>
 
-                {(pendingUpdate || pendingAdd || pendingDelete) ? (<LoadingComponent message={''}/>) : ('')}
+                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
+                    <TextField fullWidth value={concernedCompany.id === 0 ? "" : concernedCompany.id} disabled/>
 
-                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
-                <TextField fullWidth value={concernedCompany.id === 0 ? "" : concernedCompany.id} disabled/>
+                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Nom {companyType}</Typography>
+                    <TextField
+                        fullWidth
+                        value={companyName}
+                        onChange={(e: any) => setCompanyName(e.target.value)}
+                        disabled={dialogType === ModalTypeEnum.DELETE}
+                    />
 
-                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Nom {companyType}</Typography>
-                <TextField
-                    fullWidth
-                    value={companyName}
-                    onChange={(e: any) => setCompanyName(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
-                />
+                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Phone {companyType}</Typography>
+                    <TextField
+                        fullWidth
+                        value={companyPhone}
+                        onChange={(e: any) => setCompanyPhone(e.target.value)}
+                        disabled={dialogType === ModalTypeEnum.DELETE}
+                    />
 
-                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Phone {companyType}</Typography>
-                <TextField
-                    fullWidth
-                    value={companyPhone}
-                    onChange={(e: any) => setCompanyPhone(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
-                />
+                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Ville {companyType}</Typography>
+                    <TextField
+                        fullWidth
+                        value={companyLocation}
+                        onChange={(e: any) => setCompanyLocation(e.target.value)}
+                        disabled={dialogType === ModalTypeEnum.DELETE}
+                        sx={{ mb: 2 }}
+                    />
 
-                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Ville {companyType}</Typography>
-                <TextField
-                    fullWidth
-                    value={companyLocation}
-                    onChange={(e: any) => setCompanyLocation(e.target.value)}
-                    disabled={dialogType === ModalTypeEnum.DELETE || (pendingUpdate || pendingAdd || pendingDelete)}
-                />
+                    {companyType === CompanyTypeEnum.CUSTOMERS ? (
+                        <TableCallToActionButton
+                            fullwidth={true}
+                            callToActionText="Ajouter Design"
+                            callToActionFunction={() => {setCompanyDesignDialog(true)}}
+                        />
+                    ) : ('')}
 
-            </DialogContent>
-            <DialogActions>
-                {actionButton}
-                <Button variant="outlined" onClick={() => closeDialog()}>
-                    Cancel
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+                    <CompanyDesignGrid
+                        companyDesign={companyDesigns}
+                        onChangeCompanyDesign={setCompanyDesigns}
+                    />
+
+                </DialogContent>
+                <DialogActions>
+                    {actionButton}
+                    <Button variant="outlined" onClick={() => closeDialog()}>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <CompanyDesignDialog
+                concernedCompany={concernedCompany}
+                companyDesigns={companyDesigns}
+                openDialog={openCompanyDesignDialog}
+                closeDialog={() => setCompanyDesignDialog(false)}
+                addDesign={setCompanyDesigns}
+            />
+        </>
+
+);
+}
+
+interface CompanyDialogProps {
+    concernedCompany: CompanyJson
+    dialogType: ModalTypeEnum;
+    companyType: string;
+    openDialog: boolean;
+    closeDialog: () => void;
 }
 
 export default CompanyDialog;

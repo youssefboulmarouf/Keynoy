@@ -7,19 +7,19 @@ import EditButton from "../common/EditButton";
 import DeleteButton from "../common/DeleteButton";
 
 interface CompaniesListProps {
-    isLoading: boolean;
-    isError: boolean;
+    loading: boolean;
+    error: Error | null;
     type: string;
     data: CompanyJson[];
     handleOpenDialogType: (type: ModalTypeEnum, company: CompanyJson) => void;
 }
 
-const CompaniesList: React.FC<CompaniesListProps> = ({isLoading, isError, type, data, handleOpenDialogType}) => {
+const CompaniesList: React.FC<CompaniesListProps> = ({loading, error, type, data, handleOpenDialogType}) => {
     let listCompanies;
-    if (isLoading) {
+    if (loading) {
         listCompanies = <LoadingComponent message="Loading product types" />;
-    } else if (isError) {
-        listCompanies = <Typography color="error">Error loading {type}</Typography>;
+    } else if (error) {
+        listCompanies = <Typography color="error">Error loading {type}: ${error?.message}</Typography>;
     } else if (data.length === 0) {
         listCompanies = <Typography>Aucun {type} trouver</Typography>;
     } else {
