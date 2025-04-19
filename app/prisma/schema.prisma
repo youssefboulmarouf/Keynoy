@@ -7,20 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// COMPANIES (Merged: Customer, Supplier, DeliveryCompany)
+model Color {
+  id        Int     @id @default(autoincrement())
+  name      String
+  htmlCode  String
+  Product   ProductColor[]
+  OrderLine OrderLineColor[]
+}
+
 model Company {
-  id       Int      @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   name     String
   type     String
   location String?
   phone    String?
 
-  customerOrders Order[] @relation("CustomerOrders")
-  supplierOrders Order[] @relation("SupplierOrders")
-  deliveries     Shipping[]
+  customer Order[] @relation("CustomerOrders")
+  supplier Order[] @relation("SupplierOrders")
+  Shipping Shipping[]
+  designs  CompanyDesign[]
 }
 
-// EXPENSES
+model CompanyDesign {
+  id        Int     @id @default(autoincrement())
+  designUrl String
+  designName String
+  companyId Int
+  Company   Company @relation(fields: [companyId], references: [id])
+}
+
 model Expense {
   id         Int      @id @default(autoincrement())
   name       String
@@ -29,21 +44,20 @@ model Expense {
   orderId    Int?
 }
 
-// ORDERS
 model Order {
-  id            Int       @id @default(autoincrement())
-  customerId    Int
-  supplierId    Int
-  orderType     String
-  orderStatus   Int
-  totalPrice    Decimal    @db.Decimal(10, 2)
-  date          DateTime
+  id          Int      @id @default(autoincrement())
+  customerId  Int
+  supplierId  Int
+  orderType   String
+  orderStatus Int
+  totalPrice  Decimal  @db.Decimal(10, 2)
+  date         DateTime
+  designUrl   String
 
-  customer     Company     @relation("CustomerOrders", fields: [customerId], references: [id])
-  supplier     Company     @relation("SupplierOrders", fields: [supplierId], references: [id])
-
-  orderLines   OrderLine[]
-  deliveries   Shipping[]
+  customer    Company  @relation("CustomerOrders", fields: [customerId], references: [id])
+  supplier    Company  @relation("SupplierOrders", fields: [supplierId], references: [id])
+  OrderLine  OrderLine[]
+  Shipping    Shipping?
 }
 
 model OrderLine {
@@ -51,42 +65,61 @@ model OrderLine {
   productId Int
   quantity  Int
   unitPrice Decimal @db.Decimal(10, 2)
-
-  order     Order    @relation(fields: [orderId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  paintType String
+  Order     Order   @relation(fields: [orderId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id])
+  Colors    OrderLineColor[]
 
   @@id([orderId, productId])
 }
 
-// SHIPPING
-model Shipping {
-  orderId       Int @id
-  shipperId          Int
-  shippingDate  DateTime?
-  deliveryDate  DateTime?
-  price         Decimal @db.Decimal(10, 2)
+model OrderLineColor {
+  orderId Int
+  productId Int
+  colorId Int
 
-  company         Company @relation(fields: [shipperId], references: [id])
-  order           Order   @relation(fields: [orderId], references: [id])
+  OrderLine OrderLine @relation(fields: [orderId, productId], references: [orderId, productId])
+  Color     Color     @relation(fields: [colorId], references: [id])
+
+  @@id([orderId, productId, colorId])
 }
 
-// PRODUCTS
 model Product {
-  id            Int    @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   name          String
   size          String?
   productTypeId Int
-  color         String
   threshold     Int
   totalQuantity Int
+  ProductType   ProductType    @relation(fields: [productTypeId], references: [id])
+  OrderLine     OrderLine[]
+  colors        ProductColor[]
+}
 
-  productType   ProductType @relation(fields: [productTypeId], references: [id])
-  orderLines    OrderLine[]
+model ProductColor {
+  productId Int
+  colorId   Int
+
+  Product   Product @relation(fields: [productId], references: [id])
+  Color     Color   @relation(fields: [colorId], references: [id])
+
+  @@id([productId, colorId])
 }
 
 model ProductType {
-  id        Int    @id @default(autoincrement())
-  name      String
+  id      Int     @id @default(autoincrement())
+  name    String
+  sellable Boolean
+  Product Product[]
+}
 
-  products  Product[]
+model Shipping {
+  orderId      Int @id
+  shipperId    Int
+  shippingDate DateTime?
+  deliveryDate DateTime?
+  price        Decimal @db.Decimal(10, 2)
+
+  Order        Order   @relation(fields: [orderId], references: [id])
+  shipper      Company @relation(fields: [shipperId], references: [id])
 }
