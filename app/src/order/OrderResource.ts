@@ -40,7 +40,7 @@ router.post("/",
                 .status(201)
                 .json(
                     await orderService.add(
-                        OrderJson.fromRequest(req.body)
+                        OrderJson.fromObject(req.body)
                     )
                 );
         }
