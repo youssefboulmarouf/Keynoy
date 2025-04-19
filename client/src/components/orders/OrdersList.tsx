@@ -1,10 +1,8 @@
 import React, {useState} from "react";
-import {CompanyJson, ModalTypeEnum, OrderJson, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, OrderJson, OrderTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
 import OrderRow from "./OrderRow";
 
 interface OrdersListProps {
@@ -18,10 +16,11 @@ interface OrdersListProps {
     errorProductsTypesData: boolean;
     type: string;
     data: OrderJson[];
-    companiesData: CompanyJson[];
     productsData: ProductJson[];
     productTypesData: ProductTypeJson[];
     handleOpenDialogType: (type: ModalTypeEnum, order: OrderJson) => void;
+    getCompanyPhoneFromOrder: (order: OrderJson, companyType: string) => string;
+    getCompanyNameFromOrder: (order: OrderJson, companyType: string) => string;
 }
 
 const OrdersList: React.FC<OrdersListProps> = ({
@@ -35,31 +34,16 @@ const OrdersList: React.FC<OrdersListProps> = ({
     errorProductsTypesData,
     type,
     data,
-    companiesData,
     productsData,
     productTypesData,
-    handleOpenDialogType
+    handleOpenDialogType,
+    getCompanyPhoneFromOrder,
+    getCompanyNameFromOrder
 }) => {
     const [openRow, setOpenRow] = useState(false);
     const [rowToOpen, setRowToOpen] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
-
-    const getCompanyPhoneFromOrder = (order: OrderJson, companyType: string) => {
-        if (companyType === "Fournisseurs") {
-            return companiesData?.find(c => c.type === "Fournisseurs" && c.id === order.supplierId)?.phone || ""
-        } else {
-            return companiesData?.find(c => c.type === "Clients" && c.id === order.customerId)?.phone || ""
-        }
-    }
-
-    const getCompanyNameFromOrder = (order: OrderJson, companyType: string) => {
-        if (companyType === "Fournisseurs") {
-            return companiesData?.find(c => c.type === "Fournisseurs" && c.id === order.supplierId)?.name || ""
-        } else {
-            return companiesData?.find(c => c.type === "Clients" && c.id === order.customerId)?.name || ""
-        }
-    }
 
     const handleChangePage = (event: any, newPage: number) => {
         setPage(newPage);
@@ -84,7 +68,7 @@ const OrdersList: React.FC<OrdersListProps> = ({
                     <TableRow>
                         <TableCell />
                         <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                        {type === "Achats" ? (
+                        {type === OrderTypeEnum.BUY ? (
                             <TableCell><Typography variant="h6" fontSize="14px">Fournisseur</Typography></TableCell>
                         ) : (
                             <TableCell><Typography variant="h6" fontSize="14px">Client</Typography></TableCell>
