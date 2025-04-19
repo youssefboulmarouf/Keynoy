@@ -23,20 +23,14 @@ export class OrderService extends BaseService {
     }
 
     async get(): Promise<OrderJson[]> {
-        this.logger.log(`Get all orders`);
-        const prismaOrders = await this.prisma.order.findMany();
-
-        const allOrders: OrderJson[] = [];
-        for (const order of prismaOrders) {
-            allOrders.push(
-                OrderJson.fromDb(
-                    order,
-                    await this.orderLineService.getById(order.id)
-                )
+        this.logger.log("Get all orders");
+        const orders = await this.prisma.order.findMany();
+        return Promise.all(
+            orders.map(async (order) =>
+                OrderJson.fromObjectAndLines(order, await this.orderLineService.getById(order.id))
             )
-        }
-        return allOrders;
-    };
+        );
+    }
 
     async getById(orderId: number): Promise<OrderJson> {
         this.logger.log(`Get order by [id:${orderId}]`);
@@ -46,7 +40,7 @@ export class OrderService extends BaseService {
 
         NotFoundError.throwIf(!orderData, `Order with [id:${orderId}] not found`);
 
-        return OrderJson.fromDb(
+        return OrderJson.fromObjectAndLines(
             orderData,
             await this.orderLineService.getById(orderId)
         );
@@ -68,13 +62,14 @@ export class OrderService extends BaseService {
                 orderType: order.getOrderType(),
                 orderStatus: order.getOrderStatus(),
                 totalPrice: order.getTotalPrice(),
-                date: order.getDate()
+                date: order.getDate(),
+                designUrl: order.getDesignUrl()
             }
         });
 
         this.logger.log(`Created order with [id: ${orderData.id}]`);
 
-        const savedOrder = OrderJson.fromDb(
+        const savedOrder = OrderJson.fromObjectAndLines(
             orderData,
             await this.orderLineService.addList(order.getOrderLines(), orderData.id)
         );
@@ -108,14 +103,15 @@ export class OrderService extends BaseService {
                 orderType: existingOrder.getOrderType(),
                 orderStatus: orderStatus,
                 totalPrice: existingOrder.getTotalPrice(),
-                date: existingOrder.getDate()
+                date: existingOrder.getDate(),
+                designUrl: existingOrder.getDesignUrl()
             }
         });
     }
 
-    async delete(orderId: number): Promise<void> {
-        this.logger.log(`Delete order with [id=${orderId}]`);
-        const existingOrder = await this.getById(orderId);
+    async delete(id: number): Promise<void> {
+        this.logger.log(`Delete order with [id=${id}]`);
+        const existingOrder = await this.getById(id);
         BadRequestError.throwIf(
             existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED,
             `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`
@@ -125,12 +121,10 @@ export class OrderService extends BaseService {
         await this.reverseProductAndExpenseUpdates(existingOrder);
 
         this.logger.log(`Deleting order lines`);
-        await this.orderLineService.delete(orderId);
+        await this.orderLineService.delete(id);
 
         this.logger.log(`Deleting order`);
-        await this.prisma.order.delete({
-            where: { id: orderId }
-        });
+        await this.prisma.order.delete({where: { id }});
     }
 
     private async updateProductAndExpense(savedOrder: OrderJson) {
@@ -145,10 +139,10 @@ export class OrderService extends BaseService {
             ));
 
             this.logger.log(`Increasing product quantity for new BUY order`);
-            await this.increaseProductQuantity(savedOrder.getOrderLines());
+            await this.adjustProductQuantities(savedOrder.getOrderLines(), +1);
         } else if (savedOrder.getOrderType() === OrderTypeEnum.SELL) {
             this.logger.log(`Decreasing product quantity for new SELL order`);
-            await this.decreaseProductQuantity(savedOrder.getOrderLines());
+            await this.adjustProductQuantities(savedOrder.getOrderLines(), -1);
         }
     }
 
@@ -160,28 +154,18 @@ export class OrderService extends BaseService {
             await this.expenseService.deleteByOrderId(existingOrder.getId());
 
             this.logger.log(`Decreasing product quantity for updated BUY order`);
-            await this.decreaseProductQuantity(existingOrder.getOrderLines());
+            await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
         } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
             this.logger.log(`Increasing product quantity for updated SELL order`);
-            await this.increaseProductQuantity(existingOrder.getOrderLines());
+            await this.adjustProductQuantities(existingOrder.getOrderLines(), +1);
         }
     }
 
-    private async increaseProductQuantity(orderLines: OrderLineJson[]): Promise<void> {
-        await Promise.all(
-            orderLines.map(async (line) => {
-                this.logger.log(`Increasing quantity of product with [id= ${line.getProductId()}] by [${line.getQuantity()}]`);
-                await this.productService.updateQuantity(line.getProductId(), line.getQuantity());
-            })
-        )
-    }
-
-    private async decreaseProductQuantity(orderLines: OrderLineJson[]): Promise<void> {
-        await Promise.all(
-            orderLines.map(async (line) => {
-                this.logger.log(`Decreasing quantity of product with [id= ${line.getProductId()}] by [${-line.getQuantity()}]`);
-                await this.productService.updateQuantity(line.getProductId(), -line.getQuantity());
-            })
-        )
+    private async adjustProductQuantities(orderLines: OrderLineJson[], direction: 1 | -1): Promise<void> {
+        await Promise.all(orderLines.map(line => {
+            const diff = line.getQuantity() * direction;
+            this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${line.getProductId()}] by [${diff}]`);
+            return this.productService.updateQuantity(line.getProductId(), diff);
+        }));
     }
 }
