@@ -34,106 +34,19 @@ model Color {
   id        Int     @id @default(autoincrement())
   name      String
   htmlCode  String
-  Product   ProductColor[]
-  OrderLine OrderLineColor[]
-}
 
-model Company {
-  id       Int     @id @default(autoincrement())
-  name     String
-  type     String
-  location String?
-  phone    String?
-
-  customer Order[] @relation("CustomerOrders")
-  supplier Order[] @relation("SupplierOrders")
-  Shipping Shipping[]
-  designs  CompanyDesign[]
-}
-
-model CompanyDesign {
-  id        Int     @id @default(autoincrement())
-  designUrl String
-  designName String
-  companyId Int
-  Company   Company @relation(fields: [companyId], references: [id])
+  productVariation   ProductVariation[]
+  orderLine          OrderLineColor[]
 }
 
 model Expense {
   id         Int      @id @default(autoincrement())
   name       String
-  totalPrice Decimal  @db.Decimal(10, 2)
+  totalPrice Decimal  @db.Decimal(10, 2) @default(0.00)
   date       DateTime
+  isOrder    Boolean
+  isShipping Boolean
   orderId    Int?
-}
-
-model Order {
-  id          Int      @id @default(autoincrement())
-  customerId  Int
-  supplierId  Int
-  orderType   String
-  orderStatus Int
-  totalPrice  Decimal  @db.Decimal(10, 2)
-  date         DateTime
-  designUrl   String
-
-  customer    Company  @relation("CustomerOrders", fields: [customerId], references: [id])
-  supplier    Company  @relation("SupplierOrders", fields: [supplierId], references: [id])
-  OrderLine  OrderLine[]
-  Shipping    Shipping?
-}
-
-model OrderLine {
-  orderId   Int
-  productId Int
-  quantity  Int
-  unitPrice Decimal @db.Decimal(10, 2)
-  paintType String
-  Order     Order   @relation(fields: [orderId], references: [id])
-  Product   Product @relation(fields: [productId], references: [id])
-  Colors    OrderLineColor[]
-
-  @@id([orderId, productId])
-}
-
-model OrderLineColor {
-  orderId Int
-  productId Int
-  colorId Int
-
-  OrderLine OrderLine @relation(fields: [orderId, productId], references: [orderId, productId])
-  Color     Color     @relation(fields: [colorId], references: [id])
-
-  @@id([orderId, productId, colorId])
-}
-
-model Product {
-  id            Int            @id @default(autoincrement())
-  name          String
-  size          String?
-  productTypeId Int
-  threshold     Int
-  totalQuantity Int
-  ProductType   ProductType    @relation(fields: [productTypeId], references: [id])
-  OrderLine     OrderLine[]
-  colors        ProductColor[]
-}
-
-model ProductColor {
-  productId Int
-  colorId   Int
-
-  Product   Product @relation(fields: [productId], references: [id])
-  Color     Color   @relation(fields: [colorId], references: [id])
-
-  @@id([productId, colorId])
-}
-
-model ProductType {
-  id      Int     @id @default(autoincrement())
-  name    String
-  sellable Boolean
-  Product Product[]
 }
 
 model Shipping {
@@ -141,8 +54,109 @@ model Shipping {
   shipperId    Int
   shippingDate DateTime?
   deliveryDate DateTime?
-  price        Decimal @db.Decimal(10, 2)
+  price        Decimal @db.Decimal(10, 2) @default(0.00)
 
-  Order        Order   @relation(fields: [orderId], references: [id])
+  order        Order   @relation(fields: [orderId], references: [id])
   shipper      Company @relation(fields: [shipperId], references: [id])
+}
+
+model Company {
+  id          Int     @id @default(autoincrement())
+  name        String
+  companyType CompanyType
+  location    String?
+  phone       String?
+
+  customerOrders Order[] @relation("CustomerOrders")
+  supplierOrders Order[] @relation("SupplierOrders")
+  shipping       Shipping[]
+  companyDesigns  CompanyDesign[]
+}
+
+model CompanyDesign {
+  id           Int     @id @default(autoincrement())
+  designName   String
+  companyId    Int
+
+  company      Company @relation(fields: [companyId], references: [id])
+  designImages DesignImage[]
+}
+
+model DesignImage {
+  id              Int     @id @default(autoincrement())
+  imageUrl        String
+  companyDesignId Int
+
+  companyDesign   CompanyDesign @relation(fields: [companyDesignId], references: [id])
+}
+
+model ProductType {
+  id         Int     @id @default(autoincrement())
+  name       String
+  isSellable Boolean
+  isPaint    Boolean
+
+  product   Product[]
+}
+
+model Product {
+  id            Int            @id @default(autoincrement())
+  name          String
+  productTypeId Int
+
+  productType       ProductType    @relation(fields: [productTypeId], references: [id])
+  productVariation  ProductVariation[]
+}
+
+model ProductVariation {
+  id        Int @id @default(autoincrement())
+  productId Int
+  colorId   Int
+  size      String
+  quantity  Int
+  threshold Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  color     Color   @relation(fields: [colorId], references: [id])
+  orderLine OrderLine[]
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  customerId  Int?
+  supplierId  Int?
+  orderType   OrderType
+  orderStatus Int
+  totalPrice  Decimal  @db.Decimal(10, 2) @default(0.00)
+  date        DateTime
+
+  customerOrder Company?  @relation("CustomerOrders", fields: [customerId], references: [id])
+  supplierOrder Company?  @relation("SupplierOrders", fields: [supplierId], references: [id])
+  orderLine     OrderLine[]
+  shipping      Shipping?
+}
+
+model OrderLine {
+  orderId             Int
+  productVariationId  Int
+  quantity            Int
+  unitPrice           Decimal @db.Decimal(10, 2) @default(0.00)
+  paintType           PaintType
+
+  order               Order   @relation(fields: [orderId], references: [id])
+  productVariation    ProductVariation @relation(fields: [productVariationId], references: [id])
+  colors              OrderLineColor[]
+
+  @@id([orderId, productVariationId])
+}
+
+model OrderLineColor {
+  orderId            Int
+  productVariationId Int
+  colorId            Int
+
+  orderLine OrderLine @relation(fields: [orderId, productVariationId], references: [orderId, productVariationId])
+  color     Color     @relation(fields: [colorId], references: [id])
+
+  @@id([orderId, productVariationId, colorId])
 }
