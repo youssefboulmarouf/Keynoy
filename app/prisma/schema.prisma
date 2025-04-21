@@ -7,6 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CompanyType {
+  Client
+  Livreur
+  Fournisseur
+}
+
+enum OrderType {
+  Achats
+  Ventes
+}
+
+enum PaintType {
+  PVC
+  EAU
+}
+
 model Color {
   id        Int     @id @default(autoincrement())
   name      String

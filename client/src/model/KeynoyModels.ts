@@ -21,9 +21,9 @@ export type DesignImageJson = {
 }
 
 export enum CompanyTypeEnum {
-    SHIPPERS =  "Livreurs",
-    SUPPLIERS = "Fournisseurs",
-    CUSTOMERS = "Clients",
+    SHIPPERS =  "Livreur",
+    SUPPLIERS = "Fournisseur",
+    CUSTOMERS = "Client",
 }
 
 export type ExpenseJson = {
