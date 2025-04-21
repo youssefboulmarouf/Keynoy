@@ -1,16 +1,19 @@
 export class ProductTypeJson {
     private readonly id: number;
     private readonly name: string;
-    private readonly sellable: boolean;
+    private readonly isSellable: boolean;
+    private readonly isPaint: boolean;
 
     constructor(
         id: number,
         name: string,
-        sellable: boolean
+        isSellable: boolean,
+        isPaint: boolean
     ) {
         this.id = id;
         this.name = name;
-        this.sellable = sellable;
+        this.isSellable = isSellable;
+        this.isPaint = isPaint;
     }
 
     public getId(): number {
@@ -21,15 +24,20 @@ export class ProductTypeJson {
         return this.name;
     }
 
-    public isSellable(): boolean {
-        return this.sellable;
+    public getSellable(): boolean {
+        return this.isSellable;
     }
 
-    public static from(body: any): ProductTypeJson {
+    public getPaint(): boolean {
+        return this.isPaint;
+    }
+
+    public static fromObject(body: any): ProductTypeJson {
         return new ProductTypeJson(
             Number(body.id),
             body.name,
-            body.sellable
+            body.isSellable,
+            body.isPaint
         )
     }
 }

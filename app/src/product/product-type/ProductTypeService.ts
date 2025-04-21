@@ -11,7 +11,7 @@ export class ProductTypeService extends BaseService {
     async get(): Promise<ProductTypeJson[]> {
         this.logger.log(`Get all product types`);
         const data = await this.prisma.productType.findMany();
-        return data.map(c => ProductTypeJson.from(c));
+        return data.map(ProductTypeJson.fromObject);
     }
 
     async getById(id: number): Promise<ProductTypeJson> {
@@ -23,16 +23,17 @@ export class ProductTypeService extends BaseService {
 
         NotFoundError.throwIf(!productTypeData, `Product type with [id:${id}] not found`);
 
-        return ProductTypeJson.from(productTypeData);
+        return ProductTypeJson.fromObject(productTypeData);
     }
 
     async add(productType: ProductTypeJson): Promise<ProductTypeJson> {
         this.logger.log(`Create new product type`, productType);
-        return ProductTypeJson.from(
+        return ProductTypeJson.fromObject(
             await this.prisma.productType.create({
                 data: {
                     name: productType.getName(),
-                    sellable: productType.isSellable()
+                    isSellable: productType.getSellable(),
+                    isPaint: productType.getPaint()
                 }
             })
         );
@@ -48,12 +49,13 @@ export class ProductTypeService extends BaseService {
         this.logger.log(`Update existing product type`, existingPt);
         this.logger.log(`Product type updated data`, productType);
 
-        return ProductTypeJson.from(
+        return ProductTypeJson.fromObject(
             await this.prisma.productType.update({
                 where: { id },
                 data: {
                     name: productType.getName(),
-                    sellable: productType.isSellable()
+                    isSellable: productType.getSellable(),
+                    isPaint: productType.getPaint()
                 }
             })
         );
@@ -61,6 +63,10 @@ export class ProductTypeService extends BaseService {
 
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete product type with [id=${id}]`);
+
+        await this.prisma.product.deleteMany({
+            where: { productTypeId : id }
+        })
 
         await this.prisma.productType.delete({
             where: { id: id }
