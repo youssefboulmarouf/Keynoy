@@ -1,10 +1,10 @@
 import React from "react";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
-import {ColorEnum, ColorJson, ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
 import {Stack, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
+import EditButton from "../common/buttons/EditButton";
+import DeleteButton from "../common/buttons/DeleteButton";
 import Box from "@mui/material/Box";
 
 interface ProductsListProps {
@@ -78,8 +78,14 @@ const ProductsList: React.FC<ProductsListProps> = ({
                             <TableCell>{product.totalQuantity}</TableCell>
                             <TableCell>{product.threshold}</TableCell>
                             <TableCell align="right">
-                                <EditButton tooltipText={"Modifier Produit"} entity={product} handleOpenDialogType={handleOpenDialogType}/>
-                                <DeleteButton tooltipText={"Supprimer Produit"} entity={product} handleOpenDialogType={handleOpenDialogType}/>
+                                {/*<EditButton*/}
+                                {/*    tooltipText={"Modifier Produit"}*/}
+                                {/*    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, product)}*/}
+                                {/*/>*/}
+                                {/*<DeleteButton*/}
+                                {/*    tooltipText={"Supprimer Produit"}*/}
+                                {/*    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, product)}*/}
+                                {/*/>*/}
                             </TableCell>
                         </TableRow>
                     ))}

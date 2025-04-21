@@ -24,7 +24,7 @@ const ProductTypes: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0, sellable: false});
+    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0, isSellable: false, isPaint: false});
     const { productTypes, loading, error } = useProductTypesContext();
 
     const handleOpenDialogType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
@@ -48,7 +48,7 @@ const ProductTypes: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Type Produit"
-                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0, sellable: false})}
+                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0, isSellable: false, isPaint: false})}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>

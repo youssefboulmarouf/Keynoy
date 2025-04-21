@@ -2,10 +2,14 @@ import {BaseService} from "../../utilities/BaseService";
 import {ProductTypeJson} from "./ProductTypeJson";
 import NotFoundError from "../../utilities/errors/NotFoundError";
 import BadRequestError from "../../utilities/errors/BadRequestError";
+import {ProductService} from "../ProductService";
 
 export class ProductTypeService extends BaseService {
+    private readonly productService: ProductService;
+
     constructor() {
         super(ProductTypeService.name);
+        this.productService = new ProductService();
     }
 
     async get(): Promise<ProductTypeJson[]> {
@@ -64,9 +68,7 @@ export class ProductTypeService extends BaseService {
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete product type with [id=${id}]`);
 
-        await this.prisma.product.deleteMany({
-            where: { productTypeId : id }
-        })
+        await this.productService.deleteByProductType(id);
 
         await this.prisma.productType.delete({
             where: { id: id }

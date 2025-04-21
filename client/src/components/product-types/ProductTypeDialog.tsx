@@ -16,19 +16,21 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
     const { addProductType, editProductType, removeProductType } = useProductTypesContext();
     const [productTypeName, setProductTypeName] = useState<string>("");
     const [productTypeSellable, setProductTypeSellable] = useState<boolean>(false);
+    const [productTypePaint, setProductTypePaint] = useState<boolean>(false);
 
     useEffect(() => {
         setProductTypeName(concernedProductType.name);
-        setProductTypeSellable(concernedProductType.sellable);
+        setProductTypeSellable(concernedProductType.isSellable);
+        setProductTypePaint(concernedProductType.isPaint);
     }, [concernedProductType]);
 
     const handleSubmit = async () => {
         if (dialogType === ModalTypeEnum.DELETE) {
             removeProductType(concernedProductType);
         } else if (dialogType === ModalTypeEnum.ADD) {
-            addProductType({ id: 0, name: productTypeName, sellable: productTypeSellable });
+            addProductType({ id: 0, name: productTypeName, isSellable: productTypeSellable, isPaint: productTypePaint });
         } else {
-            editProductType({ id: concernedProductType.id, name: productTypeName, sellable: productTypeSellable});
+            editProductType({ id: concernedProductType.id, name: productTypeName, isSellable: productTypeSellable, isPaint: productTypePaint});
         }
         closeDialog();
     }
@@ -63,6 +65,15 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
                     checked={productTypeSellable}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
                         setProductTypeSellable(checked)
+                    }
+                    disabled={dialogType === ModalTypeEnum.DELETE}
+                />
+
+                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Peinture</Typography>
+                <Switch
+                    checked={productTypePaint}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                        setProductTypePaint(checked)
                     }
                     disabled={dialogType === ModalTypeEnum.DELETE}
                 />

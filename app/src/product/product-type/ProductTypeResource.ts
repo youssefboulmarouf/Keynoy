@@ -39,7 +39,7 @@ router.post("/",
                 .status(201)
                 .json(
                     await productTypeService.add(
-                        ProductTypeJson.from(req.body)
+                        ProductTypeJson.fromObject(req.body)
                     )
                 );
         }
@@ -54,7 +54,7 @@ router.put("/:id",
             .json(
                 await productTypeService.update(
                     Number(req.params.id),
-                    ProductTypeJson.from(req.body)
+                    ProductTypeJson.fromObject(req.body)
                 )
             );
         }

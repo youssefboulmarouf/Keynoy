@@ -3,8 +3,8 @@ import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
+import EditButton from "../common/buttons/EditButton";
+import DeleteButton from "../common/buttons/DeleteButton";
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from '@mui/icons-material/Check';
 import IconButton from "@mui/material/IconButton";
@@ -33,6 +33,7 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({loading, error, data
                         <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Type Produits</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Vendable</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Peinture</Typography></TableCell>
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -42,7 +43,18 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({loading, error, data
                             <TableCell>{type.id}</TableCell>
                             <TableCell>{type.name}</TableCell>
                             <TableCell>
-                                {type.sellable ? (
+                                {type.isSellable ? (
+                                    <IconButton color="success">
+                                        <CheckIcon width={22} />
+                                    </IconButton>
+                                ) : (
+                                    <IconButton color="error">
+                                        <ClearIcon width={22} />
+                                    </IconButton>
+                                )}
+                            </TableCell>
+                            <TableCell>
+                                {type.isPaint ? (
                                     <IconButton color="success">
                                         <CheckIcon width={22} />
                                     </IconButton>
@@ -53,8 +65,14 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({loading, error, data
                                 )}
                             </TableCell>
                             <TableCell align="right">
-                                <EditButton tooltipText={"Modifier Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
-                                <DeleteButton tooltipText={"Supprimer Type Produit"} entity={type} handleOpenDialogType={handleOpenDialogType}/>
+                                <EditButton
+                                    tooltipText={"Modifier Type Produit"}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, type)}
+                                />
+                                <DeleteButton
+                                    tooltipText={"Supprimer Type Produit"}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, type)}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}
