@@ -1,17 +1,23 @@
 export type CompanyJson = {
     id: number;
     name: string;
-    type: string;
+    companyType: string;
     phone: string;
     location: string;
-    designUrls: CompanyDesignJson[];
+    companyDesigns: CompanyDesignJson[];
 }
 
 export type CompanyDesignJson = {
     id: number;
     designName: string;
-    designUrl: string;
     companyId: number;
+    designImages: DesignImageJson[],
+}
+
+export type DesignImageJson = {
+    id: number;
+    imageUrl: string;
+    companyDesignId: number;
 }
 
 export enum CompanyTypeEnum {
