@@ -1,4 +1,4 @@
-import {ColorJson, CompanyDesignJson, CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
+import {CompanyDesignJson, CompanyJson} from "../../model/KeynoyModels";
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -14,15 +14,13 @@ interface CompanyDesignDialogProps {
 
 export const CompanyDesignDialog: React.FC<CompanyDesignDialogProps> = ({concernedCompany, companyDesigns, openDialog, closeDialog, addDesign}) => {
     const [nomDesign, setNomDesign] = useState<string>("");
-    const [urlDesign, setUrlDesign] = useState<string>("");
 
     const handleAddDesign = () => {
         addDesign([
             ...companyDesigns,
-            {id: 0, designName: nomDesign, designUrl: urlDesign, companyId: concernedCompany.id}
+            {id: 0, designName: nomDesign, companyId: concernedCompany.id, designImages: []}
         ]);
         setNomDesign("");
-        setUrlDesign("");
         closeDialog();
     };
 
@@ -36,13 +34,6 @@ export const CompanyDesignDialog: React.FC<CompanyDesignDialogProps> = ({concern
                     fullWidth
                     value={nomDesign}
                     onChange={(e: any) => setNomDesign(e.target.value)}
-                />
-
-                <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Lien Design (Google Drive)</Typography>
-                <TextField
-                    fullWidth
-                    value={urlDesign}
-                    onChange={(e: any) => setUrlDesign(e.target.value)}
                 />
             </DialogContent>
 

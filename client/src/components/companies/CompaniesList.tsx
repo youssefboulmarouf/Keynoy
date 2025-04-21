@@ -3,8 +3,8 @@ import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import EditButton from "../common/EditButton";
-import DeleteButton from "../common/DeleteButton";
+import EditButton from "../common/buttons/EditButton";
+import DeleteButton from "../common/buttons/DeleteButton";
 
 interface CompaniesListProps {
     loading: boolean;
@@ -31,6 +31,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({loading, error, type, data
                         <TableCell><Typography variant="h6" fontSize="14px">Nom {type}</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Phone</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Ville</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Designs</Typography></TableCell>
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -41,9 +42,16 @@ const CompaniesList: React.FC<CompaniesListProps> = ({loading, error, type, data
                             <TableCell>{comp.name}</TableCell>
                             <TableCell>{comp.phone}</TableCell>
                             <TableCell>{comp.location}</TableCell>
+                            <TableCell>{comp.companyDesigns.length}</TableCell>
                             <TableCell align="right">
-                                <EditButton tooltipText={"Modifier Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
-                                <DeleteButton tooltipText={"Supprimer Partenaire"} entity={comp} handleOpenDialogType={handleOpenDialogType}/>
+                                <EditButton
+                                    tooltipText={`Modifier ${type}`}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, comp)}
+                                />
+                                <DeleteButton
+                                    tooltipText={`Supprimer  ${type}`}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, comp)}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}

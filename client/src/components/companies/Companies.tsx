@@ -28,17 +28,26 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedCompany, setConcernedCompany] = useState<CompanyJson>({id: 0, name: "", type: "", phone: "", location: "", designUrls: []});
+    const [concernedCompany, setConcernedCompany] = useState<CompanyJson>({
+        id: 0,
+        name: "",
+        companyType: "",
+        phone: "",
+        location: "",
+        companyDesigns: []
+    });
     const {companies, loading, error} = useCompaniesContext();
 
     const handleOpenDialogType = (type: ModalTypeEnum, company: CompanyJson) => {
+        console.log("handleOpenDialogType", type);
+        console.log("CompanyJson", company);
         setConcernedCompany(company);
         setDialogType(type);
         setOpenDialog(true);
     };
 
     const filteredCompanies = companies?.filter(c =>
-        c.type === type && (
+        c.companyType === type && (
             c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             c.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
             c.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,8 +64,18 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
                                 fullwidth={false}
-                                callToActionText="Ajouter Partenaire"
-                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {id: 0, name: "", type: "", phone: "", location: "", designUrls: []})}
+                                callToActionText={`Ajouter ${type}`}
+                                callToActionFunction={() => handleOpenDialogType(
+                                    ModalTypeEnum.ADD,
+                                    {
+                                        id: 0,
+                                        name: "",
+                                        companyType: "",
+                                        phone: "",
+                                        location: "",
+                                        companyDesigns: []
+                                    }
+                                )}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>

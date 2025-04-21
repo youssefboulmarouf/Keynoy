@@ -6,7 +6,15 @@ import React, {useEffect, useState} from "react";
 import {useCompaniesContext} from "../../context/CompaniesContext";
 import TableCallToActionButton from "../common/TableCallToActionButton";
 import CompanyDesignDialog from "./CompanyDesignDialog";
-import CompanyDesignGrid from "./CompanyDesignGrid";
+import CompanyDesignList from "./CompanyDesignList";
+
+interface CompanyDialogProps {
+    concernedCompany: CompanyJson
+    dialogType: ModalTypeEnum;
+    companyType: string;
+    openDialog: boolean;
+    closeDialog: () => void;
+}
 
 const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogType, companyType, openDialog, closeDialog}) => {
     const [companyName, setCompanyName] = useState<string>("");
@@ -20,7 +28,7 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
         setCompanyName(concernedCompany.name);
         setCompanyPhone(concernedCompany.phone);
         setCompanyLocation(concernedCompany.location);
-        setCompanyDesigns(concernedCompany.designUrls);
+        setCompanyDesigns(concernedCompany.companyDesigns);
     }, [concernedCompany]);
 
     const handleSubmit = () => {
@@ -32,8 +40,8 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
                 name: companyName,
                 phone: companyPhone,
                 location: companyLocation,
-                type: companyType,
-                designUrls: companyDesigns
+                companyType: companyType,
+                companyDesigns: companyDesigns
             });
         } else {
             editCompany({
@@ -41,8 +49,8 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
                 name: companyName,
                 phone: companyPhone,
                 location: companyLocation,
-                type: companyType,
-                designUrls: companyDesigns
+                companyType: companyType,
+                companyDesigns: companyDesigns
             });
         }
         closeDialog()
@@ -60,7 +68,7 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
 
     return (
         <>
-            <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '700px', maxWidth: '700px'}}}>
+            <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '900px', maxWidth: '900px'}}}>
                 <DialogTitle sx={{ mt: 2 }}>{actionText}</DialogTitle>
                 <DialogContent>
 
@@ -93,17 +101,19 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
                     />
 
                     {companyType === CompanyTypeEnum.CUSTOMERS ? (
-                        <TableCallToActionButton
-                            fullwidth={true}
-                            callToActionText="Ajouter Design"
-                            callToActionFunction={() => {setCompanyDesignDialog(true)}}
-                        />
+                        <>
+                            <TableCallToActionButton
+                                fullwidth={true}
+                                callToActionText="Ajouter Design"
+                                callToActionFunction={() => {setCompanyDesignDialog(true)}}
+                            />
+                            <CompanyDesignList
+                                companyDesigns={companyDesigns}
+                                onChangeCompanyDesign={setCompanyDesigns}
+                                disabled={dialogType === ModalTypeEnum.DELETE}
+                            />
+                        </>
                     ) : ('')}
-
-                    <CompanyDesignGrid
-                        companyDesign={companyDesigns}
-                        onChangeCompanyDesign={setCompanyDesigns}
-                    />
 
                 </DialogContent>
                 <DialogActions>
@@ -122,15 +132,6 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
             />
         </>
 
-);
+    );
 }
-
-interface CompanyDialogProps {
-    concernedCompany: CompanyJson
-    dialogType: ModalTypeEnum;
-    companyType: string;
-    openDialog: boolean;
-    closeDialog: () => void;
-}
-
 export default CompanyDialog;
