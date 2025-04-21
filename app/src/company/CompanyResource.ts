@@ -39,7 +39,7 @@ router.post("/",
                 .status(201)
                 .json(
                     await companyService.add(
-                        CompanyJson.fromObject(req.body)
+                        CompanyJson.fromRequest(req.body)
                     )
                 );
         }
@@ -54,7 +54,7 @@ router.put("/:id",
                 .json(
                     await companyService.update(
                         Number(req.params.id),
-                        CompanyJson.fromObject(req.body)
+                        CompanyJson.fromRequest(req.body)
                     )
                 );
         }

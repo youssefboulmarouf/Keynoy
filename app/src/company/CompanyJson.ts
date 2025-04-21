@@ -1,28 +1,28 @@
-import {companyTypeFromString} from "./CompanyTypeEnum";
-import {CompanyDesignJson} from "./CompanyDesignJson";
+import {CompanyTypeEnum, companyTypeFromString, mapCompanyTypeToCompanyTypeEnum} from "./CompanyTypeEnum";
+import {CompanyDesignJson} from "./company-design/CompanyDesignJson";
 
 export class CompanyJson {
     private readonly id: number;
     private readonly name: string;
-    private readonly type: string;
+    private readonly companyType: CompanyTypeEnum;
     private readonly phone: string;
     private readonly location: string;
-    private readonly designUrls: CompanyDesignJson[];
+    private readonly companyDesigns: CompanyDesignJson[];
 
     constructor(
         id: number,
         name: string,
-        type: string,
+        companyType: CompanyTypeEnum,
         phone: string,
         location: string,
-        designUrls: CompanyDesignJson[],
+        companyDesigns: CompanyDesignJson[],
     ) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.companyType = companyType;
         this.phone = phone;
         this.location = location;
-        this.designUrls = designUrls;
+        this.companyDesigns = companyDesigns;
     }
 
     public getId(): number {
@@ -33,8 +33,8 @@ export class CompanyJson {
         return this.name;
     }
 
-    public getType(): string {
-        return this.type;
+    public getCompanyType(): CompanyTypeEnum {
+        return this.companyType;
     }
 
     public getPhone(): string {
@@ -45,26 +45,26 @@ export class CompanyJson {
         return this.location;
     }
 
-    public getDesignUrls(): CompanyDesignJson[] {
-        return this.designUrls;
+    public getCompanyDesigns(): CompanyDesignJson[] {
+        return this.companyDesigns;
     }
 
-    public static fromObject(body: any): CompanyJson {
+    public static fromRequest(body: any): CompanyJson {
         return new CompanyJson(
             Number(body.id),
             body.name,
-            companyTypeFromString(body.type),
+            companyTypeFromString(body.companyType),
             body.phone,
             body.location,
-            body.designUrls.map((d: any) => CompanyDesignJson.from(d)),
+            body.companyDesigns.map(CompanyDesignJson.fromRequest),
         )
     }
 
-    public static fromObjectAndDesigns(body: any, designs: CompanyDesignJson[]): CompanyJson {
+    public static fromObjectAndCompanyDesigns(body: any, designs: CompanyDesignJson[]): CompanyJson {
         return new CompanyJson(
             Number(body.id),
             body.name,
-            companyTypeFromString(body.type),
+            mapCompanyTypeToCompanyTypeEnum(body.companyType),
             body.phone,
             body.location,
             designs,

@@ -1,14 +1,13 @@
 import {BaseService} from "../utilities/BaseService";
-import {CompanyTypeEnum} from "./CompanyTypeEnum";
+import {CompanyTypeEnum, mapCompanyTypeEnumToCompanyType} from "./CompanyTypeEnum";
 import {CompanyJson} from "./CompanyJson";
 import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
-import {CompanyDesignService} from "./CompanyDesignService";
-import {CompanyDesignJson} from "./CompanyDesignJson";
+import {CompanyDesignService} from "./company-design/CompanyDesignService";
 
 export class CompanyService extends BaseService {
 
-    private readonly companyDesignService :CompanyDesignService;
+    private readonly companyDesignService: CompanyDesignService;
 
     constructor() {
         super(CompanyService.name);
@@ -17,39 +16,42 @@ export class CompanyService extends BaseService {
 
     async get(): Promise<CompanyJson[]> {
         this.logger.log(`Get all companies`);
-        const companiesData = await this.prisma.company.findMany({
-            include: { designs: true }
-        });
 
-        return companiesData.map(c =>
-            CompanyJson.fromObjectAndDesigns(c, c.designs.map(CompanyDesignJson.from))
-        );
-    };
+        const companiesData = await this.prisma.company.findMany();
+
+        return await Promise.all(
+            companiesData.map(async c =>
+                CompanyJson.fromObjectAndCompanyDesigns(
+                    c,
+                    await this.companyDesignService.getByCompanyId(c.id)
+                )
+            )
+        )
+    }
 
     async getById(id: number): Promise<CompanyJson> {
         this.logger.log(`Get company by [id:${id}]`);
         const companyData = await this.prisma.company.findUnique({
-            where: { id },
-            include: { designs: true }
+            where: { id }
         });
 
         NotFoundError.throwIf(!companyData, `Company with [id:${id}] not found`);
 
-        return CompanyJson.fromObjectAndDesigns(
+        return CompanyJson.fromObjectAndCompanyDesigns(
             companyData,
-            companyData?.designs.map(CompanyDesignJson.from) || []
+            await this.companyDesignService.getByCompanyId(companyData?.id ?? 0)
         );
     };
 
     async add(company: CompanyJson): Promise<CompanyJson> {
         this.logger.log(`Create new company`, company);
 
-        BadRequestError.throwIf(company.getType() === CompanyTypeEnum.UNKNOWN, `Company cannot be unknown.`);
+        BadRequestError.throwIf(company.getCompanyType() === CompanyTypeEnum.UNKNOWN, `Company cannot be unknown.`);
 
         const companyData = await this.prisma.company.create({
             data: {
                 name: company.getName(),
-                type: company.getType(),
+                companyType: mapCompanyTypeEnumToCompanyType(company.getCompanyType()),
                 phone: company.getPhone(),
                 location: company.getLocation()
             }
@@ -57,10 +59,14 @@ export class CompanyService extends BaseService {
 
         this.logger.log(`Created company with [id: ${companyData.id}]`);
 
-        return CompanyJson.fromObjectAndDesigns(
-            companyData,
-            await this.companyDesignService.addList(company.getDesignUrls(), companyData.id)
-        )
+        if (company.getCompanyType() === CompanyTypeEnum.CUSTOMER) {
+            return CompanyJson.fromObjectAndCompanyDesigns(
+                companyData,
+                await this.companyDesignService.addMany(company.getCompanyDesigns(), companyData.id)
+            )
+        } else {
+            return CompanyJson.fromObjectAndCompanyDesigns(companyData, [])
+        }
     };
 
     async update(id: number, company: CompanyJson): Promise<CompanyJson> {
@@ -75,16 +81,17 @@ export class CompanyService extends BaseService {
 
         await this.companyDesignService.deleteByCompanyId(id);
 
-        return CompanyJson.fromObjectAndDesigns(
+        return CompanyJson.fromObjectAndCompanyDesigns(
             await this.prisma.company.update({
                 where: { id },
                 data: {
                     name: company.getName(),
+                    companyType: mapCompanyTypeEnumToCompanyType(company.getCompanyType()),
                     phone: company.getPhone(),
                     location: company.getLocation()
                 }
             }),
-            await this.companyDesignService.addList(company.getDesignUrls(), id)
+            await this.companyDesignService.addMany(company.getCompanyDesigns(), id)
         );
     }
 

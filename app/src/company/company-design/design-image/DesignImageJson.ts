@@ -1,7 +1,7 @@
 export class DesignImageJson {
     private readonly id: number;
     private readonly imageUrl: string;
-    private companyDesignId: number;
+    private readonly companyDesignId: number;
 
     constructor(id: number, imageUrl: string, companyDesignId: number) {
         this.id = id;
@@ -16,10 +16,6 @@ export class DesignImageJson {
     public getImageUrl(): string {
         return this.imageUrl;
     }
-    
-    public setCompanyDesignId(companyDesignId: number): void {
-        this.companyDesignId = companyDesignId;
-    }
 
     public getCompanyDesignId(): number {
         return this.companyDesignId;
@@ -29,7 +25,7 @@ export class DesignImageJson {
         return new DesignImageJson(
             Number(body.id),
             body.imageUrl,
-            body.companyId,
+            body.companyDesignId,
         )
     }
 }
