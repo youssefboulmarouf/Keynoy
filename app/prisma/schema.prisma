@@ -23,6 +23,13 @@ enum PaintType {
   EAU
 }
 
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  email     String
+  password  String
+}
+
 model Color {
   id        Int     @id @default(autoincrement())
   name      String
