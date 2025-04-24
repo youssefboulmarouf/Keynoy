@@ -3,26 +3,28 @@ import {ProductJson} from "./ProductJson";
 import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
 import {ColorJson} from "../color/ColorJson";
-import {ColorService} from "../color/ColorService";
+import {ProductVariationService} from "./product-variation/ProductVariationService";
 
 export class ProductService extends BaseService {
-    private readonly colorService: ColorService;
+    private readonly productVariationService: ProductVariationService;
     constructor() {
         super(ProductService.name);
-        this.colorService = new ColorService();
+        this.productVariationService = new ProductVariationService();
     }
 
     async get(): Promise<ProductJson[]> {
         this.logger.log("Get all products");
 
-        const products = await this.prisma.product.findMany();
+        const productsData = await this.prisma.product.findMany();
 
-        return await Promise.all(products.map(async (p) =>
-            ProductJson.fromObjectAndColor(
-                p,
-                await this.colorService.getByProductId(p.id)
+        return await Promise.all(
+            productsData.map(async product =>
+                ProductJson.fromObjectAndVariation(
+                    product,
+                    await this.productVariationService.getByProductId(product.id),
+                )
             )
-        ));
+        )
     }
 
     async getById(id: number): Promise<ProductJson> {
@@ -33,11 +35,21 @@ export class ProductService extends BaseService {
         });
         NotFoundError.throwIf(!productData, `Product with [id:${id}] not found`);
 
-        return ProductJson.fromObjectAndColor(
+        return ProductJson.fromObjectAndVariation(
             productData,
-            await this.colorService.getByProductId(id)
+            await this.productVariationService.getByProductId(productData?.id ?? 0),
         );
-    };
+    }
+
+    async getByProductTypeId(productTypeId: number): Promise<ProductJson[]> {
+        this.logger.log(`Get product by [productTypeId:${productTypeId}]`);
+
+        const productData = await this.prisma.product.findMany({
+            where: { productTypeId }
+        });
+
+        return productData.map(ProductJson.fromObject);
+    }
 
     async add(product: ProductJson): Promise<ProductJson> {
         this.logger.log(`Create new product`, product);
@@ -45,16 +57,13 @@ export class ProductService extends BaseService {
         const productData = await this.prisma.product.create({
             data: {
                 name: product.getName(),
-                size: product.getSize(),
-                productTypeId: product.getProductTypeId(),
-                threshold: product.getThreshold(),
-                totalQuantity: product.getTotalQuantity()
+                productTypeId: product.getProductTypeId()
             }
         });
 
-        return ProductJson.fromObjectAndColor(
+        return ProductJson.fromObjectAndVariation(
             productData,
-            await this.setProductColors(productData.id, product.getColors())
+            await this.productVariationService.addMany(product.getProductVariations(), productData.id)
         );
     };
 
@@ -68,54 +77,67 @@ export class ProductService extends BaseService {
         this.logger.log(`Update existing product`, existingProduct);
         this.logger.log(`Product updated data`, product);
 
-        return ProductJson.fromObjectAndColor(
-            await this.prisma.product.update({
-                where: { id: productId },
-                data: {
-                    name: product.getName(),
-                    size: product.getSize(),
-                    productTypeId: product.getProductTypeId(),
-                    threshold: product.getThreshold(),
-                    totalQuantity: product.getTotalQuantity()
-                }
-            }),
-            await this.setProductColors(productId, product.getColors())
-        );
+        await this.productVariationService.deleteByProductId(productId);
+
+        await this.prisma.product.update({
+            where: { id: productId },
+            data: {
+                name: product.getName(),
+                productTypeId: product.getProductTypeId()
+            }
+        })
+
+        await this.productVariationService.addMany(product.getProductVariations(), productId);
+
+        return await this.getById(productId);
     }
 
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete product with [id=${id}]`);
 
-        await this.prisma.productColor.deleteMany({ where: { productId: id } });
+        await this.prisma.productVariation.deleteMany({ where: { productId: id } });
         await this.prisma.product.delete({
             where: { id }
         });
     }
 
+    async deleteByProductType(productTypeId: number): Promise<void> {
+        this.logger.log(`Delete product with [productTypeId=${productTypeId}]`);
+
+        const products = await this.getByProductTypeId(productTypeId);
+
+        await Promise.all(
+            products.map(async (product) => {
+                await this.delete(product.getId())
+            })
+        )
+    }
+
     async updateQuantity(id: number, quantityDiff: number): Promise<void> {
         this.logger.log(`Update product quantity [id=${id}, diff=${quantityDiff}]`);
 
-        await this.prisma.product.update({
-            where: { id },
-            data: {
-                totalQuantity: { increment: quantityDiff }
-            }
-        });
+        // await this.prisma.product.update({
+        //     where: { id },
+        //     data: {
+        //         totalQuantity: { increment: quantityDiff }
+        //     }
+        // });
     }
 
     private async setProductColors(productId: number, colors: ColorJson[]): Promise<ColorJson[]> {
-        await this.prisma.productColor.deleteMany({ where: { productId } });
-
-        if (!colors?.length) return [];
-
-        await this.prisma.productColor.createMany({
-            data: colors.map((c) => ({
-                productId,
-                colorId: c.getId()
-            })),
-            skipDuplicates: true
-        });
-
-        return await this.colorService.getByProductId(productId);
+        // await this.prisma.productColor.deleteMany({ where: { productId } });
+        //
+        // if (!colors?.length) return [];
+        //
+        // await this.prisma.productColor.createMany({
+        //     data: colors.map((c) => ({
+        //         productId,
+        //         colorId: c.getId()
+        //     })),
+        //     skipDuplicates: true
+        // });
+        //
+        // return await this.colorService.getByProductId(productId);
+        return [];
     }
 }
