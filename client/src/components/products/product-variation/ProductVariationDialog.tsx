@@ -1,10 +1,10 @@
-import {ColorJson, ModalTypeEnum, ProductJson, ProductVariationJson} from "../../model/KeynoyModels";
+import {ColorJson, ModalTypeEnum, ProductJson, ProductVariationJson} from "../../../model/KeynoyModels";
 import {Autocomplete, Box, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
-import ColorBox from "../common/ColorBox";
-import {getActionButton} from "../common/Utilities";
+import ColorBox from "../../common/ColorBox";
+import {getActionButton} from "../../common/Utilities";
 
 interface ProductVariantDialogProps {
     concernedProductVariant: ProductVariationJson;

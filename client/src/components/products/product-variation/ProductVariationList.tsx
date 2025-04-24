@@ -1,10 +1,10 @@
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import React from "react";
-import {ModalTypeEnum, ProductVariationJson} from "../../model/KeynoyModels";
-import DeleteButton from "../common/buttons/DeleteButton";
-import EditButton from "../common/buttons/EditButton";
-import ColorBox from "../common/ColorBox";
+import {ModalTypeEnum, ProductVariationJson} from "../../../model/KeynoyModels";
+import DeleteButton from "../../common/buttons/DeleteButton";
+import EditButton from "../../common/buttons/EditButton";
+import ColorBox from "../../common/ColorBox";
 
 interface ProductVariationListProps {
     productVariations: ProductVariationJson[];
