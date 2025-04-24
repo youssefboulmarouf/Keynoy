@@ -1,4 +1,4 @@
-import {CompanyDesignJson, DesignImageJson} from "../../model/KeynoyModels";
+import {CompanyDesignJson, DesignImageJson} from "../../../../model/KeynoyModels";
 import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
