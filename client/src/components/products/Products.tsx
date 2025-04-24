@@ -4,7 +4,7 @@ import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
-import {ModalTypeEnum, ProductJson, ProductVariationJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductJson} from "../../model/KeynoyModels";
 import Box from "@mui/material/Box";
 import ProductDialog from "./ProductDialog";
 import ProductsList from "./ProductsList";

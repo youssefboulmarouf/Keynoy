@@ -13,7 +13,7 @@ interface ProductsContextValue {
     removeProduct: (product: ProductJson) => void;
 }
 
-const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);;
+const ProductsContext = createContext<ProductsContextValue | undefined>(undefined);
 
 export const useProductsContext = (): ProductsContextValue => {
     const context = useContext(ProductsContext);
