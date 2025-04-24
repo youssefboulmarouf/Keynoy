@@ -5,8 +5,10 @@ import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from "react";
 import {useCompaniesContext} from "../../context/CompaniesContext";
 import TableCallToActionButton from "../common/TableCallToActionButton";
-import CompanyDesignDialog from "./CompanyDesignDialog";
-import CompanyDesignList from "./CompanyDesignList";
+import CompanyDesignDialog from "./company-design/CompanyDesignDialog";
+import CompanyDesignList from "./company-design/CompanyDesignList";
+import {getActionButton} from "../common/Utilities";
+import {useDialogController} from "../common/useDialogController";
 
 interface CompanyDialogProps {
     concernedCompany: CompanyJson
@@ -58,20 +60,12 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
         closeDialog()
     }
 
-    let actionText = `${dialogType} ${companyType}`;
-    let actionButton;
-    if (dialogType === ModalTypeEnum.DELETE) {
-        actionButton = <Button variant="contained" color="error" onClick={handleSubmit}>{actionText}</Button>
-    } else if (dialogType === ModalTypeEnum.ADD) {
-        actionButton = <Button variant="contained" color="primary" onClick={handleSubmit}>{actionText}</Button>
-    } else {
-        actionButton = <Button variant="contained" color="warning" onClick={handleSubmit}>{actionText}</Button>
-    }
+    const actionButton = getActionButton(dialogType, handleSubmit, `${dialogType} ${companyType}`);
 
     return (
         <>
             <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '900px', maxWidth: '900px'}}}>
-                <DialogTitle sx={{ mt: 2 }}>{actionText}</DialogTitle>
+                <DialogTitle sx={{ mt: 2 }}>{dialogType} {companyType}</DialogTitle>
                 <DialogContent>
 
                     <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
