@@ -2,10 +2,9 @@ import React from "react";
 import LoadingComponent from "../common/LoadingComponent";
 import Typography from "@mui/material/Typography";
 import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
-import {Stack, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/buttons/EditButton";
 import DeleteButton from "../common/buttons/DeleteButton";
-import Box from "@mui/material/Box";
 
 interface ProductsListProps {
     loadingProductsData: boolean;
@@ -31,7 +30,6 @@ const ProductsList: React.FC<ProductsListProps> = ({
     if (loadingProductsData || loadingProductTypesData) {
         listProducts = <LoadingComponent message="Loading products" />;
     } else if (errorProductsData || errorProductsTypesData) {
-        // TODO handles error messages
         listProducts = <Typography color="error">Error loading products</Typography>;
     } else if (data.length === 0) {
         listProducts = <Typography>No product found</Typography>;
@@ -42,11 +40,8 @@ const ProductsList: React.FC<ProductsListProps> = ({
                     <TableRow>
                         <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Nom Produit</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Taille</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Type</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Couleur</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Quantite</Typography></TableCell>
-                        <TableCell><Typography variant="h6" fontSize="14px">Seuil</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Variations</Typography></TableCell>
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -55,37 +50,19 @@ const ProductsList: React.FC<ProductsListProps> = ({
                         <TableRow key={product.id}>
                             <TableCell>{product.id}</TableCell>
                             <TableCell>{product.name}</TableCell>
-                            <TableCell>{product.size || "-"}</TableCell>
                             <TableCell>
                                 {productTypesData?.find(pt => pt.id === product.productTypeId)?.name}
                             </TableCell>
-                            <TableCell>
-                                <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2, md: 4 }}>
-                                    {product.colors.map((color) => (
-                                        <Box
-                                            key={product.id + color.id}
-                                            sx={{
-                                                width: 25,
-                                                height: 25,
-                                                borderRadius: "4px",
-                                                backgroundColor: '#' + color.htmlCode,
-                                                border: "1px solid #ccc"
-                                            }}
-                                        />
-                                    ))}
-                                </Stack>
-                            </TableCell>
-                            <TableCell>{product.totalQuantity}</TableCell>
-                            <TableCell>{product.threshold}</TableCell>
+                            <TableCell>{product.productVariations.length}</TableCell>
                             <TableCell align="right">
-                                {/*<EditButton*/}
-                                {/*    tooltipText={"Modifier Produit"}*/}
-                                {/*    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, product)}*/}
-                                {/*/>*/}
-                                {/*<DeleteButton*/}
-                                {/*    tooltipText={"Supprimer Produit"}*/}
-                                {/*    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, product)}*/}
-                                {/*/>*/}
+                                <EditButton
+                                    tooltipText={"Modifier Produit"}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, product)}
+                                />
+                                <DeleteButton
+                                    tooltipText={"Supprimer Produit"}
+                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, product)}
+                                />
                             </TableCell>
                         </TableRow>
                     ))}
