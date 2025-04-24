@@ -49,10 +49,8 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         try {
             const data = await fetchProducts();
             setProducts(data);
-            console.log("products : ", products);
         } catch (err) {
             setError(err as Error);
-            console.error("err: ", err);
         } finally {
             setLoading(false);
         }
