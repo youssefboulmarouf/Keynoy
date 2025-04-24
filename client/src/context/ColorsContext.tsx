@@ -20,7 +20,7 @@ export const useColorContext = (): ColorContextValue => {
 
 export const ColorsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [colors, setColors] = useState<ColorJson[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
 
     const refresh = async () => {
