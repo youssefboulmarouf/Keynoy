@@ -1,11 +1,12 @@
-import {CompanyDesignJson, DesignImageJson, ModalTypeEnum} from "../../model/KeynoyModels";
+import {CompanyDesignJson, DesignImageJson, ModalTypeEnum} from "../../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import React from "react";
-import DeleteButton from "../common/buttons/DeleteButton";
-import DesignImageGrid from "./DesignImageGrid";
-import AddButton from "../common/buttons/AddButton";
-import DesignImageDialog from "./DesignImageDialog";
+import DeleteButton from "../../common/buttons/DeleteButton";
+import DesignImageGrid from "./design-image/DesignImageGrid";
+import AddButton from "../../common/buttons/AddButton";
+import DesignImageDialog from "./design-image/DesignImageDialog";
+import {useDialogController} from "../../common/useDialogController";
 
 interface CompanyDesignGridProps {
     companyDesigns: CompanyDesignJson[];
@@ -14,16 +15,14 @@ interface CompanyDesignGridProps {
 }
 
 const CompanyDesignList: React.FC<CompanyDesignGridProps> = ({companyDesigns, onChangeCompanyDesign, disabled = false}) => {
-    const [concernedCompanyDesign, setConcernedCompanyDesign] = React.useState<CompanyDesignJson>({
+    const companyDesignDialog = useDialogController<CompanyDesignJson>({
         id: 0,
         designName: "",
         designImages: [],
         companyId: 0
     });
-    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 
-    const handleRemoveDesign = (modalType: ModalTypeEnum, design: CompanyDesignJson) => {
-        console.log("removing :", design)
+    const handleRemoveCompanyDesign = (modalType: ModalTypeEnum, design: CompanyDesignJson) => {
         onChangeCompanyDesign(companyDesigns.filter(d => d.id !== design.id));
     }
 
@@ -76,14 +75,11 @@ const CompanyDesignList: React.FC<CompanyDesignGridProps> = ({companyDesigns, on
                             <TableCell align="right">
                                 <AddButton
                                     tooltipText={`Ajouter Image`}
-                                    handleOpenDialogType={() => {
-                                        setOpenDialog(true);
-                                        setConcernedCompanyDesign(cd);
-                                    }}
+                                    handleOpenDialogType={() => companyDesignDialog.openDialog(ModalTypeEnum.ADD, cd)}
                                 />
                                 <DeleteButton
                                     tooltipText={`Supprimer Image`}
-                                    handleOpenDialogType={() => handleRemoveDesign(ModalTypeEnum.DELETE, cd)}
+                                    handleOpenDialogType={() => handleRemoveCompanyDesign(ModalTypeEnum.DELETE, cd)}
                                     disable={disabled}
                                 />
                             </TableCell>
@@ -93,9 +89,9 @@ const CompanyDesignList: React.FC<CompanyDesignGridProps> = ({companyDesigns, on
             </Table>
 
             <DesignImageDialog
-                openDialog={openDialog}
-                closeDialog={() => setOpenDialog(false)}
-                concernedCompanyDesign={concernedCompanyDesign}
+                openDialog={companyDesignDialog.open}
+                closeDialog={companyDesignDialog.closeDialog}
+                concernedCompanyDesign={companyDesignDialog.data}
                 onAddDesignImage={handleAddDesignImage}
             />
         </>

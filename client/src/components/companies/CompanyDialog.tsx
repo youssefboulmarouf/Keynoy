@@ -21,7 +21,9 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
     const [companyPhone, setCompanyPhone] = useState<string>("");
     const [companyLocation, setCompanyLocation] = useState<string>("");
     const [companyDesigns, setCompanyDesigns] = useState<CompanyDesignJson[]>([]);
-    const [openCompanyDesignDialog, setCompanyDesignDialog] = useState<boolean>(false);
+
+    const companyDesignDialog = useDialogController<null>(null);
+
     const {addCompany, editCompany, removeCompany} = useCompaniesContext();
 
     useEffect(() => {
@@ -105,7 +107,7 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
                             <TableCallToActionButton
                                 fullwidth={true}
                                 callToActionText="Ajouter Design"
-                                callToActionFunction={() => {setCompanyDesignDialog(true)}}
+                                callToActionFunction={() => {companyDesignDialog.openDialog(ModalTypeEnum.ADD, null)}}
                             />
                             <CompanyDesignList
                                 companyDesigns={companyDesigns}
@@ -123,11 +125,12 @@ const CompanyDialog: React.FC<CompanyDialogProps> = ({concernedCompany, dialogTy
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <CompanyDesignDialog
                 concernedCompany={concernedCompany}
                 companyDesigns={companyDesigns}
-                openDialog={openCompanyDesignDialog}
-                closeDialog={() => setCompanyDesignDialog(false)}
+                openDialog={companyDesignDialog.open}
+                closeDialog={companyDesignDialog.closeDialog}
                 addDesign={setCompanyDesigns}
             />
         </>

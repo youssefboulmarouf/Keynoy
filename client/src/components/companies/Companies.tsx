@@ -9,6 +9,7 @@ import CompanyDialog from "./CompanyDialog";
 import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 import CompaniesList from "./CompaniesList";
 import {useCompaniesContext} from "../../context/CompaniesContext";
+import {useDialogController} from "../common/useDialogController";
 
 const bCrumb = [
     {
@@ -26,25 +27,15 @@ interface CompaniesProps {
 
 const Companies: React.FC<CompaniesProps> = ({type}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedCompany, setConcernedCompany] = useState<CompanyJson>({
+    const companyDialog = useDialogController<CompanyJson>({
         id: 0,
         name: "",
         companyType: "",
         phone: "",
         location: "",
         companyDesigns: []
-    });
+    })
     const {companies, loading, error} = useCompaniesContext();
-
-    const handleOpenDialogType = (type: ModalTypeEnum, company: CompanyJson) => {
-        console.log("handleOpenDialogType", type);
-        console.log("CompanyJson", company);
-        setConcernedCompany(company);
-        setDialogType(type);
-        setOpenDialog(true);
-    };
 
     const filteredCompanies = companies?.filter(c =>
         c.companyType === type && (
@@ -65,7 +56,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText={`Ajouter ${type}`}
-                                callToActionFunction={() => handleOpenDialogType(
+                                callToActionFunction={() => companyDialog.openDialog(
                                     ModalTypeEnum.ADD,
                                     {
                                         id: 0,
@@ -82,9 +73,9 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <CompaniesList
                                 loading={loading}
                                 error={error}
-                                type={type}
+                                companyType={type}
                                 data={filteredCompanies}
-                                handleOpenDialogType={handleOpenDialogType}
+                                handleOpenDialogType={companyDialog.openDialog}
                             />
                         </Box>
                     </CardContent>
@@ -92,11 +83,11 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
             </Grid>
 
             <CompanyDialog
-                concernedCompany={concernedCompany}
-                dialogType={dialogType}
+                concernedCompany={companyDialog.data}
+                dialogType={companyDialog.type}
                 companyType={type}
-                openDialog={openDialog}
-                closeDialog={() => setOpenDialog(false)}
+                openDialog={companyDialog.open}
+                closeDialog={companyDialog.closeDialog}
             />
         </>
     );
