@@ -26,6 +26,30 @@ export enum CompanyTypeEnum {
     CUSTOMERS = "Client",
 }
 
+export type ProductTypeJson = {
+    id: number;
+    name: string;
+    isSellable: boolean;
+    isPaint: boolean;
+};
+
+export type ProductJson = {
+    id: number;
+    name: string;
+    productTypeId: number;
+    productVariations: ProductVariationJson[];
+}
+
+export type ProductVariationJson = {
+    id: number;
+    productId: number;
+    color: ColorJson;
+    name: string;
+    size: string;
+    quantity: number;
+    threshold: number;
+}
+
 export type ExpenseJson = {
     id: number;
     name: string;
@@ -66,12 +90,6 @@ export type OrderJson = {
     orderLines: OrderLineJson[];
 }
 
-export type ProductTypeJson = {
-    id: number;
-    name: string;
-    sellable: boolean;
-};
-
 export type ColorJson = {
     id: number;
     name: string;
@@ -97,15 +115,7 @@ export enum ColorEnum {
     UNKNOWN = "unknown",
 }
 
-export type ProductJson = {
-    id: number;
-    name: string;
-    size: string;
-    productTypeId: number;
-    colors: ColorJson[];
-    threshold: number;
-    totalQuantity: number;
-}
+
 
 export type ShippingJson = {
     orderId: number;
