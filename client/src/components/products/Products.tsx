@@ -4,12 +4,13 @@ import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableSearch from "../common/TableSearch";
 import TableCallToActionButton from "../common/TableCallToActionButton";
-import {ModalTypeEnum, ProductJson} from "../../model/KeynoyModels";
+import {ModalTypeEnum, ProductJson, ProductVariationJson} from "../../model/KeynoyModels";
 import Box from "@mui/material/Box";
 import ProductDialog from "./ProductDialog";
 import ProductsList from "./ProductsList";
 import {useProductsContext} from "../../context/ProductsContext";
 import {useProductTypesContext} from "../../context/ProductTypesContext";
+import {useDialogController} from "../common/useDialogController";
 
 const bCrumb = [
     {
@@ -23,19 +24,12 @@ const bCrumb = [
 
 const Products: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [openDialog, setOpenDialog] = useState<boolean>(false);
-    const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedProduct, setConcernedProduct] = useState<ProductJson>(
-        {id: 0, name: "", size: "", productTypeId: 0, colors: [], threshold: 0, totalQuantity: 0}
-    );
     const {products, loading: loadingProductsData, error: errorProductsData} = useProductsContext();
     const {productTypes, loading: loadingProductTypesData, error: errorProductsTypesData} = useProductTypesContext();
 
-    const handleOpenDialogType = (type: ModalTypeEnum, product: ProductJson) => {
-        setConcernedProduct(product);
-        setDialogType(type);
-        setOpenDialog(true);
-    };
+    const productDialog = useDialogController<ProductJson>(
+        {id: 0, name: "", productTypeId: 0, productVariations: []}
+    );
 
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,9 +47,9 @@ const Products: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Produit"
-                                callToActionFunction={() => handleOpenDialogType(
+                                callToActionFunction={() => productDialog.openDialog(
                                     ModalTypeEnum.ADD,
-                                    {id: 0, name: "", size: "", productTypeId: 0, colors: [], threshold: 0, totalQuantity: 0}
+                                    {id: 0, name: "", productTypeId: 0, productVariations: []}
                                 )}
                             />
                         </Stack>
@@ -67,7 +61,7 @@ const Products: React.FC = () => {
                                 errorProductsTypesData={errorProductsTypesData}
                                 data={filteredProducts}
                                 productTypesData={productTypes}
-                                handleOpenDialogType={handleOpenDialogType}
+                                handleOpenDialogType={productDialog.openDialog}
                             />
                         </Box>
                     </CardContent>
@@ -75,11 +69,11 @@ const Products: React.FC = () => {
             </Grid>
 
             <ProductDialog
-                concernedProduct={concernedProduct}
+                concernedProduct={productDialog.data}
                 productsType={productTypes}
-                dialogType={dialogType}
-                openDialog={openDialog}
-                closeDialog={() => setOpenDialog(false)}
+                dialogType={productDialog.type}
+                openDialog={productDialog.open}
+                closeDialog={productDialog.closeDialog}
             />
         </>
     );
