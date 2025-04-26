@@ -1,9 +1,8 @@
-import {BaseService} from "../utilities/BaseService";
 import {ProductJson} from "./ProductJson";
-import NotFoundError from "../utilities/errors/NotFoundError";
-import BadRequestError from "../utilities/errors/BadRequestError";
-import {ColorJson} from "../color/ColorJson";
-import {ProductVariationService} from "./product-variation/ProductVariationService";
+import {BaseService} from "../../utilities/BaseService";
+import {ProductVariationService} from "../product-variation/ProductVariationService";
+import NotFoundError from "../../utilities/errors/NotFoundError";
+import BadRequestError from "../../utilities/errors/BadRequestError";
 
 export class ProductService extends BaseService {
     private readonly productVariationService: ProductVariationService;
@@ -124,20 +123,20 @@ export class ProductService extends BaseService {
         // });
     }
 
-    private async setProductColors(productId: number, colors: ColorJson[]): Promise<ColorJson[]> {
-        // await this.prisma.productColor.deleteMany({ where: { productId } });
-        //
-        // if (!colors?.length) return [];
-        //
-        // await this.prisma.productColor.createMany({
-        //     data: colors.map((c) => ({
-        //         productId,
-        //         colorId: c.getId()
-        //     })),
-        //     skipDuplicates: true
-        // });
-        //
-        // return await this.colorService.getByProductId(productId);
-        return [];
-    }
+    // private async setProductColors(productId: number, colors: ColorJson[]): Promise<ColorJson[]> {
+    //     // await this.prisma.productColor.deleteMany({ where: { productId } });
+    //     //
+    //     // if (!colors?.length) return [];
+    //     //
+    //     // await this.prisma.productColor.createMany({
+    //     //     data: colors.map((c) => ({
+    //     //         productId,
+    //     //         colorId: c.getId()
+    //     //     })),
+    //     //     skipDuplicates: true
+    //     // });
+    //     //
+    //     // return await this.colorService.getByProductId(productId);
+    //     return [];
+    // }
 }

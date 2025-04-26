@@ -1,7 +1,7 @@
 import express, {Request, Response} from "express";
 import {ProductService} from "./ProductService";
 import {ProductJson} from "./ProductJson";
-import handleAsync from "../utilities/HandleAsync";
+import handleAsync from "../../utilities/HandleAsync";
 
 const router = express.Router();
 const productService = new ProductService();

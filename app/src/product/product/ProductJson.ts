@@ -1,4 +1,4 @@
-import {ProductVariationJson} from "./product-variation/ProductVariationJson";
+import {ProductVariationJson} from "../product-variation/ProductVariationJson";
 
 export class ProductJson {
     private readonly id: number;
