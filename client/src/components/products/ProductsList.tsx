@@ -1,24 +1,26 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
-import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
 import EditButton from "../common/buttons/EditButton";
 import DeleteButton from "../common/buttons/DeleteButton";
 import LoadingComponent from "../common/LoadingComponent";
+import {usePaginationController} from "../common/usePaginationController";
 
 interface ProductsListProps {
     products: ProductJson[];
-    productTypesData: ProductTypeJson[] | undefined;
+    productTypes: ProductTypeJson[] | undefined;
     openDialogWithType: (type: ModalTypeEnum, product: ProductJson) => void;
     isLoading: boolean;
 }
 
 const ProductsList: React.FC<ProductsListProps> = ({
     products,
-    productTypesData,
+    productTypes,
     openDialogWithType,
     isLoading
 }) => {
+    const paginationController = usePaginationController(products.length);
 
     if (isLoading) return <LoadingComponent message="Chargement de produit" />;
     if (products.length === 0) return <Typography>Aucun Produit Trouver</Typography>;
@@ -34,12 +36,14 @@ const ProductsList: React.FC<ProductsListProps> = ({
                 </TableRow>
             </TableHead>
             <TableBody>
-                {products.map((product) => (
+                {(paginationController.rowsPerPage > 0
+                    ? products.slice(paginationController.sliceFrom(), paginationController.sliceTo())
+                    : products).map((product) => (
                     <TableRow key={product.id}>
                         <TableCell>{product.id}</TableCell>
                         <TableCell>{product.name}</TableCell>
                         <TableCell>
-                            {productTypesData?.find(pt => pt.id === product.productTypeId)?.name}
+                            {productTypes?.find(pt => pt.id === product.productTypeId)?.name}
                         </TableCell>
                         <TableCell align="right">
                             <EditButton
@@ -54,6 +58,18 @@ const ProductsList: React.FC<ProductsListProps> = ({
                     </TableRow>
                 ))}
             </TableBody>
+            <TableFooter>
+                <TableRow>
+                    <TablePagination
+                        rowsPerPageOptions={paginationController.rowsPerPageOptions}
+                        count={paginationController.count}
+                        rowsPerPage={paginationController.rowsPerPage}
+                        page={paginationController.page}
+                        onPageChange={paginationController.changePage}
+                        onRowsPerPageChange={paginationController.changeRowsPerPage}
+                    />
+                </TableRow>
+            </TableFooter>
         </Table>
     );
 }
