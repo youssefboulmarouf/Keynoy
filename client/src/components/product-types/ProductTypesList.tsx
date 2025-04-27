@@ -67,11 +67,11 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({loading, error, data
                             <TableCell align="right">
                                 <EditButton
                                     tooltipText={"Modifier Type Produit"}
-                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, type)}
+                                    openDialogWithType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, type)}
                                 />
                                 <DeleteButton
                                     tooltipText={"Supprimer Type Produit"}
-                                    handleOpenDialogType={() => handleOpenDialogType(ModalTypeEnum.DELETE, type)}
+                                    openDialogWithType={() => handleOpenDialogType(ModalTypeEnum.DELETE, type)}
                                 />
                             </TableCell>
                         </TableRow>
