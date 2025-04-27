@@ -1,132 +1,116 @@
 import React, {FC, useEffect, useState} from "react";
-import {ModalTypeEnum, ProductJson, ProductTypeJson, ProductVariationJson} from "../../model/KeynoyModels";
-import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
+import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
+import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import {useProductsContext} from "../../context/ProductsContext";
-import TableCallToActionButton from "../common/TableCallToActionButton";
-import ProductVariationList from "./product-variation/ProductVariationList";
-import ProductVariantDialog from "./product-variation/ProductVariationDialog";
-import {useColorContext} from "../../context/ColorsContext";
 import {getActionButton} from "../common/Utilities";
-import {useDialogController} from "../common/useDialogController";
+import FormLabel from "../common/FormLabel";
+import LoadingComponent from "../common/LoadingComponent";
+import {resolveObjectURL} from "node:buffer";
 
 interface ProductDialogProps {
-    concernedProduct: ProductJson;
+    selectedProduct: ProductJson;
     productsType: ProductTypeJson[];
     dialogType: ModalTypeEnum;
     openDialog: boolean;
     closeDialog: () => void;
+    addProduct: (productJson: ProductJson) => void;
+    editProduct: (productJson: ProductJson) => void;
+    removeProduct: (productJson: ProductJson) => void;
 }
 
-const ProductDialog: FC<ProductDialogProps> = ({concernedProduct, productsType, dialogType, openDialog, closeDialog}) => {
-    const {colors} = useColorContext();
+const ProductDialog: FC<ProductDialogProps> = ({
+    selectedProduct,
+    productsType,
+    dialogType,
+    openDialog,
+    closeDialog,
+    addProduct,
+    editProduct,
+    removeProduct
+}) => {
     const [productName, setProductName] = useState<string>("");
     const [productType, setProductType] = useState<ProductTypeJson | null>(null);
-    const [productVariations, setProductVariations] = useState<ProductVariationJson[]>([]);
-
-    const variationDialog = useDialogController<ProductVariationJson>(
-        { id: 0, name: "", productId: concernedProduct.id, quantity: 0, threshold: 0, size: "", color: colors[0] }
-    );
-
-    const {addProduct, editProduct, removeProduct} = useProductsContext();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        setProductName(concernedProduct.name);
-        setProductType(productsType.find(pt => pt.id === concernedProduct.productTypeId) || null);
-        setProductVariations(concernedProduct.productVariations)
-    }, [concernedProduct]);
+        setProductName(selectedProduct.name);
+        setProductType(productsType.find(pt => pt.id === selectedProduct.productTypeId) || null);
+    }, [selectedProduct]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!productType) return;
+
+        setIsLoading(true);
+
         if (dialogType === ModalTypeEnum.DELETE) {
-            removeProduct(concernedProduct);
-            closeDialog()
+            await removeProduct(selectedProduct);
         } else if (dialogType === ModalTypeEnum.ADD) {
-            addProduct({
+            await addProduct({
                 id: 0,
                 name: productName,
-                productTypeId: productType?.id ?? 0,
-                productVariations: productVariations
+                productTypeId: productType.id
             });
-            closeDialog()
         } else {
-            editProduct({
-                id: concernedProduct.id,
+            await editProduct({
+                id: selectedProduct.id,
                 name: productName,
-                productTypeId: productType?.id ?? 0,
-                productVariations: productVariations
+                productTypeId: productType.id
             });
-            closeDialog()
         }
-    }
 
-    const actionButton = getActionButton(dialogType, handleSubmit, `${dialogType} Produit`);
+        closeDialog();
+        setIsLoading(false);
+    };
+
+    const actionButton = getActionButton(
+        dialogType,
+        handleSubmit,
+        `${dialogType} Produit`,
+        !productType || productName === "" || isLoading
+    );
 
     return (
-        <>
-            <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '900px', maxWidth: '900px'}}}>
-                <DialogTitle sx={{ mt: 2 }}>{dialogType} Produit: {concernedProduct.name}</DialogTitle>
-                <DialogContent>
+        <Dialog open={openDialog} onClose={() => closeDialog()} PaperProps={{sx: {width: '500px', maxWidth: '500px'}}}>
+            <DialogTitle sx={{ mt: 2 }}>{dialogType} Produit: {selectedProduct.name}</DialogTitle>
+            <DialogContent>
+                {isLoading ? (
+                    <LoadingComponent message="Action en cours" />
+                ) : (
+                    <Stack spacing={2}>
+                        <FormLabel>Id</FormLabel>
+                        <TextField fullWidth value={selectedProduct.id === 0 ? "" : selectedProduct.id} disabled />
 
-                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Id</Typography>
-                    <TextField fullWidth value={concernedProduct.id === 0 ? "" : concernedProduct.id} disabled/>
+                        <FormLabel>Nom Produit</FormLabel>
+                        <TextField
+                            fullWidth
+                            value={productName}
+                            onChange={(e: any) => setProductName(e.target.value)}
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
 
-                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Nom Produit</Typography>
-                    <TextField
-                        fullWidth
-                        value={productName}
-                        onChange={(e: any) => setProductName(e.target.value)}
-                        disabled={dialogType === ModalTypeEnum.DELETE}
-                    />
-
-                    <Typography variant="subtitle1" fontWeight={600} component="label" sx={{ display: "flex", mt: 2 }}>Type Produit</Typography>
-                    <Autocomplete
-                        options={productsType}
-                        fullWidth
-                        getOptionKey={(options) => options.id}
-                        getOptionLabel={(options) => options.name}
-                        value={productType}
-                        onChange={(event: React.SyntheticEvent, newValue: ProductTypeJson | null) =>
-                            setProductType(newValue)
-                        }
-                        renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
-                        disabled={dialogType === ModalTypeEnum.DELETE}
-                        sx={{ mb: 2 }}
-                    />
-
-                    <TableCallToActionButton
-                        fullwidth={true}
-                        callToActionText="Ajouter Variation"
-                        callToActionFunction={() => variationDialog.openDialog(
-                            ModalTypeEnum.ADD,
-                            {id: 0, name: "", productId: concernedProduct.id, quantity: 0, threshold: 0, size: "", color: colors[0]}
-                        )}
-                    />
-                    <ProductVariationList
-                        productVariations={productVariations}
-                        onVariationAction={variationDialog.openDialog}
-                    />
-
-                </DialogContent>
-                <DialogActions>
-                    {actionButton}
-                    <Button variant="outlined" onClick={() => closeDialog()}>
-                        Cancel
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            <ProductVariantDialog
-                concernedProductVariant={variationDialog.data}
-                productVariations={productVariations}
-                product={concernedProduct}
-                colors={colors}
-                openVariationDialog={variationDialog.open}
-                closeDialog={variationDialog.closeDialog}
-                dialogType={variationDialog.type}
-                setVariation={setProductVariations}
-            />
-        </>
+                        <FormLabel>Type Produit</FormLabel>
+                        <Autocomplete
+                            options={productsType}
+                            fullWidth
+                            getOptionLabel={(options) => options.name}
+                            value={productType}
+                            onChange={(event: React.SyntheticEvent, newValue: ProductTypeJson | null) =>
+                                setProductType(newValue)
+                            }
+                            renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
+                    </Stack>
+                )}
+            </DialogContent>
+            <DialogActions>
+                {actionButton}
+                <Button variant="outlined" onClick={() => closeDialog()}>
+                    Cancel
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 }
 
