@@ -4,12 +4,12 @@ import React from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import {ButtonProps} from "./ButtonProps";
 
-const EditButton: React.FC<ButtonProps> = ({tooltipText, handleOpenDialogType, disable = false}) => {
+const EditButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disable = false}) => {
     return (
         <Tooltip title={tooltipText}>
             <IconButton
                 color="warning"
-                onClick={handleOpenDialogType}
+                onClick={openDialogWithType}
                 disabled={disable}
             >
                 <EditIcon width={22} />

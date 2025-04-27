@@ -4,12 +4,12 @@ import {Tooltip} from "@mui/material";
 import React from "react";
 import {ButtonProps} from "./ButtonProps";
 
-const DeleteButton: React.FC<ButtonProps> = ({tooltipText, handleOpenDialogType, disable = false}) => {
+const DeleteButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disable = false}) => {
     return (
         <Tooltip title={tooltipText}>
             <IconButton
                 color="error"
-                onClick={handleOpenDialogType}
+                onClick={openDialogWithType}
                 disabled={disable}
             >
                 <DeleteIcon width={22} />
