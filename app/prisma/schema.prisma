@@ -112,6 +112,7 @@ model ProductVariation {
   id        Int @id @default(autoincrement())
   productId Int
   colorId   Int
+  name      String
   size      String
   quantity  Int
   threshold Int
