@@ -25,9 +25,9 @@ const ProductTypes: React.FC = () => {
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
     const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0, isSellable: false, isPaint: false});
-    const { productTypes, loading, error } = useProductTypesContext();
+    const { productTypes, loading } = useProductTypesContext();
 
-    const handleOpenDialogType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
+    const openDialogWithType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
         setConcernedProductType(productType);
         setDialogType(type);
         setOpenDialog(true);
@@ -48,15 +48,14 @@ const ProductTypes: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Type Produit"
-                                callToActionFunction={() => handleOpenDialogType(ModalTypeEnum.ADD, {name: "", id: 0, isSellable: false, isPaint: false})}
+                                callToActionFunction={() => openDialogWithType(ModalTypeEnum.ADD, {name: "", id: 0, isSellable: false, isPaint: false})}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
                             <ProductTypesList
-                                loading={loading}
-                                error={error}
-                                data={filteredProductTypes}
-                                handleOpenDialogType={handleOpenDialogType}
+                                isLoading={loading}
+                                productTypes={filteredProductTypes}
+                                openDialogWithType={openDialogWithType}
                             />
                         </Box>
                     </CardContent>
