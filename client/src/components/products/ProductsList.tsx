@@ -6,6 +6,7 @@ import EditButton from "../common/buttons/EditButton";
 import DeleteButton from "../common/buttons/DeleteButton";
 import LoadingComponent from "../common/LoadingComponent";
 import {usePaginationController} from "../common/usePaginationController";
+import Pagination from "../common/Pagination";
 
 interface ProductsListProps {
     products: ProductJson[];
@@ -20,7 +21,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
     openDialogWithType,
     isLoading
 }) => {
-    const paginationController = usePaginationController(products.length);
+    const paginationController = usePaginationController<ProductJson>(products);
 
     if (isLoading) return <LoadingComponent message="Chargement de produit" />;
     if (products.length === 0) return <Typography>Aucun Produit Trouver</Typography>;
@@ -36,9 +37,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
                 </TableRow>
             </TableHead>
             <TableBody>
-                {(paginationController.rowsPerPage > 0
-                    ? products.slice(paginationController.sliceFrom(), paginationController.sliceTo())
-                    : products).map((product) => (
+                {paginationController.data.map((product) => (
                     <TableRow key={product.id}>
                         <TableCell>{product.id}</TableCell>
                         <TableCell>{product.name}</TableCell>
@@ -58,18 +57,7 @@ const ProductsList: React.FC<ProductsListProps> = ({
                     </TableRow>
                 ))}
             </TableBody>
-            <TableFooter>
-                <TableRow>
-                    <TablePagination
-                        rowsPerPageOptions={paginationController.rowsPerPageOptions}
-                        count={paginationController.count}
-                        rowsPerPage={paginationController.rowsPerPage}
-                        page={paginationController.page}
-                        onPageChange={paginationController.changePage}
-                        onRowsPerPageChange={paginationController.changeRowsPerPage}
-                    />
-                </TableRow>
-            </TableFooter>
+            <Pagination paginationController={paginationController} />
         </Table>
     );
 }
