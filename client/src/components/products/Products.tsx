@@ -67,7 +67,7 @@ const Products: React.FC = () => {
                         <Box sx={{ overflowX: "auto" }} mt={3}>
                             <ProductsList
                                 products={filteredProducts}
-                                productTypesData={productTypes}
+                                productTypes={productTypes}
                                 openDialogWithType={productDialog.openDialog}
                                 isLoading={isLoadingProducts || isLoadingProductTypes}
                             />
