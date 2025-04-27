@@ -1,9 +1,7 @@
-import {ColorJson} from "../../color/ColorJson";
-
 export class ProductVariationJson {
     private readonly id: number;
     private readonly productId: number;
-    private readonly color: ColorJson;
+    private readonly colorId: number;
     private readonly name: string;
     private readonly size: string;
     private readonly quantity: number;
@@ -12,7 +10,7 @@ export class ProductVariationJson {
     constructor(
         id: number,
         productId: number,
-        color: ColorJson,
+        colorId: number,
         name: string,
         size: string,
         quantity: number,
@@ -20,7 +18,7 @@ export class ProductVariationJson {
     ) {
         this.id = id;
         this.productId = productId;
-        this.color = color;
+        this.colorId = colorId;
         this.name = name;
         this.size = size;
         this.quantity = quantity;
@@ -35,8 +33,8 @@ export class ProductVariationJson {
         return this.productId;
     }
 
-    public getColor(): ColorJson {
-        return this.color;
+    public getColorId(): number {
+        return this.colorId;
     }
 
     public getName(): string {
@@ -55,23 +53,11 @@ export class ProductVariationJson {
         return this.threshold;
     }
 
-    public static fromRequest(body: any): ProductVariationJson {
+    public static fromObject(body: any): ProductVariationJson {
         return new ProductVariationJson(
             Number(body.id),
             Number(body.productId),
-            ColorJson.from(body.color),
-            body.name,
-            body.size,
-            body.quantity,
-            body.threshold,
-        )
-    }
-
-    public static fromObjectAndColor(body: any, color: ColorJson): ProductVariationJson {
-        return new ProductVariationJson(
-            Number(body.id),
-            Number(body.productId),
-            color,
+            body.colorId,
             body.name,
             body.size,
             body.quantity,

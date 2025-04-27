@@ -5,25 +5,14 @@ import NotFoundError from "../../utilities/errors/NotFoundError";
 import BadRequestError from "../../utilities/errors/BadRequestError";
 
 export class ProductService extends BaseService {
-    private readonly productVariationService: ProductVariationService;
+    private readonly productVariationService = new ProductVariationService();
     constructor() {
         super(ProductService.name);
-        this.productVariationService = new ProductVariationService();
     }
 
     async get(): Promise<ProductJson[]> {
         this.logger.log("Get all products");
-
-        const productsData = await this.prisma.product.findMany();
-
-        return await Promise.all(
-            productsData.map(async product =>
-                ProductJson.fromObjectAndVariation(
-                    product,
-                    await this.productVariationService.getByProductId(product.id),
-                )
-            )
-        )
+        return (await this.prisma.product.findMany()).map(ProductJson.fromObject)
     }
 
     async getById(id: number): Promise<ProductJson> {
@@ -34,20 +23,7 @@ export class ProductService extends BaseService {
         });
         NotFoundError.throwIf(!productData, `Product with [id:${id}] not found`);
 
-        return ProductJson.fromObjectAndVariation(
-            productData,
-            await this.productVariationService.getByProductId(productData?.id ?? 0),
-        );
-    }
-
-    async getByProductTypeId(productTypeId: number): Promise<ProductJson[]> {
-        this.logger.log(`Get product by [productTypeId:${productTypeId}]`);
-
-        const productData = await this.prisma.product.findMany({
-            where: { productTypeId }
-        });
-
-        return productData.map(ProductJson.fromObject);
+        return ProductJson.fromObject(productData);
     }
 
     async add(product: ProductJson): Promise<ProductJson> {
@@ -60,10 +36,9 @@ export class ProductService extends BaseService {
             }
         });
 
-        return ProductJson.fromObjectAndVariation(
-            productData,
-            await this.productVariationService.addMany(product.getProductVariations(), productData.id)
-        );
+        this.logger.log(`New product created with [id; ${productData.id}]`);
+
+        return ProductJson.fromObject(productData);
     };
 
     async update(productId: number, product: ProductJson): Promise<ProductJson> {
@@ -76,8 +51,6 @@ export class ProductService extends BaseService {
         this.logger.log(`Update existing product`, existingProduct);
         this.logger.log(`Product updated data`, product);
 
-        await this.productVariationService.deleteByProductId(productId);
-
         await this.prisma.product.update({
             where: { id: productId },
             data: {
@@ -86,15 +59,13 @@ export class ProductService extends BaseService {
             }
         })
 
-        await this.productVariationService.addMany(product.getProductVariations(), productId);
-
         return await this.getById(productId);
     }
 
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete product with [id=${id}]`);
 
-        await this.prisma.productVariation.deleteMany({ where: { productId: id } });
+        await this.productVariationService.deleteByProductId(id);
         await this.prisma.product.delete({
             where: { id }
         });
@@ -107,9 +78,13 @@ export class ProductService extends BaseService {
 
         await Promise.all(
             products.map(async (product) => {
-                await this.delete(product.getId())
+                await this.productVariationService.deleteByProductId(product.getId());
             })
         )
+
+        await this.prisma.product.deleteMany({
+            where: { productTypeId }
+        })
     }
 
     async updateQuantity(id: number, quantityDiff: number): Promise<void> {
@@ -121,6 +96,16 @@ export class ProductService extends BaseService {
         //         totalQuantity: { increment: quantityDiff }
         //     }
         // });
+    }
+
+    private async getByProductTypeId(productTypeId: number): Promise<ProductJson[]> {
+        this.logger.log(`Get product by [productTypeId:${productTypeId}]`);
+
+        const productData = await this.prisma.product.findMany({
+            where: { productTypeId }
+        });
+
+        return productData.map(ProductJson.fromObject);
     }
 
     // private async setProductColors(productId: number, colors: ColorJson[]): Promise<ColorJson[]> {
