@@ -1,11 +1,12 @@
 import express, { Request, Response } from "express";
-import ProductResource from "./product/ProductResource";
+import ProductResource from "./product/product/ProductResource";
 import ProductTypeResource from "./product/product-type/ProductTypeResource";
 import OrderResource from "./order/OrderResource";
 import ExpenseResource from "./expense/ExpenseResource";
 import ShippingResource from "./shipping/ShippingResource";
 import CompanyResource from "./company/CompanyResource";
 import ColorResource from "./color/ColorResource";
+import ProductVariationResource from "./product/product-variation/ProductVariationResource";
 
 const router = express.Router();
 
@@ -15,10 +16,12 @@ router.get("/", (req: Request, res: Response) => {
 
 router.use("/orders", OrderResource);
 router.use("/shipping", ShippingResource);
-router.use("/products", ProductResource);
-router.use("/product-types", ProductTypeResource);
 router.use("/colors", ColorResource);
 router.use("/expenses", ExpenseResource);
 router.use("/companies", CompanyResource);
+
+router.use("/product-variations", ProductVariationResource);
+router.use("/products", ProductResource);
+router.use("/product-types", ProductTypeResource);
 
 export default router;
