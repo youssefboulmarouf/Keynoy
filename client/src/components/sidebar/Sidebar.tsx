@@ -3,7 +3,7 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import NavHeader from "./NavHeader";
 import NavItem from "./NavItem";
-import {Menu, appMenuItems, partnerMenuItems, productMenuItems} from "../common/Menu";
+import {Menu, appMenuItems, partnerMenuItems, productMenuItems, customerMenuItems} from "../common/Menu";
 import React, {useState} from "react";
 import Logo from "../logo/Logo";
 
@@ -28,6 +28,11 @@ const Sidebar: React.FC = () => {
 
                             <NavHeader label="Produits"/>
                             {productMenuItems.map((item: Menu) => (
+                                <NavItem item={item} key={item.id} selectedItemId={selectedItemId} handleSelectedItem={handleSelectedItem} />
+                            ))}
+
+                            <NavHeader label="Clients"/>
+                            {customerMenuItems.map((item: Menu) => (
                                 <NavItem item={item} key={item.id} selectedItemId={selectedItemId} handleSelectedItem={handleSelectedItem} />
                             ))}
 

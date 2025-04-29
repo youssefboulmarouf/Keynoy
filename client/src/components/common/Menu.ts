@@ -29,12 +29,16 @@ export const appMenuItems: Menu[] = [
 export const productMenuItems: Menu[] = [
     {
         id: uniqueId(),
+        title: "Type Produits",
+        href: "/type-produits"
+    },{
+        id: uniqueId(),
         title: "Produits",
         href: "/produits"
     },{
         id: uniqueId(),
-        title: "Type Produits",
-        href: "/type-produits"
+        title: "Variations",
+        href: "/variations"
     }
 ];
 
@@ -45,12 +49,20 @@ export const partnerMenuItems: Menu[] = [
         href: "/fournisseurs"
     },{
         id: uniqueId(),
+        title: "Livreurs",
+        href: "/livreurs"
+    }
+];
+
+export const customerMenuItems: Menu[] = [
+    {
+        id: uniqueId(),
         title: "Clients",
         href: "/clients"
     },{
         id: uniqueId(),
-        title: "Livreurs",
-        href: "/livreurs"
+        title: "Designs",
+        href: "/designs"
     }
 ];
 
