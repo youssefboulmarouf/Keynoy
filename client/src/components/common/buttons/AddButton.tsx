@@ -4,12 +4,12 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import {ButtonProps} from "./ButtonProps";
 
-const AddButton: React.FC<ButtonProps> = ({tooltipText, handleOpenDialogType, disable = false}) => {
+const AddButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disable = false}) => {
     return (
         <Tooltip title={tooltipText}>
             <IconButton
                 color="primary"
-                onClick={handleOpenDialogType}
+                onClick={openDialogWithType}
                 disabled={disable}
             >
                 <AddIcon width={22} />
