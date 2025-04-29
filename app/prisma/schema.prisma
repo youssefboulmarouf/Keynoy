@@ -67,10 +67,9 @@ model Company {
   location    String?
   phone       String?
 
-  customerOrders Order[] @relation("CustomerOrders")
-  supplierOrders Order[] @relation("SupplierOrders")
+  orders         Order[]
   shipping       Shipping[]
-  companyDesigns  CompanyDesign[]
+  companyDesigns CompanyDesign[]
 }
 
 model CompanyDesign {

@@ -36,30 +36,33 @@ export type ProductJson = {
     id: number;
     name: string;
     productTypeId: number;
-    productVariations: ProductVariationJson[];
 }
 
 export type ProductVariationJson = {
     id: number;
     productId: number;
-    color: ColorJson;
+    colorId: number;
     name: string;
     size: string;
     quantity: number;
     threshold: number;
 }
 
-export type ExpenseJson = {
+export type OrderJson = {
     id: number;
-    name: string;
+    customerId: number;
+    supplierId: number;
+    orderType: OrderTypeEnum;
+    orderStatus: OrderStatusEnum;
     totalPrice: number;
     date: Date;
-    orderId: number;
+    orderLines: OrderLineJson[];
 }
 
 export type OrderLineJson = {
     orderId: number;
-    productId: number;
+    productVariation: ProductVariationJson;
+    companyDesign: CompanyDesignJson | null;
     quantity: number;
     unitPrice: number;
 }
@@ -78,15 +81,12 @@ export enum OrderTypeEnum {
     SELL = "Ventes",
 }
 
-export type OrderJson = {
+export type ExpenseJson = {
     id: number;
-    customerId: number;
-    supplierId: number;
-    orderType: OrderTypeEnum;
-    orderStatus: OrderStatusEnum;
+    name: string;
     totalPrice: number;
     date: Date;
-    orderLines: OrderLineJson[];
+    orderId: number;
 }
 
 export type ColorJson = {
@@ -94,27 +94,6 @@ export type ColorJson = {
     name: string;
     htmlCode: string;
 }
-
-export enum ColorEnum {
-    TRANSPARENT = "transparent",
-    RED = "red",
-    BLUE = "blue",
-    GREEN = "green",
-    YELLOW = "yellow",
-    GOLD = "gold",
-    ORANGE = "orange",
-    PURPLE = "purple",
-    BLACK = "black",
-    WHITE = "white",
-    GRAY = "gray",
-    PINK = "pink",
-    BROWN = "brown",
-    CYAN = "cyan",
-    MAGENTA = "magenta",
-    UNKNOWN = "unknown",
-}
-
-
 
 export type ShippingJson = {
     orderId: number;
