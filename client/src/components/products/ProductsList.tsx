@@ -1,7 +1,7 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
 import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
-import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
+import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/buttons/EditButton";
 import DeleteButton from "../common/buttons/DeleteButton";
 import LoadingComponent from "../common/LoadingComponent";

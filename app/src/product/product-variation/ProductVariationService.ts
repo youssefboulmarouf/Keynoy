@@ -32,6 +32,7 @@ export class ProductVariationService extends BaseService {
                 data: {
                     productId: productVariation.getProductId(),
                     colorId: productVariation.getColorId(),
+                    name: productVariation.getName(),
                     size: productVariation.getSize(),
                     quantity: productVariation.getQuantity(),
                     threshold: productVariation.getThreshold(),
@@ -57,6 +58,7 @@ export class ProductVariationService extends BaseService {
                     productId: productVariation.getProductId(),
                     colorId: productVariation.getColorId(),
                     size: productVariation.getSize(),
+                    name: productVariation.getName(),
                     quantity: productVariation.getQuantity(),
                     threshold: productVariation.getThreshold(),
                 }

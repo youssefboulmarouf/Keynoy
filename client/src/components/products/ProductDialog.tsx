@@ -1,12 +1,10 @@
 import React, {FC, useEffect, useState} from "react";
 import {ModalTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
 import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import {getActionButton} from "../common/Utilities";
 import FormLabel from "../common/FormLabel";
 import LoadingComponent from "../common/LoadingComponent";
-import {resolveObjectURL} from "node:buffer";
 
 interface ProductDialogProps {
     selectedProduct: ProductJson;

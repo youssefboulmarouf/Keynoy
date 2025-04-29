@@ -1,23 +1,34 @@
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import React from "react";
-import {ModalTypeEnum, ProductVariationJson} from "../../../model/KeynoyModels";
-import DeleteButton from "../../common/buttons/DeleteButton";
-import EditButton from "../../common/buttons/EditButton";
-import ColorBox from "../../common/ColorBox";
+import {ColorJson, ModalTypeEnum, ProductJson, ProductVariationJson} from "../../model/KeynoyModels";
+import DeleteButton from "../common/buttons/DeleteButton";
+import EditButton from "../common/buttons/EditButton";
+import ColorBox from "../common/ColorBox";
+import {usePaginationController} from "../common/usePaginationController";
+import Pagination from "../common/Pagination";
 
 interface ProductVariationListProps {
     productVariations: ProductVariationJson[];
-    onVariationAction: (modalType: ModalTypeEnum, variant: ProductVariationJson) => void;
+    products: ProductJson[];
+    colors: ColorJson[];
+    openDialogWithType: (modalType: ModalTypeEnum, variant: ProductVariationJson) => void;
 }
 
-const ProductVariationList: React.FC<ProductVariationListProps> = ({productVariations, onVariationAction}) => {
+const ProductVariationList: React.FC<ProductVariationListProps> = ({
+    productVariations,
+    products,
+    colors,
+    openDialogWithType
+}) => {
+    const paginationController = usePaginationController<ProductVariationJson>(productVariations);
     return (
         <Table>
             <TableHead>
                 <TableRow>
                     <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Nom</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Nom Variation</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Nom Produit</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Size</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Couleur</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Quantite</Typography></TableCell>
@@ -26,7 +37,7 @@ const ProductVariationList: React.FC<ProductVariationListProps> = ({productVaria
                 </TableRow>
             </TableHead>
             <TableBody>
-                {productVariations.map((variation, index) => (
+                {paginationController.data.map((variation, index) => (
                     <TableRow key={variation.id}>
                         <TableCell>
                             <Typography color="textSecondary" fontWeight="400">
@@ -40,13 +51,16 @@ const ProductVariationList: React.FC<ProductVariationListProps> = ({productVaria
                         </TableCell>
                         <TableCell>
                             <Typography color="textSecondary" fontWeight="400">
-                                {variation.size}
+                                {products.find(p => p.id === variation.productId)?.name}
                             </Typography>
                         </TableCell>
                         <TableCell>
                             <Typography color="textSecondary" fontWeight="400">
-                                <ColorBox htmlCode={variation.color.htmlCode}/>
+                                {variation.size}
                             </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <ColorBox htmlCode={colors.find(c => c.id === variation.colorId)?.htmlCode ?? ""}/>
                         </TableCell>
                         <TableCell>
                             <Typography color="textSecondary" fontWeight="400">
@@ -61,16 +75,17 @@ const ProductVariationList: React.FC<ProductVariationListProps> = ({productVaria
                         <TableCell align="right">
                             <EditButton
                                 tooltipText={`Modifier Variation`}
-                                handleOpenDialogType={() => onVariationAction(ModalTypeEnum.UPDATE, variation)}
+                                openDialogWithType={() => openDialogWithType(ModalTypeEnum.UPDATE, variation)}
                             />
                             <DeleteButton
                                 tooltipText={`Supprimer Variation`}
-                                handleOpenDialogType={() => onVariationAction(ModalTypeEnum.DELETE, variation)}
+                                openDialogWithType={() => openDialogWithType(ModalTypeEnum.DELETE, variation)}
                             />
                         </TableCell>
                     </TableRow>
                 ))}
             </TableBody>
+            <Pagination paginationController={paginationController}/>
         </Table>
     );
 }
