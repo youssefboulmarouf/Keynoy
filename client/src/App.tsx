@@ -17,6 +17,10 @@ import {ProductTypesProvider} from "./context/ProductTypesContext";
 import {ProductsProvider} from "./context/ProductsContext";
 import {ColorsProvider} from "./context/ColorsContext";
 import {CompaniesProvider} from "./context/CompaniesContext";
+import ProductVariations from "./components/product-variation/ProductVariations";
+import {ProductVariationProvider} from "./context/ProductVariationContext";
+import {CompaniesDesignsProvider} from "./context/CompaniesDesignsContext";
+import CompanyDesign from "./components/company-design/CompanyDesign";
 
 const PageWrapper = styled("div")(() => ({
     display: "flex",
@@ -47,29 +51,36 @@ const App: React.FC = () => {
                         <Header />
                         <Container sx={{maxWidth: "100%!important",}}>
                             <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
-                                <CompaniesProvider>
-                                    <ProductTypesProvider>
-                                        <ColorsProvider>
+                                <CompaniesDesignsProvider>
+                                    <CompaniesProvider>
+                                        <ProductTypesProvider>
                                             <ProductsProvider>
-                                                <Routes>
-                                                    <Route path="/" element={<Dashboard />} />
+                                                <ProductVariationProvider>
+                                                    <ColorsProvider>
+                                                        <Routes>
+                                                            <Route path="/" element={<Dashboard />} />
 
-                                                    <Route path="/ventes" element={<Orders type={OrderTypeEnum.SELL}/>} />
-                                                    <Route path="/achats" element={<Orders type={OrderTypeEnum.BUY}/>} />
+                                                            <Route path="/ventes" element={<Orders orderType={OrderTypeEnum.SELL}/>} />
+                                                            <Route path="/achats" element={<Orders orderType={OrderTypeEnum.BUY}/>} />
 
-                                                    <Route path="/charges" element={<Expenses />} />
+                                                            <Route path="/charges" element={<Expenses />} />
 
-                                                    <Route path="/produits" element={<Products />} />
-                                                    <Route path="/type-produits" element={<ProductTypes />} />
+                                                            <Route path="/type-produits" element={<ProductTypes />} />
+                                                            <Route path="/produits" element={<Products />} />
+                                                            <Route path="/variations" element={<ProductVariations />} />
 
-                                                    <Route path="/fournisseurs" element={<Companies type={CompanyTypeEnum.SHIPPERS}/>} />
-                                                    <Route path="/clients" element={<Companies  type={CompanyTypeEnum.CUSTOMERS}/>} />
-                                                    <Route path="/livreurs" element={<Companies  type={CompanyTypeEnum.SHIPPERS}/>} />
-                                                </Routes>
+                                                            <Route path="/clients" element={<Companies  companyType={CompanyTypeEnum.CUSTOMERS}/>} />
+                                                            <Route path="/designs" element={<CompanyDesign />} />
+
+                                                            <Route path="/fournisseurs" element={<Companies companyType={CompanyTypeEnum.SUPPLIERS}/>} />
+                                                            <Route path="/livreurs" element={<Companies  companyType={CompanyTypeEnum.SHIPPERS}/>} />
+                                                        </Routes>
+                                                    </ColorsProvider>
+                                                </ProductVariationProvider>
                                             </ProductsProvider>
-                                        </ColorsProvider>
-                                    </ProductTypesProvider>
-                                </CompaniesProvider>
+                                        </ProductTypesProvider>
+                                    </CompaniesProvider>
+                                </CompaniesDesignsProvider>
                             </Box>
                         </Container>
                     </PageWrapper>
