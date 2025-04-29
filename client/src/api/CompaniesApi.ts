@@ -4,7 +4,7 @@ export const fetchCompanies = async (): Promise<CompanyJson[]> => {
     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/companies`);
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to fetch product types');
+        throw new Error('Failed to fetch companies');
     }
     return res.json();
 };
@@ -17,7 +17,7 @@ export const createCompany = async (company: CompanyJson): Promise<CompanyJson> 
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to create product type');
+        throw new Error('Failed to create company');
     }
     return res.json();
 };
@@ -30,7 +30,7 @@ export const updateCompany = async (company: CompanyJson): Promise<CompanyJson> 
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to update product type');
+        throw new Error('Failed to update company');
     }
     return res.json();
 };
@@ -41,6 +41,6 @@ export const deleteCompany = async (company: CompanyJson): Promise<void> => {
     });
     if (!res.ok) {
         console.log(res);
-        throw new Error('Failed to update product type');
+        throw new Error('Failed to delete company');
     }
 };

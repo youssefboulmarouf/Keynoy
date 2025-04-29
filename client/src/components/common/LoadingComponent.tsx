@@ -9,7 +9,7 @@ const LoadingComponent: React.FC<LoadingComponentProps> = ({message}) => {
         <Box sx={{ textAlign: "center" }}>
             <CircularProgress />
             <Typography variant="body1" sx={{ mt: 2 }}>
-                {message}, please wait...
+                {message}, veuillez patienter...
             </Typography>
         </Box>
     );

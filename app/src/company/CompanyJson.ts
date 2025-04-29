@@ -45,22 +45,7 @@ export class CompanyJson {
         return this.location;
     }
 
-    public getCompanyDesigns(): CompanyDesignJson[] {
-        return this.companyDesigns;
-    }
-
-    public static fromRequest(body: any): CompanyJson {
-        return new CompanyJson(
-            Number(body.id),
-            body.name,
-            companyTypeFromString(body.companyType),
-            body.phone,
-            body.location,
-            body.companyDesigns.map(CompanyDesignJson.fromRequest),
-        )
-    }
-
-    public static fromObjectAndCompanyDesigns(body: any, designs: CompanyDesignJson[]): CompanyJson {
+    public static fromObject(body: any): CompanyJson {
         return new CompanyJson(
             Number(body.id),
             body.name,
