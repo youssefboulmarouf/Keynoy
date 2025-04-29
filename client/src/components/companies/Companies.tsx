@@ -22,10 +22,10 @@ const bCrumb = [
 ];
 
 interface CompaniesProps {
-    type: string;
+    companyType: string;
 }
 
-const Companies: React.FC<CompaniesProps> = ({type}) => {
+const Companies: React.FC<CompaniesProps> = ({companyType}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const companyDialog = useDialogController<CompanyJson>({
         id: 0,
@@ -38,7 +38,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
     const {companies, loading, error} = useCompaniesContext();
 
     const filteredCompanies = companies?.filter(c =>
-        c.companyType === type && (
+        c.companyType === companyType && (
             c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             c.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
             c.location.toLowerCase().includes(searchTerm.toLowerCase())
@@ -47,7 +47,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
 
     return (
         <>
-            <Breadcrumb title={type} items={bCrumb} />
+            <Breadcrumb title={companyType} items={bCrumb} />
             <Grid container mt={3}>
                 <Card sx={{padding: 0, borderColor: (theme) => theme.palette.divider}} variant="outlined">
                     <CardContent>
@@ -55,7 +55,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
                             <TableSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
                             <TableCallToActionButton
                                 fullwidth={false}
-                                callToActionText={`Ajouter ${type}`}
+                                callToActionText={`Ajouter ${companyType}`}
                                 callToActionFunction={() => companyDialog.openDialog(
                                     ModalTypeEnum.ADD,
                                     {
@@ -85,7 +85,7 @@ const Companies: React.FC<CompaniesProps> = ({type}) => {
             <CompanyDialog
                 concernedCompany={companyDialog.data}
                 dialogType={companyDialog.type}
-                companyType={type}
+                companyType={companyType}
                 openDialog={companyDialog.open}
                 closeDialog={companyDialog.closeDialog}
             />
