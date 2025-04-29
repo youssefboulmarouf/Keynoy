@@ -6,9 +6,7 @@ import BadRequestError from "../utilities/errors/BadRequestError";
 import {CompanyDesignService} from "./company-design/CompanyDesignService";
 
 export class CompanyService extends BaseService {
-
     private readonly companyDesignService: CompanyDesignService;
-
     constructor() {
         super(CompanyService.name);
         this.companyDesignService = new CompanyDesignService();
@@ -16,17 +14,7 @@ export class CompanyService extends BaseService {
 
     async get(): Promise<CompanyJson[]> {
         this.logger.log(`Get all companies`);
-
-        const companiesData = await this.prisma.company.findMany();
-
-        return await Promise.all(
-            companiesData.map(async c =>
-                CompanyJson.fromObjectAndCompanyDesigns(
-                    c,
-                    await this.companyDesignService.getByCompanyId(c.id)
-                )
-            )
-        )
+        return (await this.prisma.company.findMany()).map(CompanyJson.fromObject)
     }
 
     async getById(id: number): Promise<CompanyJson> {
@@ -37,10 +25,7 @@ export class CompanyService extends BaseService {
 
         NotFoundError.throwIf(!companyData, `Company with [id:${id}] not found`);
 
-        return CompanyJson.fromObjectAndCompanyDesigns(
-            companyData,
-            await this.companyDesignService.getByCompanyId(companyData?.id ?? 0)
-        );
+        return CompanyJson.fromObject(companyData);
     };
 
     async add(company: CompanyJson): Promise<CompanyJson> {
@@ -59,14 +44,7 @@ export class CompanyService extends BaseService {
 
         this.logger.log(`Created company with [id: ${companyData.id}]`);
 
-        if (company.getCompanyType() === CompanyTypeEnum.CUSTOMER) {
-            return CompanyJson.fromObjectAndCompanyDesigns(
-                companyData,
-                await this.companyDesignService.addMany(company.getCompanyDesigns(), companyData.id)
-            )
-        } else {
-            return CompanyJson.fromObjectAndCompanyDesigns(companyData, [])
-        }
+        return CompanyJson.fromObject(companyData)
     };
 
     async update(id: number, company: CompanyJson): Promise<CompanyJson> {
@@ -79,9 +57,7 @@ export class CompanyService extends BaseService {
         this.logger.log(`Update existing company`, existingCompany);
         this.logger.log(`Company updated data`, company);
 
-        await this.companyDesignService.deleteByCompanyId(id);
-
-        return CompanyJson.fromObjectAndCompanyDesigns(
+        return CompanyJson.fromObject(
             await this.prisma.company.update({
                 where: { id },
                 data: {
@@ -90,8 +66,7 @@ export class CompanyService extends BaseService {
                     phone: company.getPhone(),
                     location: company.getLocation()
                 }
-            }),
-            await this.companyDesignService.addMany(company.getCompanyDesigns(), id)
+            })
         );
     }
 

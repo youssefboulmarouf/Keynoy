@@ -32,10 +32,9 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
         name: "",
         companyType: "",
         phone: "",
-        location: "",
-        companyDesigns: []
+        location: ""
     })
-    const {companies, loading, error} = useCompaniesContext();
+    const {companies, addCompany, editCompany, removeCompany} = useCompaniesContext();
 
     const filteredCompanies = companies?.filter(c =>
         c.companyType === companyType && (
@@ -63,19 +62,16 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
                                         name: "",
                                         companyType: "",
                                         phone: "",
-                                        location: "",
-                                        companyDesigns: []
+                                        location: ""
                                     }
                                 )}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
                             <CompaniesList
-                                loading={loading}
-                                error={error}
-                                companyType={type}
-                                data={filteredCompanies}
-                                handleOpenDialogType={companyDialog.openDialog}
+                                companyType={companyType}
+                                companies={filteredCompanies}
+                                openCompanyDialogWithType={companyDialog.openDialog}
                             />
                         </Box>
                     </CardContent>
@@ -83,11 +79,14 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
             </Grid>
 
             <CompanyDialog
-                concernedCompany={companyDialog.data}
+                selectedCompany={companyDialog.data}
                 dialogType={companyDialog.type}
                 companyType={companyType}
                 openDialog={companyDialog.open}
                 closeDialog={companyDialog.closeDialog}
+                addCompany={addCompany}
+                editCompany={editCompany}
+                removeCompany={removeCompany}
             />
         </>
     );

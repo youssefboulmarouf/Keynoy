@@ -4,7 +4,6 @@ export type CompanyJson = {
     companyType: string;
     phone: string;
     location: string;
-    companyDesigns: CompanyDesignJson[];
 }
 
 export type CompanyDesignJson = {

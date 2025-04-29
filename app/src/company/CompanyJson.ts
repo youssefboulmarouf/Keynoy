@@ -7,7 +7,6 @@ export class CompanyJson {
     private readonly companyType: CompanyTypeEnum;
     private readonly phone: string;
     private readonly location: string;
-    private readonly companyDesigns: CompanyDesignJson[];
 
     constructor(
         id: number,
@@ -15,14 +14,12 @@ export class CompanyJson {
         companyType: CompanyTypeEnum,
         phone: string,
         location: string,
-        companyDesigns: CompanyDesignJson[],
     ) {
         this.id = id;
         this.name = name;
         this.companyType = companyType;
         this.phone = phone;
         this.location = location;
-        this.companyDesigns = companyDesigns;
     }
 
     public getId(): number {
@@ -52,7 +49,6 @@ export class CompanyJson {
             mapCompanyTypeToCompanyTypeEnum(body.companyType),
             body.phone,
             body.location,
-            designs,
         )
     }
 }
