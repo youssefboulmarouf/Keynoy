@@ -43,7 +43,6 @@ const ProductVariations: React.FC = () => {
     const {colors} = useColorContext();
 
     const filteredVariations = useMemo(() => {
-        // TODO Add variation name to filter
         return variations.filter(variation => {
             const searchTerm = filters.searchTerm.toLowerCase();
             const variationName = variation.name.toLowerCase();
@@ -55,7 +54,7 @@ const ProductVariations: React.FC = () => {
             const ProductNameMatchSearch = searchTerm ? ProductName.includes(searchTerm.toLowerCase()) : true;
             const variationIsPartOfProduct = filters.product ? variation.productId === filters.product.id : true;
 
-            return (variationSizeMatchSearch || ProductNameMatchSearch) && variationIsPartOfProduct;
+            return (variationNameMatchSearch || variationSizeMatchSearch || ProductNameMatchSearch) && variationIsPartOfProduct;
         }) || [];
     }, [filters, variations, products])
 
