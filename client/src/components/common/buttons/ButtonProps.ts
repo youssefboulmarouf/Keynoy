@@ -1,5 +1,5 @@
 export interface ButtonProps {
     tooltipText: string;
-    handleOpenDialogType: () => void;
+    openDialogWithType: () => void;
     disable?: boolean;
 }
