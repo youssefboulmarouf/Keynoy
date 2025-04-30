@@ -15,6 +15,7 @@ import ProductVariantDialog from "./ProductVariationDialog";
 interface FilterProps {
     searchTerm: string;
     product: ProductJson | null;
+    critical: boolean;
 }
 
 const bCrumb = [
@@ -28,7 +29,7 @@ const bCrumb = [
 ];
 
 const ProductVariations: React.FC = () => {
-    const [filters, setFilters] = useState<FilterProps>({searchTerm: "", product: null});
+    const [filters, setFilters] = useState<FilterProps>({searchTerm: "", product: null, critical: false});
     const variationDialog = useDialogController<ProductVariationJson>({
         id: 0,
         name: "",
@@ -53,8 +54,11 @@ const ProductVariations: React.FC = () => {
             const variationSizeMatchSearch = searchTerm ? variationSize.includes(searchTerm.toLowerCase()) : true;
             const ProductNameMatchSearch = searchTerm ? ProductName.includes(searchTerm.toLowerCase()) : true;
             const variationIsPartOfProduct = filters.product ? variation.productId === filters.product.id : true;
+            const variationIsCritical = filters.critical ? variation.quantity <= variation.threshold * 1.5 : true;
 
-            return (variationNameMatchSearch || variationSizeMatchSearch || ProductNameMatchSearch) && variationIsPartOfProduct;
+            return (variationNameMatchSearch || variationSizeMatchSearch || ProductNameMatchSearch)
+                && variationIsPartOfProduct
+                && variationIsCritical;
         }) || [];
     }, [filters, variations, products])
 

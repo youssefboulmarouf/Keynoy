@@ -1,11 +1,12 @@
 import React from "react";
-import {Autocomplete, Stack, TextField} from "@mui/material";
+import {Autocomplete, Checkbox, FormControlLabel, Stack, TextField} from "@mui/material";
 import TableSearch from "../common/TableSearch";
 import {ProductJson} from "../../model/KeynoyModels";
 
 interface FilterProps {
     searchTerm: string;
     product: ProductJson | null;
+    critical: boolean;
 }
 
 interface ProductVariationFiltersProps {
@@ -34,6 +35,18 @@ const ProductVariationFilter: React.FC<ProductVariationFiltersProps> = ({ filter
                 renderInput={(params) => <TextField {...params} label="Produit" />}
                 sx={{ minWidth: 180 }}
                 size="small"
+            />
+
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={filters.critical}
+                        onChange={(e) =>
+                            setFilters({ ...filters, critical: e.target.checked })
+                        }
+                    />
+                }
+                label="Critique (Quantite ≤ 1.5 × Seuil)"
             />
         </Stack>
     );

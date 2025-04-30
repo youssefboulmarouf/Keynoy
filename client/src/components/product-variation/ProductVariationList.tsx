@@ -7,6 +7,7 @@ import EditButton from "../common/buttons/EditButton";
 import ColorBox from "../common/ColorBox";
 import {usePaginationController} from "../common/usePaginationController";
 import Pagination from "../common/Pagination";
+import {useTheme} from "@mui/material/styles";
 
 interface ProductVariationListProps {
     productVariations: ProductVariationJson[];
@@ -21,7 +22,15 @@ const ProductVariationList: React.FC<ProductVariationListProps> = ({
     colors,
     openDialogWithType
 }) => {
+    const theme = useTheme();
     const paginationController = usePaginationController<ProductVariationJson>(productVariations);
+
+    const deduceRowColor = (variation: ProductVariationJson) => {
+        if (variation.quantity <= variation.threshold) return theme.palette.error.light;
+        if (variation.quantity <= 1.5*variation.threshold) return theme.palette.warning.light;
+        return "";
+    }
+
     return (
         <Table>
             <TableHead>
@@ -38,7 +47,7 @@ const ProductVariationList: React.FC<ProductVariationListProps> = ({
             </TableHead>
             <TableBody>
                 {paginationController.data.map((variation, index) => (
-                    <TableRow key={variation.id}>
+                    <TableRow key={variation.id} sx={{backgroundColor: deduceRowColor(variation)}}>
                         <TableCell>
                             <Typography color="textSecondary" fontWeight="400">
                                 {variation.id}
