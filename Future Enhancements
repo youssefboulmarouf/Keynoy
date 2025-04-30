@@ -1,0 +1,51 @@
+1 - Ability to track the status history
+    1.1 - Create a new `OrderStatusHistory` model
+        ```
+            model OrderStatusHistory {
+                id         Int      @id @default(autoincrement())
+                orderId    Int
+                fromStatus Int
+                toStatus   Int
+                changedAt  DateTime @default(now())
+                changedBy  String?
+
+                order      Order    @relation(fields: [orderId], references: [id])
+
+                @@index([orderId])
+            }
+        ```
+    1.2 - Adjust `Order` model to consider the `OrderStatusHistory`
+        ```
+            model Order {
+                id          Int              @id @default(autoincrement())
+                companyId   Int
+                orderType   OrderType
+                orderStatus Int              // Still using OrderStatusEnum values
+                totalPrice  Decimal          @db.Decimal(10, 2) @default(0.00)
+                date        DateTime
+
+                company     Company?         @relation(fields: [companyId], references: [id])
+                orderLine   OrderLine[]
+                shipping    Shipping?
+                statusHistory OrderStatusHistory[]
+            }
+        ```
+
+2 - Migrate `PaintType` enum to model for more flexibility (This will help with point 3)
+    ```
+        model PaintType {
+          id    Int     @id @default(autoincrement())
+          name  String  @unique
+          code  String  @unique // Optional short code like 'PVC', 'EAU'
+
+          orderLines OrderLine[]
+        }
+    ```
+
+3 - Split `Product` model to `PrintSupport`, `Tools`, and `Paint`
+    4.1 - `PrintSupport` (Sac, Mug, Papier Cartone, ...)
+    4.2 - `Tools` (Cadre, Raclete, ...)
+    4.3 - `Paint` (PVC, EAU, TONNER, ...)
+
+4 - Add support for PrintType (serigraphie, numeric, DTF, ...) in orders
+
