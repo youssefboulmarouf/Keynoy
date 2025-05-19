@@ -56,7 +56,7 @@ export class ShippingService extends BaseService {
         const data = await this.prisma.shipping.create({
             data: {
                 orderId: shippingJson.getOrderId(),
-                shipperId: shippingJson.getShipperId(),
+                companyId: shippingJson.getCompanyId(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: null,
                 price: shippingJson.getPrice()
@@ -79,7 +79,7 @@ export class ShippingService extends BaseService {
             where: { orderId },
             data: {
                 orderId: shippingJson.getOrderId(),
-                shipperId: shippingJson.getShipperId(),
+                companyId: shippingJson.getCompanyId(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: null,
                 price: shippingJson.getPrice()
@@ -125,7 +125,7 @@ export class ShippingService extends BaseService {
             where: { orderId },
             data: {
                 orderId: existingShippingDetails.getOrderId(),
-                shipperId: existingShippingDetails.getShipperId(),
+                companyId: existingShippingDetails.getCompanyId(),
                 shippingDate: existingShippingDetails.getShippingDate(),
                 deliveryDate: shippingJson.getDeliveryDate(),
                 price: existingShippingDetails.getPrice()
@@ -141,7 +141,9 @@ export class ShippingService extends BaseService {
                 "Order Delivery",
                 existingShippingDetails.getPrice(),
                 shippingJson.getDeliveryDate() || new Date(),
-                existingShippingDetails.getOrderId()
+                existingShippingDetails.getOrderId(),
+                false,
+                true
             ));
         }
     }
@@ -151,8 +153,7 @@ export class ShippingService extends BaseService {
         await this.prisma.order.update({
             where: { id: existingOrder.getId() },
             data: {
-                customerId: existingOrder.getCustomerId(),
-                supplierId: existingOrder.getSupplierId(),
+                companyId: existingOrder.getCompanyId(),
                 orderType: existingOrder.getOrderType(),
                 orderStatus: orderStatus,
                 totalPrice: existingOrder.getTotalPrice(),
