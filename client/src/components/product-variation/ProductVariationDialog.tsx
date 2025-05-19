@@ -135,7 +135,7 @@ export const ProductVariantDialog: React.FC<ProductVariantDialogProps> = ({
                             onChange={(event: React.SyntheticEvent, newValue: ProductJson | null) =>
                                 setProduct(newValue)
                             }
-                            renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
+                            renderInput={(params) => <TextField {...params} placeholder="Produit" />}
                             disabled={dialogType === ModalTypeEnum.DELETE}
                         />
 
