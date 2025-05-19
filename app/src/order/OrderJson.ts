@@ -1,37 +1,37 @@
 import {OrderTypeEnum, orderTypeFromString} from "./OrderTypeEnum";
 import {OrderStatusEnum, orderStatusFromNumber} from "./OrderStatusEnum";
-import {OrderLineJson} from "./OrderLineJson";
+import {OrderLineJson} from "./order-line/OrderLineJson";
 
 export class OrderJson {
     private readonly id: number;
-    private readonly customerId: number;
-    private readonly supplierId: number;
+    private readonly companyId: number;
     private readonly orderType: OrderTypeEnum;
     private readonly orderStatus: OrderStatusEnum;
     private readonly totalPrice: number;
     private readonly date: Date;
-    private readonly designUrl: string;
+    private readonly inventoryUpdated: boolean;
+    private readonly expenseUpdated: boolean;
     private readonly orderLines: OrderLineJson[];
 
     constructor(
         id: number,
-        customerId: number,
-        supplierId: number,
+        companyId: number,
         orderType: string,
         orderStatus: number,
         totalPrice: number,
         date: Date,
-        designUrl: string,
+        inventoryUpdated: boolean,
+        expenseUpdated: boolean,
         orderLines: OrderLineJson[]
     ) {
         this.id = id;
-        this.customerId = customerId;
-        this.supplierId = supplierId;
+        this.companyId = companyId;
         this.orderType = orderTypeFromString(orderType);
         this.orderStatus = orderStatusFromNumber(orderStatus);
         this.totalPrice = totalPrice;
         this.date = date;
-        this.designUrl = designUrl;
+        this.inventoryUpdated = inventoryUpdated;
+        this.expenseUpdated = expenseUpdated;
         this.orderLines = orderLines;
     }
 
@@ -39,12 +39,8 @@ export class OrderJson {
         return this.id;
     }
 
-    public getCustomerId(): number {
-        return this.customerId;
-    }
-
-    public getSupplierId(): number {
-        return this.supplierId;
+    public getCompanyId(): number {
+        return this.companyId;
     }
 
     public getOrderType(): OrderTypeEnum {
@@ -63,8 +59,12 @@ export class OrderJson {
         return this.date;
     }
 
-    public getDesignUrl(): string {
-        return this.designUrl;
+    public isInventoryUpdated(): boolean {
+        return this.inventoryUpdated;
+    }
+
+    public isExpenseUpdated(): boolean {
+        return this.expenseUpdated;
     }
 
     public getOrderLines(): OrderLineJson[] {
@@ -74,27 +74,27 @@ export class OrderJson {
     public static fromObject(body: any): OrderJson {
         return new OrderJson(
             Number(body.id),
-            Number(body.customerId),
-            Number(body.supplierId),
+            Number(body.companyId),
             body.orderType,
             body.orderStatus,
             Number(body.totalPrice),
             body.date,
-            body.designUrl,
-            body.orderLines.map((ol: any) => OrderLineJson.fromObject(ol)),
+            body.inventoryUpdated,
+            body.expenseUpdated,
+            body.orderLines.map((ol: any) => OrderLineJson.fromObject(ol))
         )
     }
 
     public static fromObjectAndLines(body: any, orderLines: OrderLineJson[]): OrderJson {
         return new OrderJson(
             Number(body.id),
-            Number(body.customerId),
-            Number(body.supplierId),
+            Number(body.companyId),
             body.orderType,
             body.orderStatus,
             Number(body.totalPrice),
             body.date,
-            body.designUrl,
+            body.inventoryUpdated,
+            body.expenseUpdated,
             orderLines
         )
     }
