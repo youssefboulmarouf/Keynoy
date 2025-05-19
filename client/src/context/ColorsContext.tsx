@@ -13,7 +13,7 @@ const ColorsContext = createContext<ColorContextValue | undefined>(undefined);
 export const useColorContext = (): ColorContextValue => {
     const context = useContext(ColorsContext);
     if (!context) {
-        throw new Error("useColorContext must be used within a ColorProvider");
+        throw new Error("useColorContext must be used within a ColorsProvider");
     }
     return context;
 };
