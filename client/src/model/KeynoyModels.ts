@@ -28,13 +28,16 @@ export enum CompanyTypeEnum {
 export type ProductTypeJson = {
     id: number;
     name: string;
-    isSellable: boolean;
+    isPrintable: boolean;
     isPaint: boolean;
+    isTool: boolean;
 };
 
 export type ProductJson = {
     id: number;
     name: string;
+    isSellable: boolean;
+    isLayer: boolean;
     productTypeId: number;
 }
 
@@ -50,19 +53,26 @@ export type ProductVariationJson = {
 
 export type OrderJson = {
     id: number;
-    customerId: number;
-    supplierId: number;
+    companyId: number;
     orderType: OrderTypeEnum;
     orderStatus: OrderStatusEnum;
     totalPrice: number;
     date: Date;
+    inventoryUpdated: boolean;
+    expenseUpdated: boolean;
     orderLines: OrderLineJson[];
 }
 
 export type OrderLineJson = {
+    id: number;
     orderId: number;
-    productVariation: ProductVariationJson;
-    companyDesign: CompanyDesignJson | null;
+    designId: number;
+    orderLineProductVariations: OrderLineProductVariationJson[];
+}
+
+export type OrderLineProductVariationJson = {
+    orderLineId: number;
+    productVariationId: number;
     quantity: number;
     unitPrice: number;
 }
