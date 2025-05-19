@@ -29,8 +29,9 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, productTy
                 <TableRow>
                     <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Type Produits</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Vendable</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Support Impression</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Peinture</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Outils</Typography></TableCell>
                     <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                 </TableRow>
             </TableHead>
@@ -40,7 +41,7 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, productTy
                         <TableCell>{type.id}</TableCell>
                         <TableCell>{type.name}</TableCell>
                         <TableCell>
-                            {type.isSellable ? (
+                            {type.isPrintable ? (
                                 <IconButton color="success">
                                     <CheckIcon width={22} />
                                 </IconButton>
@@ -52,6 +53,17 @@ const ProductTypesList: React.FC<ProductTypesListProps> = ({isLoading, productTy
                         </TableCell>
                         <TableCell>
                             {type.isPaint ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {type.isTool ? (
                                 <IconButton color="success">
                                     <CheckIcon width={22} />
                                 </IconButton>
