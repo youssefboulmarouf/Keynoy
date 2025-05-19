@@ -7,6 +7,9 @@ import DeleteButton from "../common/buttons/DeleteButton";
 import LoadingComponent from "../common/LoadingComponent";
 import {usePaginationController} from "../common/usePaginationController";
 import Pagination from "../common/Pagination";
+import IconButton from "@mui/material/IconButton";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface ProductsListProps {
     products: ProductJson[];
@@ -33,6 +36,8 @@ const ProductsList: React.FC<ProductsListProps> = ({
                     <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Nom Produit</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Type</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Vendable</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Calque</Typography></TableCell>
                     <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                 </TableRow>
             </TableHead>
@@ -43,6 +48,28 @@ const ProductsList: React.FC<ProductsListProps> = ({
                         <TableCell>{product.name}</TableCell>
                         <TableCell>
                             {productTypes?.find(pt => pt.id === product.productTypeId)?.name}
+                        </TableCell>
+                        <TableCell>
+                            {product.isSellable ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {product.isLayer ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
                         </TableCell>
                         <TableCell align="right">
                             <EditButton
