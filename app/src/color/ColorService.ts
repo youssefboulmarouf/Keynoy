@@ -26,24 +26,6 @@ export class ColorService extends BaseService {
         return ColorJson.from(colorData);
     }
 
-    async getByProductId(productId: number): Promise<ColorJson[]> {
-        const productColors = await this.prisma.productColor.findMany({
-            where: { productId },
-            include: { Color: true }
-        });
-
-        return  productColors.map(pc => ColorJson.from(pc.Color));
-    }
-
-    async getByOrderLineId(orderId: number, productId: number): Promise<ColorJson[]> {
-        const orderLineColors = await this.prisma.orderLineColor.findMany({
-            where: { orderId, productId },
-            include: { Color: true }
-        });
-
-        return  orderLineColors.map(olc => ColorJson.from(olc.Color));
-    }
-
     async add(colorJson: ColorJson): Promise<ColorJson> {
         this.logger.log(`Create new color`, colorJson);
         return ColorJson.from(
@@ -79,6 +61,8 @@ export class ColorService extends BaseService {
 
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete color with [id=${id}]`);
+
+        // TODO: avoid deleting when color os used in a product variation
 
         await this.prisma.color.delete({
             where: { id: id }
