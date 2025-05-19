@@ -79,4 +79,15 @@ export class ProductVariationService extends BaseService {
             where: { productId }
         });
     }
+
+    async updateQuantity(id: number, quantityDiff: number): Promise<void> {
+        this.logger.log(`Update product quantity [id=${id}, diff=${quantityDiff}]`);
+
+        await this.prisma.productVariation.update({
+            where: { id },
+            data: {
+                quantity: { increment: quantityDiff }
+            }
+        });
+    }
 }
