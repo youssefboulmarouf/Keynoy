@@ -29,14 +29,17 @@ export const ProductTypesProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const addProductType = async (productType: ProductTypeJson) => {
         await createProductType(productType);
+        await refresh();
     };
 
     const editProductType = async (productType: ProductTypeJson) => {
         await updateProductType(productType);
+        await refresh();
     };
 
     const removeProductType = async (productType: ProductTypeJson) => {
         await deleteProductType(productType);
+        await refresh();
     };
 
     const refresh = async () => {
@@ -64,7 +67,7 @@ export const ProductTypesProvider: React.FC<{ children: ReactNode }> = ({ childr
         addProductType,
         editProductType,
         removeProductType,
-    }), [productTypes, loading, error, addProductType, editProductType, removeProductType]);
+    }), [productTypes, loading, error]);
 
     return <ProductTypesContext.Provider value={value}>{children}</ProductTypesContext.Provider>;
 };
