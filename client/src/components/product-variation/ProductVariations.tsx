@@ -28,17 +28,19 @@ const bCrumb = [
     },
 ];
 
+const emptyVariant: ProductVariationJson = {
+    id: 0,
+    name: "",
+    productId: 0,
+    colorId: 0,
+    quantity: 0,
+    size: "",
+    threshold: 0
+}
+
 const ProductVariations: React.FC = () => {
     const [filters, setFilters] = useState<FilterProps>({searchTerm: "", product: null, critical: false});
-    const variationDialog = useDialogController<ProductVariationJson>({
-        id: 0,
-        name: "",
-        productId: 0,
-        colorId: 0,
-        quantity: 0,
-        size: "",
-        threshold: 0
-    });
+    const variationDialog = useDialogController<ProductVariationJson>(emptyVariant);
     const {variations, addVariant, editVariant, removeVariant} = useProductVariationContext()
     const {products} = useProductsContext();
     const {colors} = useColorContext();
@@ -73,18 +75,7 @@ const ProductVariations: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Variation"
-                                callToActionFunction={() => variationDialog.openDialog(
-                                    ModalTypeEnum.ADD,
-                                    {
-                                        id: 0,
-                                        name: "",
-                                        productId: 0,
-                                        colorId: 0,
-                                        quantity: 0,
-                                        size: "",
-                                        threshold: 0
-                                    }
-                                )}
+                                callToActionFunction={() => variationDialog.openDialog(ModalTypeEnum.ADD, emptyVariant)}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
