@@ -9,7 +9,7 @@ import {useCompaniesContext} from "../../context/CompaniesContext";
 import {CompanyDesignJson, CompanyJson, CompanyTypeEnum, ModalTypeEnum} from "../../model/KeynoyModels";
 import CompanyDesignDialog from "./CompanyDesignDialog";
 import {useDialogController} from "../common/useDialogController";
-import CompanyDesignFilters from "../CompanyDesignFilter";
+import CompanyDesignFilters from "./CompanyDesignFilter";
 
 interface FilterProps {
     searchTerm: string;

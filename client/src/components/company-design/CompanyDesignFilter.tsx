@@ -1,6 +1,6 @@
-import {CompanyJson} from "../model/KeynoyModels";
+import {CompanyJson} from "../../model/KeynoyModels";
 import {Autocomplete, Stack, TextField} from "@mui/material";
-import TableSearch from "./common/TableSearch";
+import TableSearch from "../common/TableSearch";
 import React from "react";
 
 interface FilterProps {
