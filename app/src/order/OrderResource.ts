@@ -47,23 +47,68 @@ router.post("/",
     )
 );
 
+router.put("/:id",
+    handleAsync(
+        async  (req: Request, res: Response) => {
+            res
+                .status(201)
+                .json(
+                    await orderService.update(
+                        OrderJson.fromObject(req.body),
+                        Number(req.params.id)
+                    )
+                );
+        }
+    )
+);
+
+router.put("/:id/sync-inventory",
+    handleAsync(
+        async  (req: Request, res: Response) => {
+            res
+                .status(201)
+                .json(
+                    await orderService.updateInventory(
+                        Number(req.params.id)
+                    )
+                );
+        }
+    )
+);
+
+router.put("/:id/sync-expense",
+    handleAsync(
+        async  (req: Request, res: Response) => {
+            res
+                .status(201)
+                .json(
+                    await orderService.updateExpense(
+                        Number(req.params.id)
+                    )
+                );
+        }
+    )
+);
+
+router.put("/:id/cancel-all-sync",
+    handleAsync(
+        async  (req: Request, res: Response) => {
+            res
+                .status(201)
+                .json(
+                    await orderService.cancelAllSync(
+                        Number(req.params.id)
+                    )
+                );
+        }
+    )
+);
+
 router.delete("/:id",
     handleAsync(
         async (req: Request, res: Response) => {
             await orderService.delete(Number(req.params.id));
             res.status(204).send();
-        }
-    )
-);
-
-router.put("/:id/status/:status",
-    handleAsync(
-        async  (req: Request, res: Response) => {
-            await orderService.update(
-                Number(req.params.id),
-                orderStatusFromNumber(Number(req.params.status))
-            );
-            res.status(201).send();
         }
     )
 );
