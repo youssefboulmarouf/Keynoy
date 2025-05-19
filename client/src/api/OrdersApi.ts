@@ -44,3 +44,25 @@ export const deleteOrder = async (orderJson: OrderJson): Promise<void> => {
         throw new Error('Failed to delete order');
     }
 };
+
+export const syncVariationInventory = async (orderJson: OrderJson): Promise<void> => {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/orders/${orderJson.id}/sync-inventory`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) {
+        console.log(res);
+        throw new Error('Failed to update order');
+    }
+}
+
+export const syncOrderExpense = async (orderJson: OrderJson): Promise<void> => {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/orders/${orderJson.id}/sync-expense`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) {
+        console.log(res);
+        throw new Error('Failed to update order');
+    }
+}
