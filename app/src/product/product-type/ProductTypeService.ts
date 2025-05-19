@@ -36,8 +36,9 @@ export class ProductTypeService extends BaseService {
             await this.prisma.productType.create({
                 data: {
                     name: productType.getName(),
-                    isSellable: productType.getSellable(),
-                    isPaint: productType.getPaint()
+                    isPrintable: productType.getPrintable(),
+                    isPaint: productType.getPaint(),
+                    isTool: productType.getTool()
                 }
             })
         );
@@ -58,8 +59,9 @@ export class ProductTypeService extends BaseService {
                 where: { id },
                 data: {
                     name: productType.getName(),
-                    isSellable: productType.getSellable(),
-                    isPaint: productType.getPaint()
+                    isPrintable: productType.getPrintable(),
+                    isPaint: productType.getPaint(),
+                    isTool: productType.getTool()
                 }
             })
         );
