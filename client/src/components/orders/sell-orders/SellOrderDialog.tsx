@@ -56,7 +56,6 @@ interface OrderDialogProps {
     editOrder: (order: OrderJson) => void;
     removeOrder: (order: OrderJson) => void;
     syncInventory: (order: OrderJson) => void;
-    syncExpense: (order: OrderJson) => void;
 }
 
 const emptyOrderLine: OrderLineJson = {
@@ -75,7 +74,6 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     editOrder,
     removeOrder,
     syncInventory,
-    syncExpense
 }) => {
     const [customers, setCustomers] = useState<CompanyJson[]>([]);
     const [selectedCompany, setSelectedCompany] = useState<CompanyJson | null>(null);

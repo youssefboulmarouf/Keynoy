@@ -1,6 +1,6 @@
 import {
     ColorJson,
-    CompanyDesignJson, ModalTypeEnum,
+    CompanyDesignJson,
     OrderLineJson,
     OrderLineProductVariationJson,
     ProductJson,

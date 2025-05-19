@@ -2,7 +2,6 @@ import express, {Request, Response} from "express";
 import {OrderService} from "./OrderService";
 import {OrderJson} from "./OrderJson";
 import handleAsync from "../utilities/HandleAsync";
-import {orderStatusFromNumber} from "./OrderStatusEnum";
 
 const router = express.Router();
 const orderService = new OrderService();

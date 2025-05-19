@@ -1,9 +1,5 @@
 import {TableCell, TableRow} from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import OrderStatusChip from "./OrderStatusChip";
-import OrderLinesTable from "../sell-orders/order-line/OrderLinesTable";
 import React from "react";
 import {CompanyTypeEnum, ModalTypeEnum, OrderJson, OrderStatusEnum, OrderTypeEnum} from "../../../model/KeynoyModels";
 import DeleteButton from "../../common/buttons/DeleteButton";
@@ -14,11 +10,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 interface OrderRowProps {
     order: OrderJson;
-    rowIndex: number;
     type: string;
-    openRow: boolean;
-    rowToOpen: number;
-    handleExpandRow: (index: number) => void;
     getCompanyNameFromOrder: (order: OrderJson, companyType: string) => string;
     getCompanyPhoneFromOrder: (order: OrderJson, companyType: string) => string;
     handleOpenDialogType: (type: ModalTypeEnum, order: OrderJson) => void;
@@ -26,11 +18,7 @@ interface OrderRowProps {
 
 const OrderRow: React.FC<OrderRowProps> = ({
     order,
-    rowIndex,
     type,
-    openRow,
-    rowToOpen,
-    handleExpandRow,
     getCompanyNameFromOrder,
     getCompanyPhoneFromOrder,
     handleOpenDialogType

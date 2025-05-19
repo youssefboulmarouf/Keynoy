@@ -15,8 +15,6 @@ import OrderFilter from "../order-components/OrderFilter";
 import OrdersList from "../order-components/OrdersList";
 import SellOrderDialog from "./SellOrderDialog";
 import {useCompaniesContext} from "../../../context/CompaniesContext";
-import {useProductTypesContext} from "../../../context/ProductTypesContext";
-import {useProductsContext} from "../../../context/ProductsContext";
 import {useDialogController} from "../../common/useDialogController";
 import {useOrdersContext} from "../../../context/OrdersContext";
 
@@ -64,10 +62,8 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
     const [filters, setFilters] = useState<FilterProps>({searchTerm: "", orderStatus: null, startDate: getFirstDayOfCurrentMonth(), endDate: null});
     const orderDialog = useDialogController<OrderJson>(emptyOrder);
 
-    const { orders, addOrder, editOrder, removeOrder, syncInventory, syncExpense } = useOrdersContext();
+    const { orders, addOrder, editOrder, removeOrder, syncInventory } = useOrdersContext();
     const { companies } = useCompaniesContext();
-    const { productTypes } = useProductTypesContext();
-    const { products } = useProductsContext();
 
     useEffect(() => {
         if (orders) {
@@ -120,8 +116,6 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
                             <OrdersList
                                 type={orderType}
                                 data={filteredOrders}
-                                productsData={products}
-                                productTypesData={productTypes}
                                 handleOpenDialogType={orderDialog.openDialog}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
@@ -139,7 +133,6 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
                 editOrder={editOrder}
                 removeOrder={removeOrder}
                 syncInventory={syncInventory}
-                syncExpense={syncExpense}
             />
         </>
     );

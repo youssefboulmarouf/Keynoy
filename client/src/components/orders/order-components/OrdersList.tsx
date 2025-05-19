@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {ModalTypeEnum, OrderJson, OrderTypeEnum, ProductJson, ProductTypeJson} from "../../../model/KeynoyModels";
+import {ModalTypeEnum, OrderJson, OrderTypeEnum} from "../../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
 import OrderRow from "./OrderRow";
@@ -7,8 +7,6 @@ import OrderRow from "./OrderRow";
 interface OrdersListProps {
     type: string;
     data: OrderJson[];
-    productsData: ProductJson[];
-    productTypesData: ProductTypeJson[];
     handleOpenDialogType: (type: ModalTypeEnum, order: OrderJson) => void;
     getCompanyPhoneFromOrder: (order: OrderJson, companyType: string) => string;
     getCompanyNameFromOrder: (order: OrderJson, companyType: string) => string;
@@ -17,14 +15,10 @@ interface OrdersListProps {
 const OrdersList: React.FC<OrdersListProps> = ({
     type,
     data,
-    productsData,
-    productTypesData,
     handleOpenDialogType,
     getCompanyPhoneFromOrder,
     getCompanyNameFromOrder
 }) => {
-    const [openRow, setOpenRow] = useState(false);
-    const [rowToOpen, setRowToOpen] = useState<number>(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
 
@@ -66,14 +60,7 @@ const OrdersList: React.FC<OrdersListProps> = ({
                             <OrderRow
                                 key={order.id}
                                 order={order}
-                                rowIndex={i + page * rowsPerPage}
                                 type={type}
-                                openRow={openRow}
-                                rowToOpen={rowToOpen}
-                                handleExpandRow={(index) => {
-                                    setOpenRow(!openRow);
-                                    setRowToOpen(index);
-                                }}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
                                 handleOpenDialogType={handleOpenDialogType}

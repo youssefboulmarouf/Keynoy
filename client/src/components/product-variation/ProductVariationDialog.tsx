@@ -1,5 +1,5 @@
-import {ColorJson, ModalTypeEnum, ProductJson, ProductTypeJson, ProductVariationJson} from "../../model/KeynoyModels";
-import {Autocomplete, Box, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
+import {ColorJson, ModalTypeEnum, ProductJson, ProductVariationJson} from "../../model/KeynoyModels";
+import {Autocomplete,  Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
