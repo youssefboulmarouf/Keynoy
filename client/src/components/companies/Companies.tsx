@@ -25,15 +25,17 @@ interface CompaniesProps {
     companyType: string;
 }
 
+const emptyCompany: CompanyJson = {
+    id: 0,
+    name: "",
+    companyType: "",
+    phone: "",
+    location: ""
+}
+
 const Companies: React.FC<CompaniesProps> = ({companyType}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const companyDialog = useDialogController<CompanyJson>({
-        id: 0,
-        name: "",
-        companyType: "",
-        phone: "",
-        location: ""
-    })
+    const companyDialog = useDialogController<CompanyJson>(emptyCompany)
     const {companies, addCompany, editCompany, removeCompany} = useCompaniesContext();
 
     const filteredCompanies = companies?.filter(c =>
@@ -55,16 +57,7 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText={`Ajouter ${companyType}`}
-                                callToActionFunction={() => companyDialog.openDialog(
-                                    ModalTypeEnum.ADD,
-                                    {
-                                        id: 0,
-                                        name: "",
-                                        companyType: "",
-                                        phone: "",
-                                        location: ""
-                                    }
-                                )}
+                                callToActionFunction={() => companyDialog.openDialog(ModalTypeEnum.ADD, emptyCompany)}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
