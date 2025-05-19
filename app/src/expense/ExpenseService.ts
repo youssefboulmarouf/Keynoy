@@ -33,7 +33,9 @@ export class ExpenseService extends BaseService {
                     name: expense.getName(),
                     totalPrice: expense.getTotalPrice(),
                     date: expense.getDate(),
-                    orderId: expense.getOrderId()
+                    orderId: expense.getOrderId(),
+                    isOrder: expense.getIsOrder(),
+                    isShipping: expense.getIsShipping()
                 }
             })
         );
@@ -46,6 +48,9 @@ export class ExpenseService extends BaseService {
 
         const existingExpense = await this.getById(id);
 
+        BadRequestError.throwIf(existingExpense.getIsOrder(), `Cannot update order expenses`);
+        BadRequestError.throwIf(existingExpense.getIsShipping(), `Cannot update shipping expenses`);
+
         this.logger.log(`Update existing expense`, existingExpense);
         this.logger.log(`Expense updated data`, expense);
 
@@ -56,7 +61,9 @@ export class ExpenseService extends BaseService {
                     name: expense.getName(),
                     totalPrice: expense.getTotalPrice(),
                     date: expense.getDate(),
-                    orderId: expense.getOrderId()
+                    orderId: expense.getOrderId(),
+                    isOrder: expense.getIsOrder(),
+                    isShipping: expense.getIsShipping()
                 }
             })
         );
@@ -64,6 +71,12 @@ export class ExpenseService extends BaseService {
 
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete expense with [id=${id}]`);
+
+        const existingExpense = await this.getById(id);
+
+        BadRequestError.throwIf(existingExpense.getIsOrder(), `Cannot delete order expenses`);
+        BadRequestError.throwIf(existingExpense.getIsShipping(), `Cannot delete shipping expenses`);
+
         await this.prisma.expense.delete({
             where: { id }
         });
