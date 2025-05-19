@@ -20,11 +20,19 @@ const bCrumb = [
     },
 ];
 
+const emptyProductType: ProductTypeJson = {
+    id: 0,
+    name: "",
+    isPrintable: false,
+    isPaint: false,
+    isTool: false
+}
+
 const ProductTypes: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [dialogType, setDialogType] = useState<ModalTypeEnum>(ModalTypeEnum.ADD);
-    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>({name: "", id: 0, isSellable: false, isPaint: false});
+    const [concernedProductType, setConcernedProductType] = useState<ProductTypeJson>(emptyProductType);
     const { productTypes, loading } = useProductTypesContext();
 
     const openDialogWithType = (type: ModalTypeEnum, productType: ProductTypeJson) => {
@@ -48,7 +56,7 @@ const ProductTypes: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Type Produit"
-                                callToActionFunction={() => openDialogWithType(ModalTypeEnum.ADD, {name: "", id: 0, isSellable: false, isPaint: false})}
+                                callToActionFunction={() => openDialogWithType(ModalTypeEnum.ADD, emptyProductType)}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
