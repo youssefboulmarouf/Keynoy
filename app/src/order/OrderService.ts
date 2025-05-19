@@ -2,24 +2,24 @@ import {BaseService} from "../utilities/BaseService";
 import {OrderJson} from "./OrderJson";
 import {OrderTypeEnum} from "./OrderTypeEnum";
 import {OrderStatusEnum, statusToString} from "./OrderStatusEnum";
-import {OrderLineJson} from "./OrderLineJson";
-import {OrderLineService} from "./OrderLineService";
+import {OrderLineJson} from "./order-line/OrderLineJson";
+import {OrderLineService} from "./order-line/OrderLineService";
 import {ExpenseService} from "../expense/ExpenseService";
 import {ExpenseJson} from "../expense/ExpenseJson";
-import {ProductService} from "../product/ProductService";
-import NotFoundError from "../utilities/errors/NotFoundError";
 import BadRequestError from "../utilities/errors/BadRequestError";
+import {ProductVariationService} from "../product/product-variation/ProductVariationService";
+import NotFoundError from "../utilities/errors/NotFoundError";
 
 export class OrderService extends BaseService {
     private readonly orderLineService: OrderLineService;
     private readonly expenseService: ExpenseService;
-    private readonly productService: ProductService;
+    private readonly productVariationService: ProductVariationService;
 
     constructor() {
         super(OrderService.name);
         this.orderLineService = new OrderLineService();
         this.expenseService = new ExpenseService();
-        this.productService = new ProductService();
+        this.productVariationService = new ProductVariationService();
     }
 
     async get(): Promise<OrderJson[]> {
@@ -27,7 +27,10 @@ export class OrderService extends BaseService {
         const orders = await this.prisma.order.findMany();
         return Promise.all(
             orders.map(async (order) =>
-                OrderJson.fromObjectAndLines(order, await this.orderLineService.getById(order.id))
+                OrderJson.fromObjectAndLines(
+                    order,
+                    await this.orderLineService.getByOrderId(order.id)
+                )
             )
         );
     }
@@ -42,7 +45,7 @@ export class OrderService extends BaseService {
 
         return OrderJson.fromObjectAndLines(
             orderData,
-            await this.orderLineService.getById(orderId)
+            await this.orderLineService.getByOrderId(orderId)
         );
     };
 
@@ -57,54 +60,160 @@ export class OrderService extends BaseService {
 
         const orderData: any = await this.prisma.order.create({
             data: {
-                customerId: order.getCustomerId(),
-                supplierId: order.getSupplierId(),
+                companyId: order.getCompanyId(),
                 orderType: order.getOrderType(),
                 orderStatus: order.getOrderStatus(),
                 totalPrice: order.getTotalPrice(),
                 date: order.getDate(),
-                designUrl: order.getDesignUrl()
+                inventoryUpdated: false,
+                expenseUpdated: false,
             }
         });
 
         this.logger.log(`Created order with [id: ${orderData.id}]`);
 
-        const savedOrder = OrderJson.fromObjectAndLines(
+        return OrderJson.fromObjectAndLines(
             orderData,
             await this.orderLineService.addList(order.getOrderLines(), orderData.id)
         );
-
-        await this.updateProductAndExpense(savedOrder);
-
-        return savedOrder;
     };
 
-    async update(orderId: number, orderStatus: OrderStatusEnum): Promise<void> {
+    async update(order: OrderJson, orderId: number): Promise<OrderJson> {
         this.logger.log(`Update order status of order with [id=${orderId}]`);
+        BadRequestError.throwIf(order.getId() != orderId, `Order id mismatch`);
 
         const existingOrder = await this.getById(orderId);
-        BadRequestError.throwIf(
-            orderStatus < existingOrder.getOrderStatus(),
-            `Order already have status ${statusToString(existingOrder.getOrderStatus())}`
-        );
-        BadRequestError.throwIf(
-            orderStatus > OrderStatusEnum.FINISHED,
-            `Wrong order status ${statusToString(orderStatus)}`
-        );
 
-        this.logger.log(`Update existing order`, existingOrder);
-        this.logger.log(`New order status:`, statusToString(orderStatus));
+        BadRequestError.throwIf(
+            order.getOrderStatus() < existingOrder.getOrderStatus(),
+            `Expecting [status > ${existingOrder.getOrderStatus()}], but got [status > ${order.getOrderStatus()}]`
+        )
+
+        this.logger.log(`Update existing order:`, existingOrder);
+        this.logger.log(`updated order:`, order);
+
+        if (existingOrder.getOrderStatus() === OrderStatusEnum.CONFIRMED) {
+            this.logger.log(`Deleting order lines for order with [id=${orderId}]`);
+            await this.orderLineService.deleteByOrderId(orderId);
+
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    companyId: order.getCompanyId(),
+                    orderType: order.getOrderType(),
+                    orderStatus: order.getOrderStatus(),
+                    totalPrice: order.getTotalPrice(),
+                    date: order.getDate(),
+                    inventoryUpdated: false,
+                    expenseUpdated: false,
+                }
+            });
+
+            this.logger.log(`Adding order lines for order with [id=${orderId}]`);
+            await this.orderLineService.addList(order.getOrderLines(), orderId)
+        } else {
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    companyId: existingOrder.getCompanyId(),
+                    orderType: existingOrder.getOrderType(),
+                    orderStatus: order.getOrderStatus(),
+                    totalPrice: existingOrder.getTotalPrice(),
+                    date: existingOrder.getDate(),
+                    inventoryUpdated: existingOrder.isInventoryUpdated(),
+                    expenseUpdated: existingOrder.isExpenseUpdated(),
+                }
+            });
+        }
+
+        return await this.getById(orderId);
+    }
+
+    async updateInventory(orderId: number): Promise<void> {
+        const existingOrder = await this.getById(orderId);
+        if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+            this.logger.log(`Increasing product quantity for new BUY order`);
+            await this.adjustProductQuantities(existingOrder.getOrderLines(), +1);
+        } else {
+            this.logger.log(`Decreasing product quantity for new SELL order`);
+            await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
+        }
 
         await this.prisma.order.update({
             where: { id: orderId },
             data: {
-                customerId: existingOrder.getCustomerId(),
-                supplierId: existingOrder.getSupplierId(),
+                companyId: existingOrder.getCompanyId(),
                 orderType: existingOrder.getOrderType(),
-                orderStatus: orderStatus,
+                orderStatus: existingOrder.getOrderStatus(),
                 totalPrice: existingOrder.getTotalPrice(),
                 date: existingOrder.getDate(),
-                designUrl: existingOrder.getDesignUrl()
+                inventoryUpdated: true,
+                expenseUpdated: existingOrder.isExpenseUpdated(),
+            }
+        });
+    }
+
+    async updateExpense(orderId: number): Promise<void> {
+        const existingOrder = await this.getById(orderId);
+
+        if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+            this.logger.log(`Adding Expense for BUY order`);
+            await this.expenseService.add(new ExpenseJson(
+                0,
+                "Commande Achats",
+                existingOrder.getTotalPrice(),
+                new Date(),
+                existingOrder.getId(),
+                true,
+                false
+            ));
+
+            await this.prisma.order.update({
+                where: { id: orderId },
+                data: {
+                    companyId: existingOrder.getCompanyId(),
+                    orderType: existingOrder.getOrderType(),
+                    orderStatus: existingOrder.getOrderStatus(),
+                    totalPrice: existingOrder.getTotalPrice(),
+                    date: existingOrder.getDate(),
+                    inventoryUpdated: existingOrder.isInventoryUpdated(),
+                    expenseUpdated: true,
+                }
+            });
+        }
+    }
+
+    async cancelAllSync(orderId: number): Promise<void> {
+        const existingOrder = await this.getById(orderId);
+
+        if(existingOrder.isInventoryUpdated()) {
+            this.logger.log(`Cancelling inventory updates`);
+            if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+                this.logger.log(`Decreasing product quantity for BUY order`);
+                await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
+            } else {
+                this.logger.log(`Increasing product quantity for SELL order`);
+                await this.adjustProductQuantities(existingOrder.getOrderLines(), +1);
+            }
+        }
+
+        if (existingOrder.isExpenseUpdated()) {
+            if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
+                this.logger.log(`Cancelling expense updates`);
+                await this.expenseService.deleteByOrderId(existingOrder.getId());
+            }
+        }
+
+        await this.prisma.order.update({
+            where: { id: orderId },
+            data: {
+                companyId: existingOrder.getCompanyId(),
+                orderType: existingOrder.getOrderType(),
+                orderStatus: existingOrder.getOrderStatus(),
+                totalPrice: existingOrder.getTotalPrice(),
+                date: existingOrder.getDate(),
+                inventoryUpdated: false,
+                expenseUpdated: false,
             }
         });
     }
@@ -112,60 +221,27 @@ export class OrderService extends BaseService {
     async delete(id: number): Promise<void> {
         this.logger.log(`Delete order with [id=${id}]`);
         const existingOrder = await this.getById(id);
+
         BadRequestError.throwIf(
-            existingOrder.getOrderStatus() != OrderStatusEnum.CONFIRMED,
-            `Order with [status=${existingOrder.getOrderStatus()}] cannot be deleted`
+            existingOrder.getOrderStatus() > OrderStatusEnum.CONFIRMED,
+            `Order with [status=${statusToString(existingOrder.getOrderStatus())}] cannot be deleted`
         );
 
-        this.logger.log(`Order status is confirmed, order and related entities will be deleted`);
-        await this.reverseProductAndExpenseUpdates(existingOrder);
-
         this.logger.log(`Deleting order lines`);
-        await this.orderLineService.delete(id);
+        await this.orderLineService.deleteByOrderId(id);
 
         this.logger.log(`Deleting order`);
         await this.prisma.order.delete({where: { id }});
     }
 
-    private async updateProductAndExpense(savedOrder: OrderJson) {
-        if (savedOrder.getOrderType() === OrderTypeEnum.BUY) {
-            this.logger.log(`Adding Expense for BUY order`);
-            await this.expenseService.add(new ExpenseJson(
-                0,
-                "Buy Order",
-                savedOrder.getTotalPrice(),
-                savedOrder.getDate(),
-                savedOrder.getId()
-            ));
-
-            this.logger.log(`Increasing product quantity for new BUY order`);
-            await this.adjustProductQuantities(savedOrder.getOrderLines(), +1);
-        } else if (savedOrder.getOrderType() === OrderTypeEnum.SELL) {
-            this.logger.log(`Decreasing product quantity for new SELL order`);
-            await this.adjustProductQuantities(savedOrder.getOrderLines(), -1);
-        }
-    }
-
-    private async reverseProductAndExpenseUpdates(existingOrder: OrderJson): Promise<void> {
-        this.logger.log(`Order status is confirmed, products quantity will be updated`);
-
-        if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
-            this.logger.log(`Deleting expense for order by id=${existingOrder.getId()}`);
-            await this.expenseService.deleteByOrderId(existingOrder.getId());
-
-            this.logger.log(`Decreasing product quantity for updated BUY order`);
-            await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
-        } else if (existingOrder.getOrderType() === OrderTypeEnum.SELL) {
-            this.logger.log(`Increasing product quantity for updated SELL order`);
-            await this.adjustProductQuantities(existingOrder.getOrderLines(), +1);
-        }
-    }
-
     private async adjustProductQuantities(orderLines: OrderLineJson[], direction: 1 | -1): Promise<void> {
-        await Promise.all(orderLines.map(line => {
-            const diff = line.getQuantity() * direction;
-            this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${line.getProductId()}] by [${diff}]`);
-            return this.productService.updateQuantity(line.getProductId(), diff);
+        await Promise.all(orderLines.flatMap(ol => ol.getOrderLineProductVariations()).map(pv => {
+            if(pv.getQuantity() > 0) {
+                const diff = pv.getQuantity() * direction;
+                this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${pv.getProductVariationId()}] by [${diff}]`);
+
+                return this.productVariationService.updateQuantity(pv.getProductVariationId(), diff);
+            }
         }));
     }
 }
