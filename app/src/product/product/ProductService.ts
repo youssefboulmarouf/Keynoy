@@ -32,6 +32,8 @@ export class ProductService extends BaseService {
         const productData = await this.prisma.product.create({
             data: {
                 name: product.getName(),
+                isSellable: product.getSellable(),
+                isLayer: product.getLayer(),
                 productTypeId: product.getProductTypeId()
             }
         });
@@ -55,6 +57,8 @@ export class ProductService extends BaseService {
             where: { id: productId },
             data: {
                 name: product.getName(),
+                isSellable: product.getSellable(),
+                isLayer: product.getLayer(),
                 productTypeId: product.getProductTypeId()
             }
         })
@@ -87,17 +91,6 @@ export class ProductService extends BaseService {
         })
     }
 
-    async updateQuantity(id: number, quantityDiff: number): Promise<void> {
-        this.logger.log(`Update product quantity [id=${id}, diff=${quantityDiff}]`);
-
-        // await this.prisma.product.update({
-        //     where: { id },
-        //     data: {
-        //         totalQuantity: { increment: quantityDiff }
-        //     }
-        // });
-    }
-
     private async getByProductTypeId(productTypeId: number): Promise<ProductJson[]> {
         this.logger.log(`Get product by [productTypeId:${productTypeId}]`);
 
@@ -107,21 +100,4 @@ export class ProductService extends BaseService {
 
         return productData.map(ProductJson.fromObject);
     }
-
-    // private async setProductColors(productId: number, colors: ColorJson[]): Promise<ColorJson[]> {
-    //     // await this.prisma.productColor.deleteMany({ where: { productId } });
-    //     //
-    //     // if (!colors?.length) return [];
-    //     //
-    //     // await this.prisma.productColor.createMany({
-    //     //     data: colors.map((c) => ({
-    //     //         productId,
-    //     //         colorId: c.getId()
-    //     //     })),
-    //     //     skipDuplicates: true
-    //     // });
-    //     //
-    //     // return await this.colorService.getByProductId(productId);
-    //     return [];
-    // }
 }
