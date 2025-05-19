@@ -1,19 +1,10 @@
 import React, {useState} from "react";
-import {ModalTypeEnum, OrderJson, OrderTypeEnum, ProductJson, ProductTypeJson} from "../../model/KeynoyModels";
-import LoadingComponent from "../common/LoadingComponent";
+import {ModalTypeEnum, OrderJson, OrderTypeEnum, ProductJson, ProductTypeJson} from "../../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
 import OrderRow from "./OrderRow";
 
 interface OrdersListProps {
-    loadingOrdersData: boolean;
-    loadingCompaniesData: boolean;
-    loadingProductsData: boolean;
-    loadingProductTypesData: boolean;
-    errorOrdersData: boolean;
-    errorCompaniesData: boolean;
-    errorProductsData: boolean;
-    errorProductsTypesData: boolean;
     type: string;
     data: OrderJson[];
     productsData: ProductJson[];
@@ -24,14 +15,6 @@ interface OrdersListProps {
 }
 
 const OrdersList: React.FC<OrdersListProps> = ({
-    loadingOrdersData,
-    loadingCompaniesData,
-    loadingProductsData,
-    loadingProductTypesData,
-    errorOrdersData,
-    errorCompaniesData,
-    errorProductsData,
-    errorProductsTypesData,
     type,
     data,
     productsData,
@@ -55,18 +38,13 @@ const OrdersList: React.FC<OrdersListProps> = ({
     };
 
     let listOrders;
-    if (loadingOrdersData || loadingCompaniesData || loadingProductsData || loadingProductTypesData) {
-        listOrders = <LoadingComponent message="Loading Orders" />;
-    } else if (errorOrdersData || errorCompaniesData || errorProductsData ||errorProductsTypesData) {
-        listOrders = <Typography color="error">Error loading orders</Typography>;
-    } else if (data.length === 0) {
+    if (data.length === 0) {
         listOrders = <Typography>No order found</Typography>;
     } else {
         listOrders = (
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell />
                         <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
                         {type === OrderTypeEnum.BUY ? (
                             <TableCell><Typography variant="h6" fontSize="14px">Fournisseur</Typography></TableCell>
@@ -76,6 +54,7 @@ const OrdersList: React.FC<OrdersListProps> = ({
                         <TableCell><Typography variant="h6" fontSize="14px">Status</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Inventaire Sync</Typography></TableCell>
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -97,8 +76,6 @@ const OrdersList: React.FC<OrdersListProps> = ({
                                 }}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
-                                productsData={productsData}
-                                productTypesData={productTypesData}
                                 handleOpenDialogType={handleOpenDialogType}
                             />
                         ))}

@@ -1,4 +1,4 @@
-import {OrderStatusEnum} from "../../model/KeynoyModels";
+import {OrderStatusEnum} from "../../../model/KeynoyModels";
 
 export const mapOrderStatusToString = (status: OrderStatusEnum | null) => {
     switch (status) {

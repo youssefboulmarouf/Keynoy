@@ -1,6 +1,6 @@
 import {Chip} from "@mui/material";
 import React from "react";
-import {OrderStatusEnum} from "../../model/KeynoyModels";
+import {OrderStatusEnum} from "../../../model/KeynoyModels";
 import {mapOrderStatusToColor, mapOrderStatusToString} from "./OrderStatusUtils";
 
 interface OrderStatusChipProps {
