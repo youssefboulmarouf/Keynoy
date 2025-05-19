@@ -36,7 +36,6 @@ model Color {
   htmlCode  String
 
   productVariation   ProductVariation[]
-  orderLine          OrderLineColor[]
 }
 
 model Expense {
@@ -51,13 +50,13 @@ model Expense {
 
 model Shipping {
   orderId      Int @id
-  shipperId    Int
+  companyId    Int
   shippingDate DateTime?
   deliveryDate DateTime?
   price        Decimal @db.Decimal(10, 2) @default(0.00)
 
   order        Order   @relation(fields: [orderId], references: [id])
-  shipper      Company @relation(fields: [shipperId], references: [id])
+  shipper      Company @relation(fields: [companyId], references: [id])
 }
 
 model Company {
@@ -79,6 +78,7 @@ model CompanyDesign {
 
   company      Company @relation(fields: [companyId], references: [id])
   designImages DesignImage[]
+  orderLine    OrderLine[]
 }
 
 model DesignImage {
@@ -90,10 +90,11 @@ model DesignImage {
 }
 
 model ProductType {
-  id         Int     @id @default(autoincrement())
-  name       String
-  isSellable Boolean
-  isPaint    Boolean
+  id            Int     @id @default(autoincrement())
+  name          String
+  isPrintable   Boolean
+  isPaint       Boolean
+  isTool        Boolean
 
   product   Product[]
 }
@@ -101,6 +102,8 @@ model ProductType {
 model Product {
   id            Int            @id @default(autoincrement())
   name          String
+  isSellable    Boolean
+  isLayer       Boolean
   productTypeId Int
 
   productType       ProductType    @relation(fields: [productTypeId], references: [id])
@@ -118,45 +121,42 @@ model ProductVariation {
 
   product   Product @relation(fields: [productId], references: [id])
   color     Color   @relation(fields: [colorId], references: [id])
-  orderLine OrderLine[]
+  orderLineProductVariations OrderLineProductVariation[]
 }
 
 model Order {
-  id          Int      @id @default(autoincrement())
-  customerId  Int?
-  supplierId  Int?
-  orderType   OrderType
-  orderStatus Int
-  totalPrice  Decimal  @db.Decimal(10, 2) @default(0.00)
-  date        DateTime
+  id               Int      @id @default(autoincrement())
+  companyId        Int
+  orderType        OrderType
+  orderStatus      Int
+  totalPrice       Decimal  @db.Decimal(10, 2) @default(0.00)
+  date             DateTime
+  inventoryUpdated Boolean
+  expenseUpdated   Boolean
 
-  customerOrder Company?  @relation("CustomerOrders", fields: [customerId], references: [id])
-  supplierOrder Company?  @relation("SupplierOrders", fields: [supplierId], references: [id])
-  orderLine     OrderLine[]
-  shipping      Shipping?
+  company   Company?  @relation(fields: [companyId], references: [id])
+  orderLine OrderLine[]
+  shipping  Shipping?
 }
 
 model OrderLine {
+  id                  Int      @id @default(autoincrement())
   orderId             Int
-  productVariationId  Int
-  quantity            Int
-  unitPrice           Decimal @db.Decimal(10, 2) @default(0.00)
-  paintType           PaintType
+  designId            Int?
 
-  order               Order   @relation(fields: [orderId], references: [id])
-  productVariation    ProductVariation @relation(fields: [productVariationId], references: [id])
-  colors              OrderLineColor[]
-
-  @@id([orderId, productVariationId])
+  order                      Order   @relation(fields: [orderId], references: [id])
+  design                     CompanyDesign? @relation(fields: [designId], references: [id])
+  orderLineProductVariations OrderLineProductVariation[]
 }
 
-model OrderLineColor {
-  orderId            Int
+model OrderLineProductVariation {
+  orderLineId        Int
   productVariationId Int
-  colorId            Int
+  quantity           Int
+  unitPrice          Decimal @db.Decimal(10, 2) @default(0.00)
 
-  orderLine OrderLine @relation(fields: [orderId, productVariationId], references: [orderId, productVariationId])
-  color     Color     @relation(fields: [colorId], references: [id])
+  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+  productVariation ProductVariation @relation(fields: [productVariationId], references: [id])
 
-  @@id([orderId, productVariationId, colorId])
+  @@id([orderLineId, productVariationId])
 }
