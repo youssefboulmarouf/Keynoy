@@ -7,6 +7,7 @@ export enum OrderStatusEnum {
     SHIPPED = 4,
     DELIVERED = 5,
     RETURNED = 6,
+    CANCELLED = 7,
 }
 
 export function orderStatusFromNumber(status: number): OrderStatusEnum {
