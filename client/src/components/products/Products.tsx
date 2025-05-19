@@ -27,11 +27,19 @@ const bCrumb = [
     },
 ];
 
+const emptyProduct: ProductJson = {
+    id: 0,
+    name: "",
+    isSellable: false,
+    isLayer: false,
+    productTypeId: 0
+}
+
 const Products: React.FC = () => {
     const [filters, setFilters] = useState<FilterProps>({searchTerm: "", productType: null});
     const {products, addProduct, editProduct, removeProduct, loading: isLoadingProducts} = useProductsContext();
     const {productTypes, loading: isLoadingProductTypes} = useProductTypesContext();
-    const productDialog = useDialogController<ProductJson>({id: 0, name: "", productTypeId: 0});
+    const productDialog = useDialogController<ProductJson>(emptyProduct);
 
     const filteredProducts = useMemo(() => {
         return products.filter(p => {
@@ -58,10 +66,7 @@ const Products: React.FC = () => {
                             <TableCallToActionButton
                                 fullwidth={false}
                                 callToActionText="Ajouter Produit"
-                                callToActionFunction={() => productDialog.openDialog(
-                                    ModalTypeEnum.ADD,
-                                    {id: 0, name: "", productTypeId: 0}
-                                )}
+                                callToActionFunction={() => productDialog.openDialog(ModalTypeEnum.ADD, emptyProduct)}
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
