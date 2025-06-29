@@ -1,19 +1,29 @@
 import {TableCell, TableRow} from "@mui/material";
 import OrderStatusChip from "./OrderStatusChip";
-import React from "react";
-import {CompanyTypeEnum, ModalTypeEnum, OrderJson, OrderStatusEnum, OrderTypeEnum} from "../../../model/KeynoyModels";
+import React, {useEffect, useState} from "react";
+import {
+    CompanyTypeEnum,
+    ModalTypeEnum,
+    OrderJson,
+    OrderStatusEnum,
+    OrderTypeEnum,
+    ShippingJson
+} from "../../../model/KeynoyModels";
 import DeleteButton from "../../common/buttons/DeleteButton";
 import EditButton from "../../common/buttons/EditButton";
 import {formatDate} from "../../common/Utilities";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
+import ShippingButton from "../../common/buttons/ShippingButton";
+import {useShippingContext} from "../../../context/ShippingContext";
 
 interface OrderRowProps {
     order: OrderJson;
-    type: string;
+    type: OrderTypeEnum;
     getCompanyNameFromOrder: (order: OrderJson, companyType: string) => string;
     getCompanyPhoneFromOrder: (order: OrderJson, companyType: string) => string;
-    handleOpenDialogType: (type: ModalTypeEnum, order: OrderJson) => void;
+    handleOpenOrderDialog: (type: ModalTypeEnum, order: OrderJson) => void;
+    handleOpenShippingDialog?: (type: ModalTypeEnum, order: OrderJson) => void;
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({
@@ -21,8 +31,15 @@ const OrderRow: React.FC<OrderRowProps> = ({
     type,
     getCompanyNameFromOrder,
     getCompanyPhoneFromOrder,
-    handleOpenDialogType
+    handleOpenOrderDialog,
+    handleOpenShippingDialog
 }) => {
+    const [shippingDetails, setShippingDetails] = useState<ShippingJson | null>(null)
+    const { shippings } = useShippingContext();
+
+    useEffect(() => {
+        setShippingDetails(shippings.find(s => s.orderId === order.id) ?? null)
+    }, [shippings])
 
     return (
         <TableRow key={order.id}>
@@ -48,14 +65,43 @@ const OrderRow: React.FC<OrderRowProps> = ({
                     <ClearIcon color="error" width={22} />
                 )}
             </TableCell>
+            <TableCell>
+                {order.expenseUpdated ? (
+                    <CheckIcon color="success" width={22} />
+                ) : (
+                    <ClearIcon color="error" width={22} />
+                )}
+            </TableCell>
+            {type === OrderTypeEnum.SELL ? (
+                <>
+                    <TableCell>
+                        {(shippingDetails) ? formatDate(shippingDetails.shippingDate) : "-"}
+                    </TableCell>
+                    <TableCell>
+                        {(shippingDetails && shippingDetails.deliveryDate) ? formatDate(shippingDetails.deliveryDate) : "-"}
+                    </TableCell>
+                    <TableCell>
+                        {(shippingDetails) ? shippingDetails.price : "-"}
+                    </TableCell>
+                </>
+            ) : ('')}
             <TableCell align="right">
+                {(handleOpenShippingDialog && order.orderStatus >= OrderStatusEnum.FINISHED && order.orderType === OrderTypeEnum.SELL)
+                    ? (
+                        <ShippingButton
+                            tooltipText={"Livraison"}
+                            openDialogWithType={() => handleOpenShippingDialog(ModalTypeEnum.ADD, order)}
+                        />
+                    ) : ('')
+                }
+
                 <EditButton
                     tooltipText={"Modifier Commande"}
-                    openDialogWithType={() => handleOpenDialogType(ModalTypeEnum.UPDATE, order)}
+                    openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.UPDATE, order)}
                 />
                 <DeleteButton
                     tooltipText={"Supprimer Commande"}
-                    openDialogWithType={() => handleOpenDialogType(ModalTypeEnum.DELETE, order)}
+                    openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.DELETE, order)}
                     disable={order.orderStatus > OrderStatusEnum.CONFIRMED}
                 />
             </TableCell>

@@ -1,13 +1,14 @@
 import React, {useState} from "react";
-import {ModalTypeEnum, OrderJson, OrderTypeEnum} from "../../../model/KeynoyModels";
+import {ModalTypeEnum, OrderJson, OrderTypeEnum, ShippingJson} from "../../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
 import OrderRow from "./OrderRow";
 
 interface OrdersListProps {
-    type: string;
+    type: OrderTypeEnum;
     data: OrderJson[];
-    handleOpenDialogType: (type: ModalTypeEnum, order: OrderJson) => void;
+    handleOpenOrderDialog: (type: ModalTypeEnum, order: OrderJson) => void;
+    handleOpenShippingDialog?: (type: ModalTypeEnum, order: OrderJson) => void;
     getCompanyPhoneFromOrder: (order: OrderJson, companyType: string) => string;
     getCompanyNameFromOrder: (order: OrderJson, companyType: string) => string;
 }
@@ -15,7 +16,8 @@ interface OrdersListProps {
 const OrdersList: React.FC<OrdersListProps> = ({
     type,
     data,
-    handleOpenDialogType,
+    handleOpenOrderDialog,
+    handleOpenShippingDialog,
     getCompanyPhoneFromOrder,
     getCompanyNameFromOrder
 }) => {
@@ -49,6 +51,16 @@ const OrdersList: React.FC<OrdersListProps> = ({
                         <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
                         <TableCell><Typography variant="h6" fontSize="14px">Inventaire Sync</Typography></TableCell>
+                        {type === OrderTypeEnum.BUY ? (
+                            <TableCell><Typography variant="h6" fontSize="14px">Charge Sync</Typography></TableCell>
+                        ) : (
+                            <>
+                                <TableCell><Typography variant="h6" fontSize="14px">Charge Livraison Sync</Typography></TableCell>
+                                <TableCell><Typography variant="h6" fontSize="14px">Date Livraison</Typography></TableCell>
+                                <TableCell><Typography variant="h6" fontSize="14px">Date Reception</Typography></TableCell>
+                                <TableCell><Typography variant="h6" fontSize="14px">Prix Livraison</Typography></TableCell>
+                            </>
+                        )}
                         <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                     </TableRow>
                 </TableHead>
@@ -63,7 +75,8 @@ const OrdersList: React.FC<OrdersListProps> = ({
                                 type={type}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
-                                handleOpenDialogType={handleOpenDialogType}
+                                handleOpenOrderDialog={handleOpenOrderDialog}
+                                handleOpenShippingDialog={handleOpenShippingDialog}
                             />
                         ))}
                 </TableBody>
