@@ -1,6 +1,5 @@
 import React from "react";
-import {CompanyJson, CompanyTypeEnum, ModalTypeEnum} from "../../model/KeynoyModels";
-import LoadingComponent from "../common/LoadingComponent";
+import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/buttons/EditButton";

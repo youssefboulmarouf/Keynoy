@@ -6,15 +6,15 @@ import {
     ProductJson,
     ProductTypeJson,
     ProductVariationJson
-} from "../../../../model/KeynoyModels";
+} from "../../../model/KeynoyModels";
 import {Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
-import ColorBox from "../../../common/ColorBox";
-import OrderDesignGrid from "../../order-components/OrderDesignGrid";
-import FormLabel from "../../../common/FormLabel";
-import OrderPaintGrid from "../../order-components/OrderPaintGrid";
+import ColorBox from "../../common/ColorBox";
+import OrderDesignGrid from "../order-components/OrderDesignGrid";
+import FormLabel from "../../common/FormLabel";
+import OrderPaintGrid from "../order-components/OrderPaintGrid";
 
 interface SellOrderLineDialogProps {
     openDialog: boolean;
