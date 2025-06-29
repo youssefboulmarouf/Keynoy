@@ -24,7 +24,7 @@ router.get("/:id",
             res
                 .status(200)
                 .json(
-                    await shippingService.getById(
+                    await shippingService.getByOrderId(
                         Number(req.params.id)
                     )
                 );
@@ -53,21 +53,6 @@ router.put("/:id",
                 .status(201)
                 .json(
                     await shippingService.update(
-                        Number(req.params.id),
-                        ShippingJson.from(req.body)
-                    )
-                );
-        }
-    )
-);
-
-router.put("/:id/delivered",
-    handleAsync(
-        async  (req: Request, res: Response) => {
-            res
-                .status(201)
-                .json(
-                    await shippingService.delivered(
                         Number(req.params.id),
                         ShippingJson.from(req.body)
                     )
