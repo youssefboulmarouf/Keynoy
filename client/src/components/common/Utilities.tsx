@@ -26,3 +26,8 @@ export const formatDate = (date: Date) => {
 
     return `${day}/${month}/${year}`;
 };
+
+export const getFirstDayOfCurrentMonth = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+};
