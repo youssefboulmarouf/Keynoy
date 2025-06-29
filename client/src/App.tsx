@@ -9,18 +9,15 @@ import Box from "@mui/material/Box";
 import Dashboard from "./components/dashboard/Dashboard";
 import Companies from "./components/companies/Companies";
 import Expenses from "./components/expenses/Expenses";
-import Orders from "./components/orders/Orders";
+import SellOrders from "./components/orders/sell-orders/SellOrders";
 import ProductTypes from "./components/product-types/ProductTypes";
 import Products from "./components/products/Products";
 import {CompanyTypeEnum, OrderTypeEnum} from "./model/KeynoyModels";
-import {ProductTypesProvider} from "./context/ProductTypesContext";
-import {ProductsProvider} from "./context/ProductsContext";
-import {ColorsProvider} from "./context/ColorsContext";
-import {CompaniesProvider} from "./context/CompaniesContext";
 import ProductVariations from "./components/product-variation/ProductVariations";
-import {ProductVariationProvider} from "./context/ProductVariationContext";
-import {CompaniesDesignsProvider} from "./context/CompaniesDesignsContext";
 import CompanyDesign from "./components/company-design/CompanyDesign";
+import BuyOrders from "./components/orders/buy-orders/BuyOrders";
+import Shipping from "./components/shipping/Shipping";
+import AppProviders from "./AppProviders";
 
 const PageWrapper = styled("div")(() => ({
     display: "flex",
@@ -51,36 +48,28 @@ const App: React.FC = () => {
                         <Header />
                         <Container sx={{maxWidth: "100%!important",}}>
                             <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
-                                <CompaniesDesignsProvider>
-                                    <CompaniesProvider>
-                                        <ProductTypesProvider>
-                                            <ProductsProvider>
-                                                <ProductVariationProvider>
-                                                    <ColorsProvider>
-                                                        <Routes>
-                                                            <Route path="/" element={<Dashboard />} />
+                                <AppProviders>
+                                    <Routes>
+                                        <Route path="/" element={<Dashboard />} />
 
-                                                            <Route path="/ventes" element={<Orders orderType={OrderTypeEnum.SELL}/>} />
-                                                            <Route path="/achats" element={<Orders orderType={OrderTypeEnum.BUY}/>} />
+                                        <Route path="/ventes" element={<SellOrders/>} />
+                                        <Route path="/achats" element={<BuyOrders/>} />
 
-                                                            <Route path="/charges" element={<Expenses />} />
+                                        <Route path="/charges" element={<Expenses />} />
 
-                                                            <Route path="/type-produits" element={<ProductTypes />} />
-                                                            <Route path="/produits" element={<Products />} />
-                                                            <Route path="/variations" element={<ProductVariations />} />
+                                        <Route path="/livraison" element={<Shipping />} />
 
-                                                            <Route path="/clients" element={<Companies  companyType={CompanyTypeEnum.CUSTOMERS}/>} />
-                                                            <Route path="/designs" element={<CompanyDesign />} />
+                                        <Route path="/type-produits" element={<ProductTypes />} />
+                                        <Route path="/produits" element={<Products />} />
+                                        <Route path="/variations" element={<ProductVariations />} />
 
-                                                            <Route path="/fournisseurs" element={<Companies companyType={CompanyTypeEnum.SUPPLIERS}/>} />
-                                                            <Route path="/livreurs" element={<Companies  companyType={CompanyTypeEnum.SHIPPERS}/>} />
-                                                        </Routes>
-                                                    </ColorsProvider>
-                                                </ProductVariationProvider>
-                                            </ProductsProvider>
-                                        </ProductTypesProvider>
-                                    </CompaniesProvider>
-                                </CompaniesDesignsProvider>
+                                        <Route path="/clients" element={<Companies  companyType={CompanyTypeEnum.CUSTOMERS}/>} />
+                                        <Route path="/designs" element={<CompanyDesign />} />
+
+                                        <Route path="/fournisseurs" element={<Companies companyType={CompanyTypeEnum.SUPPLIERS}/>} />
+                                        <Route path="/livreurs" element={<Companies  companyType={CompanyTypeEnum.SHIPPERS}/>} />
+                                    </Routes>
+                                </AppProviders>
                             </Box>
                         </Container>
                     </PageWrapper>
