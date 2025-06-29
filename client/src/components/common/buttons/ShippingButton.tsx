@@ -1,10 +1,10 @@
-import React from "react";
-import {Tooltip} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import AddIcon from '@mui/icons-material/Add';
+import {Tooltip} from "@mui/material";
+import React from "react";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {ButtonProps} from "./ButtonProps";
 
-const AddButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disable = false}) => {
+const ShippingButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disable = false}) => {
     return (
         <Tooltip title={tooltipText}>
             <IconButton
@@ -12,10 +12,10 @@ const AddButton: React.FC<ButtonProps> = ({tooltipText, openDialogWithType, disa
                 onClick={openDialogWithType}
                 disabled={disable}
             >
-                <AddIcon width={22} />
+                <LocalShippingIcon width={22} />
             </IconButton>
         </Tooltip>
     )
 }
 
-export default AddButton;
+export default ShippingButton;
