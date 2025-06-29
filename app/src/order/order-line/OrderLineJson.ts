@@ -3,13 +3,13 @@ import {OrderLineProductVariationJson} from "./order-line-product-variation/Orde
 export class OrderLineJson {
     private readonly id: number;
     private readonly orderId: number;
-    private readonly designId: number;
+    private readonly designId: number | null;
     private readonly orderLineProductVariations: OrderLineProductVariationJson[];
 
     constructor(
         id: number,
         orderId: number,
-        designId: number,
+        designId: number | null,
         orderLineProductVariations: OrderLineProductVariationJson[]
     ) {
         this.id = id;
@@ -26,7 +26,7 @@ export class OrderLineJson {
         return this.orderId;
     }
 
-    public getDesignId(): number {
+    public getDesignId(): number | null {
         return this.designId;
     }
 
@@ -38,7 +38,7 @@ export class OrderLineJson {
         return new OrderLineJson(
             Number(body.id),
             Number(body.orderId),
-            Number(body.designId),
+            body.designId ? Number(body.designId) : null,
             body.orderLineProductVariations.map(OrderLineProductVariationJson.fromObject)
         )
     }
@@ -47,7 +47,7 @@ export class OrderLineJson {
         return new OrderLineJson(
             Number(body.id),
             Number(body.orderId),
-            Number(body.designId),
+            body.designId ? Number(body.designId) : null,
             orderLineProductVariations
         )
     }
