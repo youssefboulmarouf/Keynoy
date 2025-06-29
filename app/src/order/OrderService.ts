@@ -160,7 +160,7 @@ export class OrderService extends BaseService {
             this.logger.log(`Adding Expense for BUY order`);
             await this.expenseService.add(new ExpenseJson(
                 0,
-                "Commande Achats",
+                `Commande Achats [${existingOrder.getId()}]`,
                 existingOrder.getTotalPrice(),
                 new Date(),
                 existingOrder.getId(),
