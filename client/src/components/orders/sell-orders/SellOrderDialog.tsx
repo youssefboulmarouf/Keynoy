@@ -31,7 +31,7 @@ import {
     mapStringToOrderStatus,
     ORDER_STATUS_STRING_OPTIONS
 } from "../order-components/OrderStatusUtils";
-import SellOrderLineDialog from "./order-line/SellOrderLineDialog";
+import SellOrderLineDialog from "./SellOrderLineDialog";
 import FormLabel from "../../common/FormLabel";
 import {useCompaniesContext} from "../../../context/CompaniesContext";
 import {useDialogController} from "../../common/useDialogController";
@@ -101,7 +101,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
         setTotalPrice(concernedOrder.totalPrice)
         setOrderStatus(concernedOrder.orderStatus)
         setSelectedCompany(companies.find((company) => company.id === concernedOrder.companyId) ?? null)
-    });
+    }, [openDialog]);
 
     useEffect(() => {
         setTotalPrice(
@@ -189,38 +189,40 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     }
 
     const handleSubmit = () => {
-        if (orderStatus && orderStatus < concernedOrder.orderStatus) return;
-        if (orderLines.length === 0) return;
-        if (!selectedCompany) return;
-        if (!orderStatus) return;
-        if (!orderDate) return;
-
-        if (dialogType === ModalTypeEnum.ADD) {
-            addOrder({
-                id: 0,
-                companyId: selectedCompany.id,
-                orderType: OrderTypeEnum.SELL,
-                orderStatus: orderStatus,
-                totalPrice: totalPrice,
-                date: orderDate,
-                inventoryUpdated: false,
-                expenseUpdated: false,
-                orderLines: orderLines
-            });
-        } else if (dialogType === ModalTypeEnum.UPDATE) {
-            editOrder({
-                id: concernedOrder.id,
-                companyId: selectedCompany.id,
-                orderType: OrderTypeEnum.SELL,
-                orderStatus: orderStatus,
-                totalPrice: totalPrice,
-                date: orderDate,
-                inventoryUpdated: false,
-                expenseUpdated: false,
-                orderLines: orderLines
-            });
-        } else {
+        if (dialogType === ModalTypeEnum.DELETE) {
             removeOrder(concernedOrder);
+        } else {
+            if (orderStatus && orderStatus < concernedOrder.orderStatus) return;
+            if (orderLines.length === 0) return;
+            if (!selectedCompany) return;
+            if (!orderStatus) return;
+            if (!orderDate) return;
+
+            if (dialogType === ModalTypeEnum.ADD) {
+                addOrder({
+                    id: 0,
+                    companyId: selectedCompany.id,
+                    orderType: OrderTypeEnum.SELL,
+                    orderStatus: orderStatus,
+                    totalPrice: totalPrice,
+                    date: orderDate,
+                    inventoryUpdated: false,
+                    expenseUpdated: false,
+                    orderLines: orderLines
+                });
+            } else {
+                editOrder({
+                    id: concernedOrder.id,
+                    companyId: selectedCompany.id,
+                    orderType: OrderTypeEnum.SELL,
+                    orderStatus: orderStatus,
+                    totalPrice: totalPrice,
+                    date: orderDate,
+                    inventoryUpdated: false,
+                    expenseUpdated: false,
+                    orderLines: orderLines
+                });
+            }
         }
 
         handleCloseDialog();
@@ -302,12 +304,14 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
 
                     {(selectedCompany) ? (
                         <>
-                            <TableCallToActionButton
-                                fullwidth={true}
-                                callToActionText="Ajouter Ligne Commande"
-                                callToActionFunction={() => orderLineDialog.openDialog(ModalTypeEnum.ADD, emptyOrderLine)}
-                                disabled={dialogType === ModalTypeEnum.DELETE || concernedOrder.orderStatus > OrderStatusEnum.CONFIRMED}
-                            />
+                            {(dialogType != ModalTypeEnum.DELETE && concernedOrder.orderStatus === OrderStatusEnum.CONFIRMED)
+                                ? (<TableCallToActionButton
+                                    fullwidth={true}
+                                    callToActionText="Ajouter Ligne Commande"
+                                    callToActionFunction={() => orderLineDialog.openDialog(ModalTypeEnum.ADD, emptyOrderLine)}
+                                />)
+                                : ('')
+                            }
 
                             {orderLines.length > 0 ? (
                                 <Table>
