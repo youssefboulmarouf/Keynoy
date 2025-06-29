@@ -66,7 +66,7 @@ export type OrderJson = {
 export type OrderLineJson = {
     id: number;
     orderId: number;
-    designId: number;
+    designId: number | null;
     orderLineProductVariations: OrderLineProductVariationJson[];
 }
 
@@ -97,6 +97,8 @@ export type ExpenseJson = {
     totalPrice: number;
     date: Date;
     orderId: number;
+    isOrder: boolean;
+    isShipping: boolean;
 }
 
 export type ColorJson = {
@@ -107,7 +109,7 @@ export type ColorJson = {
 
 export type ShippingJson = {
     orderId: number;
-    shipperId: number;
+    companyId: number;
     shippingDate: Date;
     deliveryDate: Date | null;
     price: number;
