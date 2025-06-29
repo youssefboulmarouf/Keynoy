@@ -17,6 +17,8 @@ import SellOrderDialog from "./SellOrderDialog";
 import {useCompaniesContext} from "../../../context/CompaniesContext";
 import {useDialogController} from "../../common/useDialogController";
 import {useOrdersContext} from "../../../context/OrdersContext";
+import {getFirstDayOfCurrentMonth} from "../../common/Utilities";
+import ShipOrderDialog from "./ShipOrderDialog";
 
 const bCrumb = [
     {
@@ -28,10 +30,6 @@ const bCrumb = [
     },
 ];
 
-interface OrdersProps {
-    orderType: OrderTypeEnum;
-}
-
 interface FilterProps {
     searchTerm: string;
     orderStatus: OrderStatusEnum | null;
@@ -39,10 +37,7 @@ interface FilterProps {
     endDate: Date | null;
 }
 
-const getFirstDayOfCurrentMonth = () => {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-};
+
 
 const emptyOrder: OrderJson = {
     id: 0,
@@ -56,11 +51,16 @@ const emptyOrder: OrderJson = {
     orderLines: []
 }
 
-const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
+const SellOrders: React.FC = () => {
     const [listOrders, setListOrders] = useState<OrderJson[]>([]);
-
-    const [filters, setFilters] = useState<FilterProps>({searchTerm: "", orderStatus: null, startDate: getFirstDayOfCurrentMonth(), endDate: null});
+    const [filters, setFilters] = useState<FilterProps>({
+        searchTerm: "",
+        orderStatus: null,
+        startDate: getFirstDayOfCurrentMonth(),
+        endDate: null
+    });
     const orderDialog = useDialogController<OrderJson>(emptyOrder);
+    const shippingDialog = useDialogController<OrderJson>(emptyOrder);
 
     const { orders, addOrder, editOrder, removeOrder, syncInventory } = useOrdersContext();
     const { companies } = useCompaniesContext();
@@ -68,10 +68,10 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
     useEffect(() => {
         if (orders) {
             setListOrders(
-                orders.filter(order => order.orderType == orderType)
+                orders.filter(order => order.orderType == OrderTypeEnum.SELL)
             );
         }
-    }, [orders, orderType]);
+    }, [orders]);
 
     const getCompanyPhoneFromOrder = (order: OrderJson, companyType: string) => {
         return companies?.find(c => c.companyType === companyType && c.id === order.companyId)?.phone ?? "";
@@ -82,7 +82,7 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
     }
 
     const filteredOrders = listOrders.filter((o) => {
-        const companyType = orderType === OrderTypeEnum.BUY ? CompanyTypeEnum.SUPPLIERS : CompanyTypeEnum.CUSTOMERS;
+        const companyType = CompanyTypeEnum.CUSTOMERS;
 
         const matchesSearch =
             getCompanyPhoneFromOrder(o, companyType).toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
@@ -100,7 +100,7 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
 
     return (
         <>
-            <Breadcrumb title={orderType} items={bCrumb} />
+            <Breadcrumb title={OrderTypeEnum.SELL} items={bCrumb} />
             <Grid container mt={3}>
                 <Card sx={{padding: 0, borderColor: (theme) => theme.palette.divider}} variant="outlined">
                     <CardContent>
@@ -114,9 +114,10 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
                             <OrdersList
-                                type={orderType}
+                                type={OrderTypeEnum.SELL}
                                 data={filteredOrders}
-                                handleOpenDialogType={orderDialog.openDialog}
+                                handleOpenOrderDialog={orderDialog.openDialog}
+                                handleOpenShippingDialog={shippingDialog.openDialog}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
                             />
@@ -133,6 +134,14 @@ const SellOrders: React.FC<OrdersProps> = ({orderType}) => {
                 editOrder={editOrder}
                 removeOrder={removeOrder}
                 syncInventory={syncInventory}
+            />
+            <ShipOrderDialog
+                concernedOrder={shippingDialog.data}
+                customers={companies.filter(c => c.companyType === CompanyTypeEnum.CUSTOMERS)}
+                shippers={companies.filter(c => c.companyType === CompanyTypeEnum.SHIPPERS)}
+                dialogType={shippingDialog.type}
+                openDialog={shippingDialog.open}
+                closeDialog={shippingDialog.closeDialog}
             />
         </>
     );
