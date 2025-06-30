@@ -109,7 +109,7 @@ const BuyOrders: React.FC = () => {
                             <OrdersList
                                 type={OrderTypeEnum.BUY}
                                 data={filteredOrders}
-                                handleOpenDialogType={orderDialog.openDialog}
+                                handleOpenOrderDialog={orderDialog.openDialog}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
                             />
