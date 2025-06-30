@@ -3,8 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
 import {OrderTypeEnum} from "../../src/order/OrderTypeEnum";
 import {OrderStatusEnum} from "../../src/order/OrderStatusEnum";
-import {OrderLineJson} from "../../src/order/OrderLineJson";
-import {ProductJson} from "../../src/product/ProductJson";
+import {OrderLineJson} from "../../src/order/order-line/OrderLineJson";
+import {ProductJson} from "../../src/product/product/ProductJson";
 import {CompanyJson} from "../../src/company/CompanyJson";
 import {CompanyTypeEnum} from "../../src/company/CompanyTypeEnum";
 
@@ -32,13 +32,13 @@ describe("Order API E2E Tests", () => {
             "/api/companies",
             { id: null, name: "Bob", type: CompanyTypeEnum.CUSTOMER, phone: "111222333", location: "Morocco" }
         );
-        customer = CompanyJson.from(customerResponse.body);
+        customer = CompanyJson.fromObject(customerResponse.body);
 
         const supplierResponse = await createEntity(
             "/api/companies",
             { id: null, name: "Sup", type: CompanyTypeEnum.SUPPLIER, phone: "111222333", location: "Morocco" }
         );
-        supplier = CompanyJson.from(supplierResponse.body);
+        supplier = CompanyJson.fromObject(supplierResponse.body);
 
         const productResponse = await createEntity(
             "/api/products",

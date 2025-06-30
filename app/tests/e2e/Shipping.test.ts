@@ -1,10 +1,10 @@
 import {PrismaClient} from "@prisma/client";
 import {stopServer} from "../../src";
 import {createEntity, deleteEntity, getEntity, updateEntity} from "./TestHelper";
-import {ProductJson} from "../../src/product/ProductJson";
+import {ProductJson} from "../../src/product/product/ProductJson";
 import {OrderTypeEnum} from "../../src/order/OrderTypeEnum";
 import {OrderStatusEnum} from "../../src/order/OrderStatusEnum";
-import {OrderLineJson} from "../../src/order/OrderLineJson";
+import {OrderLineJson} from "../../src/order/order-line/OrderLineJson";
 import {CompanyJson} from "../../src/company/CompanyJson";
 import {CompanyTypeEnum} from "../../src/company/CompanyTypeEnum";
 
@@ -23,13 +23,13 @@ describe("Order API E2E Tests", () => {
             "/api/companies",
             { id: null, name: "Bob", type: CompanyTypeEnum.CUSTOMER, phone: "111222333", location: "Morocco" }
         );
-        customer = CompanyJson.from(customerResponse.body);
+        customer = CompanyJson.fromObject(customerResponse.body);
 
         const supplierResponse = await createEntity(
             "/api/companies",
             { id: null, name: "Sup", type: CompanyTypeEnum.SUPPLIER, phone: "111222333", location: "Morocco" }
         );
-        supplier = CompanyJson.from(supplierResponse.body);
+        supplier = CompanyJson.fromObject(supplierResponse.body);
 
         const productResponse = await createEntity(
             "/api/products",
@@ -38,7 +38,7 @@ describe("Order API E2E Tests", () => {
         product = ProductJson.from(productResponse.body);
 
         const shipperResponse = await getEntity("/api/companies/shippers");
-        shipper = CompanyJson.from(shipperResponse.body[0]);
+        shipper = CompanyJson.fromObject(shipperResponse.body[0]);
         console.log("shipper: ", shipper)
 
         orderDate = new Date();
@@ -148,7 +148,7 @@ describe("Order API E2E Tests", () => {
     test("Should update shipping details", async () => {
         const newDate = new Date();
         const dc = await getEntity(`/api/companies`);
-        const newShipper = CompanyJson.from(dc.body[1]);
+        const newShipper = CompanyJson.fromObject(dc.body[1]);
 
         const shippingResponse = await updateEntity(`/api/shipping/${orderId}`, {
             orderId: orderId,
