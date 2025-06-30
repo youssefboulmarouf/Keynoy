@@ -50,3 +50,9 @@
 4 - Add support for PrintType (serigraphie, numeric, DTF, ...) in orders
 
 5 - Include customer designs in an inner table of the customers, and remove design menu
+
+6 - client dashboard
+    - number of orders
+    - chiffre d'affaire
+    - number of bags
+    - ...
