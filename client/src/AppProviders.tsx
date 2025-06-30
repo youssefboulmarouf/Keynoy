@@ -6,6 +6,8 @@ import { ProductsProvider } from "./context/ProductsContext";
 import { ProductVariationProvider } from "./context/ProductVariationContext";
 import { ColorsProvider } from "./context/ColorsContext";
 import { OrdersProvider } from "./context/OrdersContext";
+import {ShippingProvider} from "./context/ShippingContext";
+import {ExpensesProvider} from "./context/ExpensesContext";
 
 export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
@@ -16,7 +18,11 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children
                         <ProductVariationProvider>
                             <ColorsProvider>
                                 <OrdersProvider>
-                                    {children}
+                                    <ShippingProvider>
+                                        <ExpensesProvider>
+                                            {children}
+                                        </ExpensesProvider>
+                                    </ShippingProvider>
                                 </OrdersProvider>
                             </ColorsProvider>
                         </ProductVariationProvider>

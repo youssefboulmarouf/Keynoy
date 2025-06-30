@@ -12,11 +12,10 @@ import Expenses from "./components/expenses/Expenses";
 import SellOrders from "./components/orders/sell-orders/SellOrders";
 import ProductTypes from "./components/product-types/ProductTypes";
 import Products from "./components/products/Products";
-import {CompanyTypeEnum, OrderTypeEnum} from "./model/KeynoyModels";
+import {CompanyTypeEnum} from "./model/KeynoyModels";
 import ProductVariations from "./components/product-variation/ProductVariations";
 import CompanyDesign from "./components/company-design/CompanyDesign";
 import BuyOrders from "./components/orders/buy-orders/BuyOrders";
-import Shipping from "./components/shipping/Shipping";
 import AppProviders from "./AppProviders";
 
 const PageWrapper = styled("div")(() => ({
@@ -56,8 +55,6 @@ const App: React.FC = () => {
                                         <Route path="/achats" element={<BuyOrders/>} />
 
                                         <Route path="/charges" element={<Expenses />} />
-
-                                        <Route path="/livraison" element={<Shipping />} />
 
                                         <Route path="/type-produits" element={<ProductTypes />} />
                                         <Route path="/produits" element={<Products />} />
