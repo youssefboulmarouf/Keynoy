@@ -17,13 +17,13 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children
                     <ProductsProvider>
                         <ProductVariationProvider>
                             <ColorsProvider>
-                                <OrdersProvider>
-                                    <ShippingProvider>
-                                        <ExpensesProvider>
+                                <ExpensesProvider>
+                                    <OrdersProvider>
+                                        <ShippingProvider>
                                             {children}
-                                        </ExpensesProvider>
-                                    </ShippingProvider>
-                                </OrdersProvider>
+                                        </ShippingProvider>
+                                    </OrdersProvider>
+                                </ExpensesProvider>
                             </ColorsProvider>
                         </ProductVariationProvider>
                     </ProductsProvider>
