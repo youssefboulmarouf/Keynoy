@@ -2,6 +2,7 @@ import {ShippingJson} from "../model/KeynoyModels";
 import React, {createContext, ReactNode, useContext, useEffect, useMemo, useState} from "react";
 import {createShipping, deleteShipping, fetchShipping, updateShipping} from "../api/ShippingApi";
 import {useOrdersContext} from "./OrdersContext";
+import {useExpensesContext} from "./ExpensesContext";
 
 interface ShippingContextValue {
     shippings: ShippingJson[];
@@ -29,6 +30,7 @@ export const ShippingProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [error, setError] = useState<Error | null>(null);
 
     const {refresh: refreshOrders} = useOrdersContext();
+    const {refresh: refreshExpenses} = useExpensesContext();
 
     const addShipping = async (shippingJson: ShippingJson) => {
         await createShipping(shippingJson);
@@ -50,6 +52,7 @@ export const ShippingProvider: React.FC<{ children: ReactNode }> = ({ children }
         setError(null);
         try {
             await refreshOrders();
+            await refreshExpenses();
             const data = await fetchShipping();
             setShippings(data);
         } catch (err) {

@@ -9,6 +9,7 @@ import {
     updateOrder
 } from "../api/OrdersApi";
 import {useProductVariationContext} from "./ProductVariationContext";
+import {useExpensesContext} from "./ExpensesContext";
 
 interface OrdersContextValue {
     orders: OrderJson[];
@@ -37,6 +38,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
     const {refresh: refreshVariations} = useProductVariationContext();
+    const {refresh: refreshExpenses} = useExpensesContext();
 
     const addOrder = async (order: OrderJson) => {
         await createOrder(order)
@@ -62,7 +64,7 @@ export const OrdersProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const syncExpense = async (order: OrderJson) => {
         await syncOrderExpense(order);
         await refresh();
-        // TODO refesh expenses
+        await refreshExpenses();
     }
 
     const refresh = async () => {
