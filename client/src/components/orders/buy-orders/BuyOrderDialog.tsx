@@ -116,6 +116,11 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
 
     const handleAddOrderLine = (newOrderLine: OrderLineJson) => {
         setOrderLines([...orderLines, newOrderLine]);
+        setTotalPrice(
+            orderLines
+                .flatMap(ol => ol.orderLineProductVariations)
+                .reduce((pv, cv) => pv + cv.unitPrice * cv.quantity, 0)
+        )
     };
 
     const handleRemoveOrderLine = (orderLineProductVariation: OrderLineProductVariationJson) => {
