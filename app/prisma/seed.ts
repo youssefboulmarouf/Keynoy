@@ -30,10 +30,9 @@ async function main() {
         INSERT INTO Company 
             (name,          companyType,    location,   phone)
         VALUES
-            ('Ozone',       'Livreur',      'Rabat',    '06123'),
-            ('Alta',        'Livreur',      'Sale',     '06456'),
-            ('Redombale',   'Fournisseur',  'Sale',     '06789'),
-            ('Client',      'Client',       'Sale',     '06147');
+            ('Ozone',       'Livreur',      'Rabat',    ''),
+            ('Alta',        'Livreur',      'Sale',     ''),
+            ('Redombale',   'Fournisseur',  'Sale',     '');
     `);
 
     await prisma.$executeRawUnsafe(`
@@ -42,7 +41,7 @@ async function main() {
         VALUES
             ('Support Impression',  true,           false,      false),
             ('Peinture',            false,          true,       false),
-            ('Support Peinture',    true,           true,       false),
+            ('Outils Peinture',    true,           true,       false),
             ('Nettoyage',           false,          false,      true),
             ('Outil',               false,          false,      true)
         ;
@@ -59,17 +58,17 @@ async function main() {
             ('Peinture PVC',    false,          false,      (SELECT id from ProductType WHERE name = 'Peinture')),
             ('Peinture EAU',    false,          false,      (SELECT id from ProductType WHERE name = 'Peinture')),
 
-            ('Patte',           false,          false,      (SELECT id from ProductType WHERE name = 'Support Peinture')),
-            ('Dulio',           false,          false,      (SELECT id from ProductType WHERE name = 'Support Peinture')),
+            ('Patte',           false,          false,      (SELECT id from ProductType WHERE name = 'Outils Peinture')),
+            ('Dulio',           false,          false,      (SELECT id from ProductType WHERE name = 'Outils Peinture')),
 
             ('Cyclo',           false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
-            ('Decapot',         false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
+            ('Decapant',         false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
 
-            ('Laswa',           false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
+            ('La Soie',         false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
             ('Cadre',           false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
             ('Gelatine',        false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
             ('Raclette',        false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
-            ('Bizagra',         false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
+            ('Bisagra',         false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
             ('Scotche',         false,          false,      (SELECT id from ProductType WHERE name = 'Outil'))
         ;
     `);
