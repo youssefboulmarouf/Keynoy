@@ -9,52 +9,61 @@ Problems:
 9 - Introduce code-envoi for shipping from delivery companies
 
 Improvements:
-1 - Introduce size table
-    ```
-        model Size {
-            id        Int     @id @default(autoincrement())
-            name      String
-            productVariation   ProductVariation[]
-        }
+1 - Introduce new tables
+    1.1 - Size Table
+        ```
+            model Size {
+                id        Int     @id @default(autoincrement())
+                name      String
+                productVariation   ProductVariation[]
+            }
 
-        model ProductVariation {
-            id        Int @id @default(autoincrement())
-            productId Int
-            colorId   Int
-            sizeId    Int
-            name      String
-            quantity  Int
-            threshold Int
+            model ProductVariation {
+                id        Int @id @default(autoincrement())
+                productId Int
+                colorId   Int
+                sizeId    Int
+                name      String
+                quantity  Int
+                threshold Int
 
-            product   Product @relation(fields: [productId], references: [id])
-            color     Color   @relation(fields: [colorId], references: [id])
-            size      Size   @relation(fields: [sizeId], references: [id])
+                product   Product @relation(fields: [productId], references: [id])
+                color     Color   @relation(fields: [colorId], references: [id])
+                size      Size   @relation(fields: [sizeId], references: [id])
 
-            orderLineProductVariations OrderLineProductVariation[]
-        }
-    ```
+                orderLineProductVariations OrderLineProductVariation[]
+            }
+        ```
 
-2 - Introduce product categories
-    ```
-        model ProductCategory {
-            id            Int     @id @default(autoincrement())
-            name          String
-            productType   ProductType[]
-        }
-        model ProductType {
-            id            Int     @id @default(autoincrement())
-            name          String
-            isPrintable   Boolean
-            isPaint       Boolean
-            isTool        Boolean
-            productCategoryId Int
+    1.2 - ProductCategories Table
+        ```
+            model ProductCategory {
+                id            Int     @id @default(autoincrement())
+                name          String
+                productType   ProductType[]
+            }
+            model ProductType {
+                id            Int     @id @default(autoincrement())
+                name          String
+                isPrintable   Boolean
+                isPaint       Boolean
+                isTool        Boolean
+                productCategoryId Int
 
-            category  ProductCategory    @relation(fields: [productCategoryId], references: [id])
-            product   Product[]
-        }
-    ```
+                category  ProductCategory    @relation(fields: [productCategoryId], references: [id])
+                product   Product[]
+            }
+        ```
 
-3 - Move all flags from ProductType to Product
+    1.3 - Cities Table (this should be considered in companies)
+        ```
+            model City {
+                id        Int     @id @default(autoincrement())
+                name      String
+            }
+        ```
+
+2 - Move all flags from ProductType to Product
     ```
         model Product {
             id            Int            @id @default(autoincrement())
@@ -73,8 +82,7 @@ Improvements:
             productVariation  ProductVariation[]
         }
     ```
-
-4 - Adjust OrderLine to contain  sellable product related fields (`productVariationId`, `quantity`, `unitPrice`)
+3 - Adjust OrderLine to contain  sellable product related fields (`productVariationId`, `quantity`, `unitPrice`)
     and keep `OrderLineProductVariation` only for consumable products, and rename `OrderLineProductVariation` to `OrderLineConsumedVariation`
     ```
         model OrderLine {
@@ -104,8 +112,8 @@ Improvements:
         }
     ```
 
-5 - Ability to track the status history
-    5.1 - Create a new `OrderStatusHistory` model
+4 - Ability to track the status history
+    4.1 - Create a new `OrderStatusHistory` model
         ```
             model OrderStatusHistory {
                 id         Int      @id @default(autoincrement())
@@ -120,7 +128,7 @@ Improvements:
                 @@index([orderId])
             }
         ```
-    5.2 - Adjust `Order` model to consider the `OrderStatusHistory`
+    4.2 - Adjust `Order` model to consider the `OrderStatusHistory`
         ```
             model Order {
                 id          Int              @id @default(autoincrement())
@@ -137,7 +145,7 @@ Improvements:
             }
         ```
 
-6 - Migrate `PaintType` enum to model for more flexibility (This will help with point 3)
+5 - Migrate `PaintType` enum to model for more flexibility (This will help with point 3)
     ```
         model PaintType {
           id    Int     @id @default(autoincrement())
@@ -148,16 +156,16 @@ Improvements:
         }
     ```
 
-7 - Split `Product` model to `PrintSupport`, `Tools`, and `Paint`
-    7.1 - `PrintSupport` (Sac, Mug, Papier Cartone, ...)
-    7.2 - `Tools` (Cadre, Raclete, ...)
-    7.3 - `Paint` (PVC, EAU, TONNER, ...)
+6 - Split `Product` model to `PrintSupport`, `Tools`, and `Paint`
+    6.1 - `PrintSupport` (Sac, Mug, Papier Cartone, ...)
+    6.2 - `Tools` (Cadre, Raclete, ...)
+    6.3 - `Paint` (PVC, EAU, TONNER, ...)
 
-8 - Add support for PrintType (serigraphie, numeric, DTF, ...) in orders
+7 - Add support for PrintType (serigraphie, numeric, DTF, ...) in orders
 
-9 - Include customer designs in an inner table of the customers, and remove design menu
+8 - Include customer designs in an inner table of the customers, and remove design menu
 
-10- client dashboard
+9 - client dashboard
     - number of orders
     - chiffre d'affaire
     - number of bags
