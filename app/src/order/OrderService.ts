@@ -162,7 +162,7 @@ export class OrderService extends BaseService {
                 0,
                 `Commande Achats [${existingOrder.getId()}]`,
                 existingOrder.getTotalPrice(),
-                new Date(),
+                existingOrder.getDate(),
                 existingOrder.getId(),
                 true,
                 false
