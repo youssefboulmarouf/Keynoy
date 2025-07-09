@@ -46,6 +46,7 @@ import {useProductVariationContext} from "../../../context/ProductVariationConte
 import {useCompaniesDesignsContext} from "../../../context/CompaniesDesignsContext";
 import Button from "@mui/material/Button";
 import {getActionButton} from "../../common/Utilities";
+import NumberField from "../../common/NumberField";
 
 interface OrderDialogProps {
     concernedOrder: OrderJson;
@@ -300,7 +301,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                     </LocalizationProvider>
 
                     <FormLabel>Prix Total</FormLabel>
-                    <TextField fullWidth value={totalPrice} disabled sx={{ mb: 2 }}/>
+                    <NumberField value={totalPrice} disabled={true}/>
 
                     {(selectedCompany) ? (
                         <>

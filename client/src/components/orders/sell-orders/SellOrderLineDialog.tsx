@@ -15,6 +15,7 @@ import ColorBox from "../../common/ColorBox";
 import OrderDesignGrid from "../order-components/OrderDesignGrid";
 import FormLabel from "../../common/FormLabel";
 import OrderPaintGrid from "../order-components/OrderPaintGrid";
+import NumberField from "../../common/NumberField";
 
 interface SellOrderLineDialogProps {
     openDialog: boolean;
@@ -124,20 +125,20 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         return [];
     }
 
-    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setQuantity(Number(e.target.value))
-        setTotalPrice(Number(e.target.value) * unitPrice)
+    const handleQuantityChange = (q: number) => {
+        setQuantity(q)
+        setTotalPrice(q * unitPrice)
     }
 
-    const handleUnitPriceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setUnitPrice(Number(e.target.value))
-        setTotalPrice(Number(e.target.value) * quantity)
+    const handleUnitPriceChange = (p: number) => {
+        setUnitPrice(p)
+        setTotalPrice(p * quantity)
     }
 
-    const handleTotalPriceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setTotalPrice(Number(e.target.value))
+    const handleTotalPriceChange = (p: number) => {
+        setTotalPrice(p)
         if (quantity > 0) {
-            setUnitPrice(Number(e.target.value) / quantity)
+            setUnitPrice(p / quantity)
         }
     }
 
@@ -151,6 +152,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         setCalqueQuantity(0);
         setQuantity(0);
         setUnitPrice(0);
+        setTotalPrice(0);
         closeDialog();
     }
 
@@ -271,10 +273,9 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 {selectedCalqueVariation ? (
                     <>
                         <FormLabel>Quantite Calque</FormLabel>
-                        <TextField
-                            fullWidth
+                        <NumberField
                             value={calqueQuantity}
-                            onChange={(e) => setCalqueQuantity(Number(e.target.value))}
+                            onChange={setCalqueQuantity}
                             error={ calqueQuantity > (selectedCalqueVariation.quantity)}
                         />
                         <Typography
@@ -286,8 +287,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 ) : ('')}
 
                 <FormLabel>Quantite</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={quantity}
                     onChange={handleQuantityChange}
                     error={ quantity > (selectedVariant?.quantity ?? 0)}
@@ -301,18 +301,10 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 ) : ('')}
 
                 <FormLabel>Prix Unitaire</FormLabel>
-                <TextField
-                    fullWidth
-                    value={unitPrice}
-                    onChange={handleUnitPriceChange}
-                />
+                <NumberField value={unitPrice} onChange={handleUnitPriceChange}/>
 
                 <FormLabel>Prix Totale</FormLabel>
-                <TextField
-                    fullWidth
-                    value={totalPrice}
-                    onChange={handleTotalPriceChange}
-                />
+                <NumberField value={totalPrice} onChange={handleTotalPriceChange}/>
             </DialogContent>
 
             <DialogActions>

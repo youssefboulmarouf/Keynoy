@@ -15,6 +15,7 @@ import ColorBox from "../../common/ColorBox";
 import OrderDesignGrid from "../order-components/OrderDesignGrid";
 import FormLabel from "../../common/FormLabel";
 import OrderPaintGrid from "../order-components/OrderPaintGrid";
+import NumberField from "../../common/NumberField";
 
 interface SellOrderLineDialogProps {
     openDialog: boolean;
@@ -81,20 +82,20 @@ const BuyOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         return [];
     }
 
-    const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setQuantity(Number(e.target.value))
-        setTotalPrice(Number(e.target.value) * unitPrice)
+    const handleQuantityChange = (q: number) => {
+        setQuantity(q)
+        setTotalPrice(q * unitPrice)
     }
 
-    const handleUnitPriceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setUnitPrice(Number(e.target.value))
-        setTotalPrice(Number(e.target.value) * quantity)
+    const handleUnitPriceChange = (p: number) => {
+        setUnitPrice(p)
+        setTotalPrice(p * quantity)
     }
 
-    const handleTotalPriceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setTotalPrice(Number(e.target.value))
+    const handleTotalPriceChange = (p: number) => {
+        setTotalPrice(p)
         if (quantity > 0) {
-            setUnitPrice(Number(e.target.value) / quantity)
+            setUnitPrice(p / quantity)
         }
     }
 
@@ -104,6 +105,7 @@ const BuyOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         setSelectedVariant(null);
         setQuantity(0);
         setUnitPrice(0);
+        setTotalPrice(0);
         closeDialog();
     }
 
@@ -180,22 +182,19 @@ const BuyOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 />
 
                 <FormLabel>Quantite</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={quantity}
                     onChange={handleQuantityChange}
                 />
 
                 <FormLabel>Prix Unitaire</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={unitPrice}
                     onChange={handleUnitPriceChange}
                 />
 
                 <FormLabel>Prix Totale</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={totalPrice}
                     onChange={handleTotalPriceChange}
                 />

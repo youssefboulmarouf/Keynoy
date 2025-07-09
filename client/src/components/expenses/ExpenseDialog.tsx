@@ -8,6 +8,7 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {DatePicker} from "@mui/x-date-pickers";
 import Button from "@mui/material/Button";
 import {stubFalse} from "lodash";
+import NumberField from "../common/NumberField";
 
 interface ExpenseDialogProps {
     selectedExpense: ExpenseJson;
@@ -103,10 +104,9 @@ const ExpenseDialog: FC<ExpenseDialogProps> = ({
                 />
 
                 <FormLabel>Cout</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={expenseCost}
-                    onChange={(e: any) => setExpenseCost(e.target.value)}
+                    onChange={setExpenseCost}
                     disabled={dialogType === ModalTypeEnum.DELETE}
                 />
 

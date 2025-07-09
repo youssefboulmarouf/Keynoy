@@ -14,6 +14,7 @@ import FormLabel from "../../common/FormLabel";
 import {DatePicker} from "@mui/x-date-pickers";
 import {useShippingContext} from "../../../context/ShippingContext";
 import Button from "@mui/material/Button";
+import NumberField from "../../common/NumberField";
 
 interface ShipOrderDialogProps {
     concernedOrder: OrderJson;
@@ -172,12 +173,10 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                 </LocalizationProvider>
 
                 <FormLabel>Prix Livraison</FormLabel>
-                <TextField
-                    fullWidth
+                <NumberField
                     value={shippingPrice}
-                    onChange={(e) => setShippingPrice(Number(e.target.value))}
+                    onChange={setShippingPrice}
                     disabled={concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED}
-                    sx={{ mb: 2 }}
                 />
 
             </DialogContent>
