@@ -1,6 +1,6 @@
 import {ExpenseJson, ModalTypeEnum, OrderStatusEnum} from "../../model/KeynoyModels";
 import React, {FC, useEffect, useState} from "react";
-import {Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Switch, TextField} from "@mui/material";
 import {getActionButton} from "../common/Utilities";
 import FormLabel from "../common/FormLabel";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
@@ -32,6 +32,8 @@ const ExpenseDialog: FC<ExpenseDialogProps> = ({
     const [expenseName, setExpenseName] = useState<string>("");
     const [expenseCost, setExpenseCost] = useState<number>(0);
     const [expenseDate, setExpenseDate] = useState<Date | null>(null);
+    const [expenseOrder, setExpenseOrder] = useState(false);
+    const [expenseDelivery, setExpenseDelivery] = useState(false);
 
     useEffect(() => {
         setExpenseName(selectedExpense.name);
@@ -53,8 +55,8 @@ const ExpenseDialog: FC<ExpenseDialogProps> = ({
                 totalPrice: expenseCost,
                 date: expenseDate,
                 orderId: 0,
-                isShipping: false,
-                isOrder: false
+                isShipping: expenseDelivery,
+                isOrder: expenseOrder
 
             });
         } else {
@@ -64,8 +66,8 @@ const ExpenseDialog: FC<ExpenseDialogProps> = ({
                 totalPrice: expenseCost,
                 date: expenseDate,
                 orderId: 0,
-                isShipping: false,
-                isOrder: false
+                isShipping: expenseDelivery,
+                isOrder: expenseOrder
             });
         }
 
@@ -123,10 +125,21 @@ const ExpenseDialog: FC<ExpenseDialogProps> = ({
                     />
                 </LocalizationProvider>
 
-                {(selectedExpense.isOrder || selectedExpense.isShipping)
-                    ? selectedExpense.orderId
-                    : ''
-                }
+                <FormLabel>Charge Commande?</FormLabel>
+                <Switch
+                    checked={expenseOrder}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                        setExpenseOrder(checked)
+                    }
+                />
+
+                <FormLabel>Charge Livraison?</FormLabel>
+                <Switch
+                    checked={expenseDelivery}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                        setExpenseDelivery(checked)
+                    }
+                />
 
             </DialogContent>
 
