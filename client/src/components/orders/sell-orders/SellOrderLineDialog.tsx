@@ -280,7 +280,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                         />
                         <Typography
                             variant="body2"
-                            sx={{ display: "flex"}}
+                            sx={{ display: "flex", mt: -2 }}
                             color={calqueQuantity > (selectedCalqueVariation.quantity) ? 'error' : ''}
                         >Quantite {selectedCalqueVariation.name} Actuelle: {selectedCalqueVariation.quantity}</Typography>
                     </>
@@ -295,7 +295,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 {selectedVariant ? (
                     <Typography
                         variant="body2"
-                        sx={{ display: "flex"}}
+                        sx={{ display: "flex", mt: -2 }}
                         color={ quantity > (selectedVariant?.quantity ?? 0) ? 'error' : ''}
                     >Quantite {selectedVariant.name} Actuelle: {selectedVariant?.quantity}</Typography>
                 ) : ('')}
