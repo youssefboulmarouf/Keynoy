@@ -19,7 +19,19 @@ const NumberField: React.FC<NumberFieldProps> = ({
             fullWidth
             type="number"
             value={value}
-            onChange={(e) => onChange(parseFloat(e.target.value))}
+            onChange={(e) => {
+                const value = e.target.value;
+                if (value === "") {
+                    onChange(0);
+                    return;
+                }
+
+                // Allow only numbers with up to 2 decimal places
+                const regex = /^\d*\.?\d{0,2}$/;
+                if (regex.test(value)) {
+                    onChange(parseFloat(value));
+                }
+            }}
             disabled={disabled}
             error={error}
             sx={{
