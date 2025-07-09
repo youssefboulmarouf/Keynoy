@@ -1,5 +1,4 @@
 Problems:
-1 - Delete default data
 2 - Price doesn't accept decimals (2 digits)
 4 - Expense date should follow order/delivery date
 5 - Expense form missing shipping and order flags
