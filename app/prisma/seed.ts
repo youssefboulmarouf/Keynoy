@@ -41,7 +41,7 @@ async function main() {
         VALUES
             ('Support Impression',  true,           false,      false),
             ('Peinture',            false,          true,       false),
-            ('Outils Peinture',    true,           true,       false),
+            ('Outils Peinture',     true,           true,       false),
             ('Nettoyage',           false,          false,      true),
             ('Outil',               false,          false,      true)
         ;
@@ -115,7 +115,6 @@ async function main() {
             ((SELECT id from Product WHERE name = 'Laswa'),         (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 120',            '120',      0,          0),
             ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Normale',        '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Couvrante',      '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte 45',             '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 20/30',        '20/30',    0,          0),
             ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 30/40',        '30/40',    0,          0),
             ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 40/50',        '40/50',    0,          0),
