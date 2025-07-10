@@ -41,7 +41,7 @@ async function main() {
         VALUES
             ('Support Impression',  true,           false,      false),
             ('Peinture',            false,          true,       false),
-            ('Outils Peinture',     true,           true,       false),
+            ('Outils Peinture',     false,          true,       true),
             ('Nettoyage',           false,          false,      true),
             ('Outil',               false,          false,      true)
         ;
@@ -111,8 +111,8 @@ async function main() {
             ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Rouge'),        'Peinture EAU Rouge',   '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Vert'),         'Peinture EAU Vert',    '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Calque'),        (SELECT id from Color WHERE name = 'Transparent'),  'Calque',               '1',        0,        10),
-            ((SELECT id from Product WHERE name = 'Laswa'),         (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 90',             '90',       0,          0),
-            ((SELECT id from Product WHERE name = 'Laswa'),         (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 120',            '120',      0,          0),
+            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 90',             '90',       0,          0),
+            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 120',            '120',      0,          0),
             ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Normale',        '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Couvrante',      '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 20/30',        '20/30',    0,          0),
@@ -123,11 +123,11 @@ async function main() {
             ((SELECT id from Product WHERE name = 'Gelatine'),      (SELECT id from Color WHERE name = 'Transparent'),  'Gelatine Sati',        '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 30',          '30',       0,          0),
             ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 25',          '25',       0,          0),
-            ((SELECT id from Product WHERE name = 'Bizagra'),       (SELECT id from Color WHERE name = 'Transparent'),  'Bizagra',              '1',        0,          0),
+            ((SELECT id from Product WHERE name = 'Bisagra'),       (SELECT id from Color WHERE name = 'Transparent'),  'Bizagra',              '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Dulio'),         (SELECT id from Color WHERE name = 'Transparent'),  'Dulio 1050',           '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Cyclo'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cyclo',                '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Scotche'),       (SELECT id from Color WHERE name = 'Transparent'),  'Scotche',              '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Decapot'),       (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,          0);
+            ((SELECT id from Product WHERE name = 'Decapant'),       (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,          0);
     `);
 
     console.log("Seeding completed successfully!");
