@@ -62,7 +62,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         setPaintProducts(products.filter(p => paintProductTypeIds.includes(p.productTypeId)));
 
         const paintSupportProductTypeIds = productTypes
-            .filter(pt => pt.isPaint && pt.isPrintable && !pt.isTool)
+            .filter(pt => pt.isPaint && !pt.isPrintable && pt.isTool)
             .map(pt => pt.id);
         const paintSupportProductIds = products.filter(p => paintSupportProductTypeIds.includes(p.productTypeId)).map(p => p.id);
         setPaintSupportVariations(variations.filter(v => paintSupportProductIds.includes(v.productId)))
@@ -237,7 +237,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                     setSelectedPaintVariations={setSelectedPaintVariations}
                 />
 
-                <FormLabel>Support Peinture</FormLabel>
+                <FormLabel>Outils Peinture</FormLabel>
                 <Autocomplete
                     options={paintSupportVariations}
                     fullWidth
