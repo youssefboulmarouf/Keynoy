@@ -58,6 +58,7 @@ export class ShippingService extends BaseService {
             data: {
                 orderId: shippingJson.getOrderId(),
                 companyId: shippingJson.getCompanyId(),
+                shippingCode: shippingJson.getShippingCode(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: shippingJson.getDeliveryDate(),
                 price: shippingJson.getPrice()
@@ -96,6 +97,7 @@ export class ShippingService extends BaseService {
             data: {
                 orderId: shippingJson.getOrderId(),
                 companyId: shippingJson.getCompanyId(),
+                shippingCode: shippingJson.getShippingCode(),
                 shippingDate: shippingJson.getShippingDate(),
                 deliveryDate: shippingJson.getDeliveryDate(),
                 price: shippingJson.getPrice()

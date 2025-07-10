@@ -110,6 +110,7 @@ export type ColorJson = {
 export type ShippingJson = {
     orderId: number;
     companyId: number;
+    shippingCode: string;
     shippingDate: Date;
     deliveryDate: Date | null;
     price: number;

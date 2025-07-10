@@ -51,6 +51,7 @@ model Expense {
 model Shipping {
   orderId      Int @id
   companyId    Int
+  shippingCode String
   shippingDate DateTime?
   deliveryDate DateTime?
   price        Decimal @db.Decimal(10, 2) @default(0.00)
@@ -134,7 +135,7 @@ model Order {
   inventoryUpdated Boolean
   expenseUpdated   Boolean
 
-  company   Company?  @relation(fields: [companyId], references: [id])
+  company   Company  @relation(fields: [companyId], references: [id])
   orderLine OrderLine[]
   shipping  Shipping?
 }

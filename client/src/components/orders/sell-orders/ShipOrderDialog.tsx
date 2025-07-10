@@ -40,6 +40,7 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
     const [shippingDate, setShippingDate] = useState<Date | null>(null);
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
     const [shippingPrice, setShippingPrice] = useState<number>(0);
+    const [shippingCode, setShippingCode] = useState<string>("");
     const [selectedShipper, setSelectedShipper] = useState<CompanyJson | null>(null);
 
     const { shippings, addShipping, editShipping } = useShippingContext();
@@ -75,24 +76,22 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
     const handleDialogAction = async () => {
         console.log("handleDialogAction")
         if (concernedOrder.orderStatus < OrderStatusEnum.SHIPPED) {
-            console.log("if")
             if (selectedShipper && shippingDate) {
-                console.log("add")
                 await addShipping({
                     orderId: concernedOrder.id,
                     companyId: selectedShipper.id,
+                    shippingCode: shippingCode,
                     shippingDate: shippingDate,
                     deliveryDate: deliveryDate,
                     price: shippingPrice
                 })
             }
         } else {
-            console.log("else")
             if (shippingDetails && deliveryDate) {
-                console.log("edit")
                 await editShipping({
                     orderId: shippingDetails.orderId,
                     companyId: shippingDetails.companyId,
+                    shippingCode: shippingDetails.shippingCode,
                     shippingDate: shippingDetails.shippingDate,
                     deliveryDate: deliveryDate,
                     price: shippingPrice
@@ -138,6 +137,8 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                     disabled={concernedOrder.orderStatus >= OrderStatusEnum.SHIPPED}
                 />
 
+
+
                 {/* TODO : Move date picker to seperated component*/}
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <FormLabel>Date Livraison</FormLabel>
@@ -150,6 +151,14 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                         disabled={concernedOrder.orderStatus >= OrderStatusEnum.SHIPPED && shippingDate != null}
                     />
                 </LocalizationProvider>
+
+                <FormLabel>Code Envoi</FormLabel>
+                <TextField
+                    fullWidth
+                    value={shippingCode}
+                    onChange={(e: any) => setShippingCode(e.target.value)}
+                    disabled={concernedOrder.orderStatus >= OrderStatusEnum.SHIPPED && shippingDate != null}
+                />
 
                 <FormLabel>Commande Recu?</FormLabel>
                 <Switch
