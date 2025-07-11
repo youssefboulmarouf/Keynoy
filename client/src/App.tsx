@@ -17,6 +17,7 @@ import ProductVariations from "./components/product-variation/ProductVariations"
 import CompanyDesign from "./components/company-design/CompanyDesign";
 import BuyOrders from "./components/orders/buy-orders/BuyOrders";
 import AppProviders from "./AppProviders";
+import Configuration from "./components/configuration/Configuration";
 
 const PageWrapper = styled("div")(() => ({
     display: "flex",
@@ -65,6 +66,8 @@ const App: React.FC = () => {
 
                                         <Route path="/fournisseurs" element={<Companies companyType={CompanyTypeEnum.SUPPLIERS}/>} />
                                         <Route path="/livreurs" element={<Companies  companyType={CompanyTypeEnum.SHIPPERS}/>} />
+
+                                        <Route path="/configuration" element={<Configuration/>} />
                                     </Routes>
                                 </AppProviders>
                             </Box>

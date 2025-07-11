@@ -66,6 +66,14 @@ export const customerMenuItems: Menu[] = [
     }
 ];
 
+export const configurationMenuItems: Menu[] = [
+    {
+        id: uniqueId(),
+        title: "Configuration",
+        href: "/configuration"
+    }
+];
+
 export interface ProfileType {
     href: string;
     title: string;

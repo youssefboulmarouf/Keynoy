@@ -101,12 +101,6 @@ export type ExpenseJson = {
     isShipping: boolean;
 }
 
-export type ColorJson = {
-    id: number;
-    name: string;
-    htmlCode: string;
-}
-
 export type ShippingJson = {
     orderId: number;
     companyId: number;
@@ -114,6 +108,17 @@ export type ShippingJson = {
     shippingDate: Date;
     deliveryDate: Date | null;
     price: number;
+}
+
+export type ColorJson = {
+    id: number;
+    name: string;
+    htmlCode: string;
+}
+
+export type CityJson = {
+    id: number;
+    name: string;
 }
 
 export enum ModalTypeEnum {

@@ -3,7 +3,14 @@ import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import NavHeader from "./NavHeader";
 import NavItem from "./NavItem";
-import {Menu, appMenuItems, partnerMenuItems, productMenuItems, customerMenuItems} from "../common/Menu";
+import {
+    Menu,
+    appMenuItems,
+    partnerMenuItems,
+    productMenuItems,
+    customerMenuItems,
+    configurationMenuItems
+} from "../common/Menu";
 import React, {useState} from "react";
 import Logo from "../logo/Logo";
 
@@ -38,6 +45,11 @@ const Sidebar: React.FC = () => {
 
                             <NavHeader label="Partenaire"/>
                             {partnerMenuItems.map((item: Menu) => (
+                                <NavItem item={item} key={item.id} selectedItemId={selectedItemId} handleSelectedItem={handleSelectedItem} />
+                            ))}
+
+                            <NavHeader label="Configuration"/>
+                            {configurationMenuItems.map((item: Menu) => (
                                 <NavItem item={item} key={item.id} selectedItemId={selectedItemId} handleSelectedItem={handleSelectedItem} />
                             ))}
                         </List>
