@@ -62,7 +62,7 @@ async function main() {
             ('Dulio',           false,          false,      (SELECT id from ProductType WHERE name = 'Outils Peinture')),
 
             ('Cyclo',           false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
-            ('Decapant',         false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
+            ('Decapant',        false,          false,      (SELECT id from ProductType WHERE name = 'Nettoyage')),
 
             ('La Soie',         false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
             ('Cadre',           false,          false,      (SELECT id from ProductType WHERE name = 'Outil')),
@@ -127,7 +127,7 @@ async function main() {
             ((SELECT id from Product WHERE name = 'Dulio'),         (SELECT id from Color WHERE name = 'Transparent'),  'Dulio 1050',           '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Cyclo'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cyclo',                '1',        0,          0),
             ((SELECT id from Product WHERE name = 'Scotche'),       (SELECT id from Color WHERE name = 'Transparent'),  'Scotche',              '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Decapant'),       (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,          0);
+            ((SELECT id from Product WHERE name = 'Decapant'),      (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,          0);
     `);
 
     console.log("Seeding completed successfully!");
