@@ -4,7 +4,7 @@ import {
     ModalTypeEnum,
     OrderJson,
     OrderLineJson,
-    OrderLineProductVariationJson,
+    OrderLineConsumedVariationJson,
     OrderStatusEnum,
     OrderTypeEnum
 } from "../../../model/KeynoyModels";
@@ -64,7 +64,10 @@ const emptyOrderLine: OrderLineJson = {
     id: 0,
     orderId: 0,
     designId: 0,
-    orderLineProductVariations: []
+    productVariationId: 0,
+    quantity: 0,
+    unitPrice: 0,
+    orderLineConsumedVariations: []
 }
 
 const BuyOrderDialog: React.FC<OrderDialogProps> = ({
@@ -109,8 +112,7 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
         if (dialogType === ModalTypeEnum.ADD) {
             setTotalPrice(
                 orderLines
-                    .flatMap(ol => ol.orderLineProductVariations)
-                    .reduce((pv, cv) => pv + cv.unitPrice * cv.quantity, 0)
+                    .reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0)
             )
         }
     }, [orderLines]);
@@ -119,18 +121,13 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
         setOrderLines([...orderLines, newOrderLine]);
         setTotalPrice(
             orderLines
-                .flatMap(ol => ol.orderLineProductVariations)
-                .reduce((pv, cv) => pv + cv.unitPrice * cv.quantity, 0)
+                .reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0)
         )
     };
 
-    const handleRemoveOrderLine = (orderLineProductVariation: OrderLineProductVariationJson) => {
-        setOrderLines((prev) => prev
-            .filter((line) =>
-                !line
-                    .orderLineProductVariations
-                    .map(olpv => olpv.productVariationId)
-                    .includes(orderLineProductVariation.productVariationId))
+    const handleRemoveOrderLine = (orderLineJson: OrderLineJson) => {
+        setOrderLines((prev) =>
+            prev.filter((line) => line.productVariationId != orderLineJson.productVariationId)
         );
     };
 
@@ -285,43 +282,42 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
                                     </TableHead>
                                     <TableBody>
                                         {orderLines
-                                            .flatMap(ol => ol.orderLineProductVariations)
-                                            .map((olpv) => (
-                                                <TableRow key={olpv.productVariationId}>
+                                            .map((ol) => (
+                                                <TableRow key={ol.productVariationId}>
                                                     <TableCell>
                                                         <Tooltip title="Supprimer Ligne">
                                                             <IconButton
                                                                 color="error"
-                                                                onClick={() => handleRemoveOrderLine(olpv)}
+                                                                onClick={() => handleRemoveOrderLine(ol)}
                                                                 disabled={dialogType === ModalTypeEnum.DELETE || concernedOrder.orderStatus > OrderStatusEnum.CONFIRMED}
                                                             >
                                                                 <ClearIcon width={22} />
                                                             </IconButton>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell>{variations.find(v => v.id === olpv.productVariationId)?.name}</TableCell>
+                                                    <TableCell>{variations.find(v => v.id === ol.productVariationId)?.name}</TableCell>
                                                     <TableCell>
                                                         <Box
                                                             sx={{
                                                                 width: 30,
                                                                 height: 30,
                                                                 borderRadius: '6px',
-                                                                backgroundColor: '#' + colors.find(c => c.id === variations.find(v => v.id === olpv.productVariationId)?.colorId)?.htmlCode,
+                                                                backgroundColor: '#' + colors.find(c => c.id === variations.find(v => v.id === ol.productVariationId)?.colorId)?.htmlCode,
                                                                 border: "1px solid #ccc",
                                                                 cursor: 'pointer',
                                                                 opacity: 1,
                                                             }}
-                                                            title={colors.find(c => c.id === variations.find(v => v.id === olpv.productVariationId)?.colorId)?.name}
+                                                            title={colors.find(c => c.id === variations.find(v => v.id === ol.productVariationId)?.colorId)?.name}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        {olpv.quantity}
+                                                        {ol.quantity}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {olpv.unitPrice}
+                                                        {ol.unitPrice}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {olpv.quantity * olpv.unitPrice}
+                                                        {ol.quantity * ol.unitPrice}
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

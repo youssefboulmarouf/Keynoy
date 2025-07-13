@@ -63,7 +63,10 @@ const emptyOrderLine: OrderLineJson = {
     id: 0,
     orderId: 0,
     designId: 0,
-    orderLineProductVariations: []
+    productVariationId: 0,
+    quantity: 0,
+    unitPrice: 0,
+    orderLineConsumedVariations: []
 }
 
 const SellOrderDialog: React.FC<OrderDialogProps> = ({
@@ -105,26 +108,8 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     }, [openDialog]);
 
     useEffect(() => {
-        setTotalPrice(
-            orderLines
-                .flatMap(ol => ol.orderLineProductVariations)
-                .reduce((pv, cv) => pv + cv.unitPrice * cv.quantity, 0)
-        )
+        setTotalPrice(orderLines.reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0))
     }, [orderLines]);
-
-    const deducePrintable = (orderLine: OrderLineJson) => {
-        const printableProductTypeIds = productTypes
-            .filter(pt => pt.isPrintable && !pt.isPaint && !pt.isTool)
-            .map(pt => pt.id);
-        const printableSellableProductIds = products
-            .filter(p => printableProductTypeIds.includes(p.productTypeId) && p.isSellable)
-            .map(p => p.id);
-
-        const printableSellableVariationIds = variations
-            .filter(v => printableSellableProductIds.includes(v.productId))
-            .map(v => v.id);
-        return orderLine.orderLineProductVariations.find(olpv => printableSellableVariationIds.includes(olpv.productVariationId))
-    }
 
     const deduceColor = (paintVariationColorId: number) => {
         return colors.find(c => c.id === paintVariationColorId);
@@ -143,10 +128,9 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
             .filter(v => paintProductIds.includes(v.productId))
             .map(v => v.id);
 
-        const productVariationIds = orderLine
-            .orderLineProductVariations
-            .filter(olpv => paintVariationIds.includes(olpv.productVariationId))
-            .map(olpv => olpv.productVariationId);
+        const productVariationIds = orderLine.orderLineConsumedVariations
+            .filter(olcv => paintVariationIds.includes(olcv.productVariationId))
+            .map(olcv => olcv.productVariationId);
 
         return variations.filter(v => productVariationIds.includes(v.id));
     }
@@ -164,7 +148,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
             .filter(v => calqueProductIds.includes(v.productId))
             .map(v => v.id);
 
-        return orderLine.orderLineProductVariations.find(olpv => calqueVariationIds.includes(olpv.productVariationId))
+        return orderLine.orderLineConsumedVariations.find(olcv => calqueVariationIds.includes(olcv.productVariationId))
     }
 
     const deduceCalqueProductName = (orderLine: OrderLineJson) => {
@@ -333,7 +317,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                                     <TableBody>
                                         {orderLines
                                             .map((ol) => (
-                                                <TableRow key={deducePrintable(ol)?.productVariationId}>
+                                                <TableRow key={ol.productVariationId}>
                                                     <TableCell>
                                                         <Tooltip title="Supprimer Ligne">
                                                             <IconButton
@@ -345,19 +329,19 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                                                             </IconButton>
                                                         </Tooltip>
                                                     </TableCell>
-                                                    <TableCell>{variations.find(v => v.id === deducePrintable(ol)?.productVariationId)?.name}</TableCell>
+                                                    <TableCell>{variations.find(v => v.id === ol.productVariationId)?.name}</TableCell>
                                                     <TableCell>
                                                         <Box
                                                             sx={{
                                                                 width: 30,
                                                                 height: 30,
                                                                 borderRadius: '6px',
-                                                                backgroundColor: '#' + colors.find(c => c.id === variations.find(v => v.id === deducePrintable(ol)?.productVariationId)?.colorId)?.htmlCode,
+                                                                backgroundColor: '#' + colors.find(c => c.id === variations.find(v => v.id === ol.productVariationId)?.colorId)?.htmlCode,
                                                                 border: "1px solid #ccc",
                                                                 cursor: 'pointer',
                                                                 opacity: 1,
                                                             }}
-                                                            title={colors.find(c => c.id === variations.find(v => v.id === deducePrintable(ol)?.productVariationId)?.colorId)?.name}
+                                                            title={colors.find(c => c.id === variations.find(v => v.id === ol.productVariationId)?.colorId)?.name}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -389,13 +373,13 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                                                         {deduceCalque(ol)?.quantity}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {deducePrintable(ol)?.quantity}
+                                                        {ol.quantity}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {deducePrintable(ol)?.unitPrice}
+                                                        {ol.unitPrice}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {(deducePrintable(ol)?.quantity ?? 0) * (deducePrintable(ol)?.unitPrice ?? 0)}
+                                                        {ol.quantity * ol.unitPrice}
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

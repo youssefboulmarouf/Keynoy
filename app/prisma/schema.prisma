@@ -122,7 +122,8 @@ model ProductVariation {
 
   product   Product @relation(fields: [productId], references: [id])
   color     Color   @relation(fields: [colorId], references: [id])
-  orderLineProductVariations OrderLineProductVariation[]
+  orderLine OrderLine[]
+  orderLineConsumedVariations OrderLineConsumedVariation[]
 }
 
 model Order {
@@ -143,18 +144,23 @@ model Order {
 model OrderLine {
   id                  Int      @id @default(autoincrement())
   orderId             Int
-  designId            Int?
 
-  order                      Order   @relation(fields: [orderId], references: [id])
-  design                     CompanyDesign? @relation(fields: [designId], references: [id])
-  orderLineProductVariations OrderLineProductVariation[]
+  designId            Int?
+  productVariationId  Int
+  quantity            Int
+  unitPrice           Decimal @db.Decimal(10, 2) @default(0.00)
+
+  order               Order   @relation(fields: [orderId], references: [id])
+  productVariation    ProductVariation @relation(fields: [productVariationId], references: [id])
+  design              CompanyDesign? @relation(fields: [designId], references: [id])
+
+  consumedVariations OrderLineConsumedVariation[]
 }
 
-model OrderLineProductVariation {
+model OrderLineConsumedVariation {
   orderLineId        Int
   productVariationId Int
   quantity           Int
-  unitPrice          Decimal @db.Decimal(10, 2) @default(0.00)
 
   orderLine OrderLine @relation(fields: [orderLineId], references: [id])
   productVariation ProductVariation @relation(fields: [productVariationId], references: [id])

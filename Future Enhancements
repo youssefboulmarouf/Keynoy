@@ -1,11 +1,5 @@
 Problems:
-2 - Price doesn't accept decimals (2 digits)
-4 - Expense date should follow order/delivery date
-5 - Expense form missing shipping and order flags
-6 - Support Peinture missing missing in sell orders form
-7 - Remove patte 45
-8 - Sync Invetory/Expenses after order state finished, to be in a separate modal
-9 - Introduce code-envoi for shipping from delivery companies
+8 - Sync Inventory/Expenses after order state finished, to be in a separate modal
 
 Improvements:
 1 - Introduce new tables

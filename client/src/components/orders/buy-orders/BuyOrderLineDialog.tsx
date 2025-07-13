@@ -1,8 +1,6 @@
 import {
     ColorJson,
-    CompanyDesignJson,
     OrderLineJson,
-    OrderLineProductVariationJson,
     ProductJson,
     ProductTypeJson,
     ProductVariationJson
@@ -12,9 +10,7 @@ import Typography from "@mui/material/Typography";
 import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import ColorBox from "../../common/ColorBox";
-import OrderDesignGrid from "../order-components/OrderDesignGrid";
 import FormLabel from "../../common/FormLabel";
-import OrderPaintGrid from "../order-components/OrderPaintGrid";
 import NumberField from "../../common/NumberField";
 
 interface SellOrderLineDialogProps {
@@ -59,27 +55,15 @@ const BuyOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 id: 0,
                 orderId: 0,
                 designId: null,
-                orderLineProductVariations: buildOrderLineProductVariations()
+                productVariationId: selectedVariant.id,
+                quantity: quantity,
+                unitPrice: unitPrice,
+                orderLineConsumedVariations: []
             }
 
             addOrderLine(orderLine)
             handleCloseDialog();
         }
-    }
-
-    const buildOrderLineProductVariations = () => {
-        const orderLineProductVariations: OrderLineProductVariationJson[] = [];
-        if (selectedVariant) {
-            orderLineProductVariations.push({
-                orderLineId: 0,
-                productVariationId: selectedVariant.id,
-                quantity: quantity,
-                unitPrice: unitPrice
-            })
-            return orderLineProductVariations;
-        }
-
-        return [];
     }
 
     const handleQuantityChange = (q: number) => {

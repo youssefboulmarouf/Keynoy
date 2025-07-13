@@ -1,19 +1,16 @@
-export class OrderLineProductVariationJson {
+export class OrderLineConsumedVariationJson {
     private readonly orderLineId: number;
     private readonly productVariationId: number;
     private readonly quantity: number;
-    private readonly unitPrice: number;
 
     constructor(
         orderLineId: number,
         productVariationId: number,
-        quantity: number,
-        unitPrice: number
+        quantity: number
     ) {
         this.orderLineId = orderLineId;
         this.productVariationId = productVariationId;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
     }
 
     public getOrderLineId(): number {
@@ -28,16 +25,11 @@ export class OrderLineProductVariationJson {
         return this.quantity;
     }
 
-    public getUnitPrice(): number {
-        return this.unitPrice;
-    }
-
-    public static fromObject(body: any): OrderLineProductVariationJson {
-        return new OrderLineProductVariationJson(
+    public static fromObject(body: any): OrderLineConsumedVariationJson {
+        return new OrderLineConsumedVariationJson(
             Number(body.orderLineId),
             Number(body.productVariationId),
-            Number(body.quantity),
-            Number(body.unitPrice)
+            Number(body.quantity)
         )
     }
 }

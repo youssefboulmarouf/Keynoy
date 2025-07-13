@@ -137,8 +137,6 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                     disabled={concernedOrder.orderStatus >= OrderStatusEnum.SHIPPED}
                 />
 
-
-
                 {/* TODO : Move date picker to seperated component*/}
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <FormLabel>Date Livraison</FormLabel>

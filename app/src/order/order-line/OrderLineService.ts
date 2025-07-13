@@ -1,13 +1,13 @@
 import {BaseService} from "../../utilities/BaseService";
 import {OrderLineJson} from "./OrderLineJson";
-import {OrderLineProductVariationService} from "./order-line-product-variation/OrderLineProductVariationService";
+import {OrderLineConsumedVariationService} from "./order-line-product-variation/OrderLineConsumedVariationService";
 
 export class OrderLineService extends BaseService {
-    private readonly orderLineProductVariationService: OrderLineProductVariationService;
+    private readonly orderLineProductVariationService: OrderLineConsumedVariationService;
 
     constructor() {
         super(OrderLineService.name);
-        this.orderLineProductVariationService = new OrderLineProductVariationService();
+        this.orderLineProductVariationService = new OrderLineConsumedVariationService();
     }
 
     async getByOrderId(orderId: number): Promise<OrderLineJson[]> {
@@ -27,7 +27,10 @@ export class OrderLineService extends BaseService {
         const orderLineData = await this.prisma.orderLine.create({
             data: {
                 orderId,
-                designId: orderLine.getDesignId()
+                designId: orderLine.getDesignId(),
+                productVariationId: orderLine.getProductVariationId(),
+                quantity: orderLine.getQuantity(),
+                unitPrice: orderLine.getUnitPrice(),
             }
         });
 
@@ -36,7 +39,7 @@ export class OrderLineService extends BaseService {
         const orderLineProductVariations = await this.orderLineProductVariationService.addList(
             orderId,
             orderLineData.id,
-            orderLine.getOrderLineProductVariations()
+            orderLine.getOrderLineConsumedVariations()
         );
 
         return OrderLineJson.fromObjectAndVariations(orderLineData, orderLineProductVariations);

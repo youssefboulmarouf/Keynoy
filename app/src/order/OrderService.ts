@@ -235,13 +235,25 @@ export class OrderService extends BaseService {
     }
 
     private async adjustProductQuantities(orderLines: OrderLineJson[], direction: 1 | -1): Promise<void> {
-        await Promise.all(orderLines.flatMap(ol => ol.getOrderLineProductVariations()).map(pv => {
-            if(pv.getQuantity() > 0) {
-                const diff = pv.getQuantity() * direction;
-                this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${pv.getProductVariationId()}] by [${diff}]`);
+        const itemsToProcess = orderLines.flatMap(ol => {
+            const items = [];
 
-                return this.productVariationService.updateQuantity(pv.getProductVariationId(), diff);
+            if (ol.getQuantity() > 0) {
+                items.push({ productVariationId: ol.getProductVariationId(), diff: ol.getQuantity() * direction });
             }
+
+            ol.getOrderLineConsumedVariations()
+                .filter(olv => olv.getQuantity() > 0)
+                .forEach(olv => {
+                    items.push({ productVariationId: olv.getProductVariationId(), diff: olv.getQuantity() * direction });
+                });
+
+            return items;
+        });
+
+        await Promise.all(itemsToProcess.map(async item => {
+            this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${item.productVariationId}] by [${item.diff}]`);
+            await this.productVariationService.updateQuantity(item.productVariationId, item.diff);
         }));
     }
 }

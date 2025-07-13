@@ -1,41 +1,40 @@
 import {BaseService} from "../../../utilities/BaseService";
-import {OrderLineProductVariationJson} from "./OrderLineProductVariationJson";
+import {OrderLineConsumedVariationJson} from "./OrderLineConsumedVariationJson";
 
-export class OrderLineProductVariationService extends BaseService {
+export class OrderLineConsumedVariationService extends BaseService {
 
     constructor() {
-        super(OrderLineProductVariationService.name);
+        super(OrderLineConsumedVariationService.name);
     }
 
-    async addList(orderId: number, orderLineId: number, orderLineProductVariations: OrderLineProductVariationJson[]): Promise<OrderLineProductVariationJson[]> {
+    async addList(orderId: number, orderLineId: number, orderLineProductVariations: OrderLineConsumedVariationJson[]): Promise<OrderLineConsumedVariationJson[]> {
         this.logger.log(`Create multiple order line product variation`, orderLineProductVariations);
 
-        await this.prisma.orderLineProductVariation.createMany({
+        await this.prisma.orderLineConsumedVariation.createMany({
             data: orderLineProductVariations.map(o => ({
                 orderLineId,
                 productVariationId: o.getProductVariationId(),
-                quantity: o.getQuantity(),
-                unitPrice: o.getUnitPrice(),
+                quantity: o.getQuantity()
             })),
         })
 
         return await this.getByOrderLineId(orderId, orderLineId);
     };
 
-    async getByOrderLineId(orderId: number, orderLineId: number): Promise<OrderLineProductVariationJson[]> {
+    async getByOrderLineId(orderId: number, orderLineId: number): Promise<OrderLineConsumedVariationJson[]> {
         this.logger.log(`Get order line products variations by [orderLineId=${orderLineId}] for order with [id=${orderId}]`);
 
-        const data = await this.prisma.orderLineProductVariation.findMany({
+        const data = await this.prisma.orderLineConsumedVariation.findMany({
             where: { orderLineId }
         })
 
-        return data.map(OrderLineProductVariationJson.fromObject);
+        return data.map(OrderLineConsumedVariationJson.fromObject);
     }
 
     async deleteByOrderLineId(orderId: number, orderLineId: number): Promise<void> {
         this.logger.log(`Deleting order line products variations by [orderLineId=${orderLineId}] for order with [id=${orderId}]`);
 
-        await this.prisma.orderLineProductVariation.deleteMany({
+        await this.prisma.orderLineConsumedVariation.deleteMany({
             where: { orderLineId }
         })
     }

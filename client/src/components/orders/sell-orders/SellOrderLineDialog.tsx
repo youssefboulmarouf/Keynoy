@@ -1,8 +1,7 @@
 import {
     ColorJson,
-    CompanyDesignJson,
+    CompanyDesignJson, OrderLineConsumedVariationJson,
     OrderLineJson,
-    OrderLineProductVariationJson,
     ProductJson,
     ProductTypeJson,
     ProductVariationJson
@@ -85,7 +84,10 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 id: 0,
                 orderId: 0,
                 designId: selectedCompanyDesign.id,
-                orderLineProductVariations: buildOrderLineProductVariations()
+                productVariationId: selectedVariant.id,
+                quantity: quantity,
+                unitPrice: unitPrice,
+                orderLineConsumedVariations: buildOrderLineConsumedVariations()
             }
 
             addOrderLine(orderLine)
@@ -93,30 +95,21 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
         }
     }
 
-    const buildOrderLineProductVariations = () => {
-        const orderLineProductVariations: OrderLineProductVariationJson[] = [];
+    const buildOrderLineConsumedVariations = () => {
+        const orderLineProductVariations: OrderLineConsumedVariationJson[] = [];
         if (selectedVariant && selectedCalqueVariation && selectedPaintVariations.length > 0) {
-            orderLineProductVariations.push({
-                orderLineId: 0,
-                productVariationId: selectedVariant.id,
-                quantity: quantity,
-                unitPrice: unitPrice
-            })
-
             selectedPaintVariations.forEach(spp => {
                 orderLineProductVariations.push({
                     orderLineId: 0,
                     productVariationId: spp?.id,
-                    quantity: 0,
-                    unitPrice: 0
+                    quantity: 0
                 })
             })
 
             orderLineProductVariations.push({
                 orderLineId: 0,
                 productVariationId: selectedCalqueVariation.id,
-                quantity: calqueQuantity,
-                unitPrice: 0
+                quantity: calqueQuantity
             })
 
             return orderLineProductVariations;

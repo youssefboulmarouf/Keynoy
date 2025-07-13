@@ -67,14 +67,16 @@ export type OrderLineJson = {
     id: number;
     orderId: number;
     designId: number | null;
-    orderLineProductVariations: OrderLineProductVariationJson[];
-}
-
-export type OrderLineProductVariationJson = {
-    orderLineId: number;
     productVariationId: number;
     quantity: number;
     unitPrice: number;
+    orderLineConsumedVariations: OrderLineConsumedVariationJson[];
+}
+
+export type OrderLineConsumedVariationJson = {
+    orderLineId: number;
+    productVariationId: number;
+    quantity: number;
 }
 
 export enum OrderStatusEnum {
