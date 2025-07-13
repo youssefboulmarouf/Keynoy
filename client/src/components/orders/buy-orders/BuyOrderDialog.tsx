@@ -201,7 +201,7 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
                     <FormLabel>Id</FormLabel>
                     <TextField fullWidth value={concernedOrder.id === 0 ? "" : concernedOrder.id} disabled/>
 
-                    <FormLabel>{CompanyTypeEnum.SHIPPERS}</FormLabel>
+                    <FormLabel>{CompanyTypeEnum.SUPPLIERS}</FormLabel>
                     <Autocomplete
                         options={suppliers}
                         fullWidth

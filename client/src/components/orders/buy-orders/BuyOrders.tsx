@@ -11,6 +11,7 @@ import {Stack} from "@mui/system";
 import Box from "@mui/material/Box";
 import OrdersList from "../order-components/OrdersList";
 import BuyOrderDialog from "./BuyOrderDialog";
+import BuyOrdersList from "./BuyOrdersList";
 
 const bCrumb = [
     {
@@ -106,9 +107,8 @@ const BuyOrders: React.FC = () => {
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
-                            <OrdersList
-                                type={OrderTypeEnum.BUY}
-                                data={filteredOrders}
+                            <BuyOrdersList
+                                buyOrders={filteredOrders}
                                 handleOpenOrderDialog={orderDialog.openDialog}
                                 getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
                                 getCompanyNameFromOrder={getCompanyNameFromOrder}
