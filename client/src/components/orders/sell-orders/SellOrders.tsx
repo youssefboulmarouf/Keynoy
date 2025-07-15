@@ -4,6 +4,7 @@ import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
 import TableCallToActionButton from "../../common/TableCallToActionButton";
 import {
+    CompanyJson,
     CompanyTypeEnum,
     ModalTypeEnum,
     OrderJson,
@@ -12,13 +13,13 @@ import {
 } from "../../../model/KeynoyModels";
 import Box from "@mui/material/Box";
 import OrderFilter from "../order-components/OrderFilter";
-import OrdersList from "../order-components/OrdersList";
 import SellOrderDialog from "./SellOrderDialog";
 import {useCompaniesContext} from "../../../context/CompaniesContext";
 import {useDialogController} from "../../common/useDialogController";
 import {useOrdersContext} from "../../../context/OrdersContext";
 import {getFirstDayOfCurrentMonth} from "../../common/Utilities";
 import ShipOrderDialog from "./ShipOrderDialog";
+import SellOrderList from "./SellOrderList";
 
 const bCrumb = [
     {
@@ -36,8 +37,6 @@ interface FilterProps {
     startDate: Date | null;
     endDate: Date | null;
 }
-
-
 
 const emptyOrder: OrderJson = {
     id: 0,
@@ -73,20 +72,17 @@ const SellOrders: React.FC = () => {
         }
     }, [orders]);
 
-    const getCompanyPhoneFromOrder = (order: OrderJson, companyType: string) => {
-        return companies?.find(c => c.companyType === companyType && c.id === order.companyId)?.phone ?? "";
-    }
-
-    const getCompanyNameFromOrder = (order: OrderJson, companyType: string) => {
-        return companies?.find(c => c.companyType === companyType && c.id === order.companyId)?.name ?? "";
+    const getCompanyFromOrder = (order: OrderJson): CompanyJson | null => {
+        return companies?.find(c => c.id === order.companyId) ?? null;
     }
 
     const filteredOrders = listOrders.filter((o) => {
-        const companyType = CompanyTypeEnum.CUSTOMERS;
+        const company = getCompanyFromOrder(o);
 
-        const matchesSearch =
-            getCompanyPhoneFromOrder(o, companyType).toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-            getCompanyNameFromOrder(o, companyType).toLowerCase().includes(filters.searchTerm.toLowerCase());
+        const matchesSearch = company
+            ? company.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+                || company.phone.toLowerCase().includes(filters.searchTerm.toLowerCase())
+            : true;
 
         const matchesStatus = filters.orderStatus ? o.orderStatus === filters.orderStatus : true;
 
@@ -113,13 +109,11 @@ const SellOrders: React.FC = () => {
                             />
                         </Stack>
                         <Box sx={{ overflowX: "auto" }} mt={3}>
-                            <OrdersList
-                                type={OrderTypeEnum.SELL}
-                                data={filteredOrders}
+                            <SellOrderList
+                                sellOrders={filteredOrders}
+                                getCompanyFromOrder={getCompanyFromOrder}
                                 handleOpenOrderDialog={orderDialog.openDialog}
                                 handleOpenShippingDialog={shippingDialog.openDialog}
-                                getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
-                                getCompanyNameFromOrder={getCompanyNameFromOrder}
                             />
                         </Box>
                     </CardContent>
