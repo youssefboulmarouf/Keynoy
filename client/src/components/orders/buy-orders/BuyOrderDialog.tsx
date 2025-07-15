@@ -4,7 +4,6 @@ import {
     ModalTypeEnum,
     OrderJson,
     OrderLineJson,
-    OrderLineConsumedVariationJson,
     OrderStatusEnum,
     OrderTypeEnum
 } from "../../../model/KeynoyModels";

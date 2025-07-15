@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {CompanyTypeEnum, ModalTypeEnum, OrderJson, OrderStatusEnum, OrderTypeEnum} from "../../../model/KeynoyModels";
+import {
+    CompanyJson,
+    ModalTypeEnum,
+    OrderJson,
+    OrderStatusEnum,
+    OrderTypeEnum
+} from "../../../model/KeynoyModels";
 import {useOrdersContext} from "../../../context/OrdersContext";
 import {useCompaniesContext} from "../../../context/CompaniesContext";
 import {useDialogController} from "../../common/useDialogController";
@@ -9,7 +15,6 @@ import OrderFilter from "../order-components/OrderFilter";
 import TableCallToActionButton from "../../common/TableCallToActionButton";
 import {Stack} from "@mui/system";
 import Box from "@mui/material/Box";
-import OrdersList from "../order-components/OrdersList";
 import BuyOrderDialog from "./BuyOrderDialog";
 import BuyOrdersList from "./BuyOrdersList";
 
@@ -67,20 +72,17 @@ const BuyOrders: React.FC = () => {
         }
     }, [orders]);
 
-    const getCompanyPhoneFromOrder = (order: OrderJson, companyType: string) => {
-        return companies?.find(c => c.companyType === companyType && c.id === order.companyId)?.phone ?? "";
-    }
-
-    const getCompanyNameFromOrder = (order: OrderJson, companyType: string) => {
-        return companies?.find(c => c.companyType === companyType && c.id === order.companyId)?.name ?? "";
+    const getCompanyFromOrder = (order: OrderJson): CompanyJson | null => {
+        return companies?.find(c => c.id === order.companyId) ?? null;
     }
 
     const filteredOrders = listOrders.filter((o) => {
-        const companyType = CompanyTypeEnum.SUPPLIERS;
+        const company = getCompanyFromOrder(o);
 
-        const matchesSearch =
-            getCompanyPhoneFromOrder(o, companyType).toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-            getCompanyNameFromOrder(o, companyType).toLowerCase().includes(filters.searchTerm.toLowerCase());
+        const matchesSearch = company
+            ? company.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+                || company.phone.toLowerCase().includes(filters.searchTerm.toLowerCase())
+            : true;
 
         const matchesStatus = filters.orderStatus ? o.orderStatus === filters.orderStatus : true;
 
@@ -110,8 +112,7 @@ const BuyOrders: React.FC = () => {
                             <BuyOrdersList
                                 buyOrders={filteredOrders}
                                 handleOpenOrderDialog={orderDialog.openDialog}
-                                getCompanyPhoneFromOrder={getCompanyPhoneFromOrder}
-                                getCompanyNameFromOrder={getCompanyNameFromOrder}
+                                getCompanyFromOrder={getCompanyFromOrder}
                             />
                         </Box>
                     </CardContent>
