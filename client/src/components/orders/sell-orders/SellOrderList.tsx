@@ -1,9 +1,4 @@
-import {
-    CompanyJson,
-    ModalTypeEnum,
-    OrderJson,
-    OrderStatusEnum,
-} from "../../../model/KeynoyModels";
+import {CompanyJson, ModalTypeEnum, OrderJson, OrderStatusEnum, OrderTypeEnum,} from "../../../model/KeynoyModels";
 import React, {useState} from "react";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow} from "@mui/material";
@@ -17,13 +12,26 @@ import EditButton from "../../common/buttons/EditButton";
 import DeleteButton from "../../common/buttons/DeleteButton";
 import SyncInventoryButton from "../../common/buttons/SyncInventoryButton";
 import SyncExpenseButton from "../../common/buttons/SyncExpenseButton";
-import SyncIcon from "@mui/icons-material/Sync";
+import {useDialogController} from "../../common/useDialogController";
+import SyncInventoryDialog from "./SyncInventoryDialog";
 
 interface SellOrdersListProps {
     sellOrders: OrderJson[];
     handleOpenOrderDialog: (type: ModalTypeEnum, order: OrderJson) => void;
     handleOpenShippingDialog: (type: ModalTypeEnum, order: OrderJson) => void;
     getCompanyFromOrder: (order: OrderJson) => CompanyJson | null;
+}
+
+const emptyOrder: OrderJson = {
+    id: 0,
+    companyId: 0,
+    orderType: OrderTypeEnum.BUY,
+    orderStatus: OrderStatusEnum.CONFIRMED,
+    totalPrice: 0,
+    inventoryUpdated: false,
+    expenseUpdated: false,
+    date: new Date(),
+    orderLines: []
 }
 
 const SellOrderList: React.FC<SellOrdersListProps> = ({
@@ -34,6 +42,9 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
 }) => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
+
+    const syncInventoryDialog = useDialogController<OrderJson>(emptyOrder);
+
     const { shippings } = useShippingContext();
 
     const loadShippingDetails = (order: OrderJson) => shippings.find(s => s.orderId === order.id) ?? null;
@@ -57,86 +68,96 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
 
     if (sellOrders.length === 0) return <Typography>Aucune commande vente trouver</Typography>;
     return (
-        <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Client</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Status</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Sync Inventaire</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Date Livraison</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Date Reception</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Prix Livraison</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Sync Charge</Typography></TableCell>
-                    <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {paginatedOrders.map(order => {
-                    const shipping = loadShippingDetails(order);
-                    const company = getCompanyFromOrder(order);
+        <>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell><Typography variant="h6" fontSize="14px">Id</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Client</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Status</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Sync Inventaire</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Date Livraison</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Date Reception</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Prix Livraison</Typography></TableCell>
+                        <TableCell><Typography variant="h6" fontSize="14px">Sync Charge</Typography></TableCell>
+                        <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {paginatedOrders.map(order => {
+                        const shipping = loadShippingDetails(order);
+                        const company = getCompanyFromOrder(order);
 
-                    return (
-                        <TableRow key={order.id}>
-                            <TableCell>{order.id}</TableCell>
-                            <TableCell>{company ? `${company.name} - ${company.phone}` : '-'}</TableCell>
-                            <TableCell><OrderStatusChip orderStatus={order.orderStatus} /></TableCell>
-                            <TableCell>{order.totalPrice}</TableCell>
-                            <TableCell>{formatDate(order.date)}</TableCell>
-                            <TableCell>{renderStatusIcon(order.inventoryUpdated)}</TableCell>
-                            <TableCell>{shipping ? formatDate(shipping.shippingDate) : "-"}</TableCell>
-                            <TableCell>{shipping?.deliveryDate ? formatDate(shipping.deliveryDate) : "-"}</TableCell>
-                            <TableCell>{shipping ? shipping.price : "-"}</TableCell>
-                            <TableCell>{renderStatusIcon(order.expenseUpdated)}</TableCell>
-                            <TableCell align="right">
-                                {order.orderStatus >= OrderStatusEnum.IN_PROGRESS && (
-                                    <SyncInventoryButton
-                                        tooltipText="Sync Inventaire"
-                                        openDialogWithType={() => {}}
+                        return (
+                            <TableRow key={order.id}>
+                                <TableCell>{order.id}</TableCell>
+                                <TableCell>{company ? `${company.name} - ${company.phone}` : '-'}</TableCell>
+                                <TableCell><OrderStatusChip orderStatus={order.orderStatus} /></TableCell>
+                                <TableCell>{order.totalPrice}</TableCell>
+                                <TableCell>{formatDate(order.date)}</TableCell>
+                                <TableCell>{renderStatusIcon(order.inventoryUpdated)}</TableCell>
+                                <TableCell>{shipping ? formatDate(shipping.shippingDate) : "-"}</TableCell>
+                                <TableCell>{shipping?.deliveryDate ? formatDate(shipping.deliveryDate) : "-"}</TableCell>
+                                <TableCell>{shipping ? shipping.price : "-"}</TableCell>
+                                <TableCell>{renderStatusIcon(order.expenseUpdated)}</TableCell>
+                                <TableCell align="right">
+                                    {order.orderStatus >= OrderStatusEnum.IN_PROGRESS && (
+                                        <SyncInventoryButton
+                                            tooltipText="Sync Inventaire"
+                                            openDialogWithType={() => syncInventoryDialog.openDialog(ModalTypeEnum.ADD, order)}
+                                            disable={order.inventoryUpdated}
+                                        />
+                                    )}
+                                    {shipping && (
+                                        <SyncExpenseButton
+                                            tooltipText="Sync Charge"
+                                            openDialogWithType={() => {}}
+                                        />
+                                    )}
+                                    {order.orderStatus >= OrderStatusEnum.FINISHED && (
+                                        <ShippingButton
+                                            tooltipText="Livraison"
+                                            openDialogWithType={() => handleOpenShippingDialog(ModalTypeEnum.ADD, order)}
+                                        />
+                                    )}
+                                    <EditButton
+                                        tooltipText={"Modifier Commande"}
+                                        openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.UPDATE, order)}
                                     />
-                                )}
-                                {shipping && (
-                                    <SyncExpenseButton
-                                        tooltipText="Sync Charge"
-                                        openDialogWithType={() => {}}
+                                    <DeleteButton
+                                        tooltipText={"Supprimer Commande"}
+                                        openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.DELETE, order)}
+                                        disable={order.orderStatus > OrderStatusEnum.CONFIRMED}
                                     />
-                                )}
-                                {order.orderStatus >= OrderStatusEnum.FINISHED && (
-                                    <ShippingButton
-                                        tooltipText="Livraison"
-                                        openDialogWithType={() => handleOpenShippingDialog(ModalTypeEnum.ADD, order)}
-                                    />
-                                )}
-                                <EditButton
-                                    tooltipText={"Modifier Commande"}
-                                    openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.UPDATE, order)}
-                                />
-                                <DeleteButton
-                                    tooltipText={"Supprimer Commande"}
-                                    openDialogWithType={() => handleOpenOrderDialog(ModalTypeEnum.DELETE, order)}
-                                    disable={order.orderStatus > OrderStatusEnum.CONFIRMED}
-                                />
-                            </TableCell>
-                        </TableRow>
-                    );
-                })}
-            </TableBody>
-            <TableFooter>
-                <TableRow>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25, 50, { label: "All", value: -1 }]}
-                        colSpan={12}
-                        count={sellOrders.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </TableRow>
-            </TableFooter>
-        </Table>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 50, { label: "All", value: -1 }]}
+                            colSpan={12}
+                            count={sellOrders.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </TableRow>
+                </TableFooter>
+            </Table>
+
+            <SyncInventoryDialog
+                concernedOrder={syncInventoryDialog.data}
+                openDialog={syncInventoryDialog.open}
+                closeDialog={syncInventoryDialog.closeDialog}
+            />
+        </>
+
     );
 }
 

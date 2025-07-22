@@ -140,7 +140,7 @@ export class OrderService extends BaseService {
             await this.orderLineService.addList(order.getOrderLines(), orderId)
 
             this.logger.log(`Decreasing product variation inventory for new SELL order`);
-            await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
+            await this.adjustProductQuantities(order.getOrderLines(), -1);
         }
 
         await this.prisma.order.update({

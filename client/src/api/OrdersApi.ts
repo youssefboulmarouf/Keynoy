@@ -49,6 +49,7 @@ export const syncVariationInventory = async (orderJson: OrderJson): Promise<void
     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/orders/${orderJson.id}/sync-inventory`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderJson),
     });
     if (!res.ok) {
         console.log(res);

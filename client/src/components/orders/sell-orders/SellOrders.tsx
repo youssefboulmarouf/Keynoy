@@ -61,7 +61,7 @@ const SellOrders: React.FC = () => {
     const orderDialog = useDialogController<OrderJson>(emptyOrder);
     const shippingDialog = useDialogController<OrderJson>(emptyOrder);
 
-    const { orders, addOrder, editOrder, removeOrder, syncInventory } = useOrdersContext();
+    const { orders, addOrder, editOrder, removeOrder } = useOrdersContext();
     const { companies } = useCompaniesContext();
 
     useEffect(() => {
@@ -127,7 +127,6 @@ const SellOrders: React.FC = () => {
                 addOrder={addOrder}
                 editOrder={editOrder}
                 removeOrder={removeOrder}
-                syncInventory={syncInventory}
             />
             <ShipOrderDialog
                 concernedOrder={shippingDialog.data}

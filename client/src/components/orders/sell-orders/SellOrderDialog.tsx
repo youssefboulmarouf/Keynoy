@@ -56,7 +56,6 @@ interface OrderDialogProps {
     addOrder: (order: OrderJson) => void;
     editOrder: (order: OrderJson) => void;
     removeOrder: (order: OrderJson) => void;
-    syncInventory: (order: OrderJson) => void;
 }
 
 const emptyOrderLine: OrderLineJson = {
@@ -76,8 +75,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     closeDialog,
     addOrder,
     editOrder,
-    removeOrder,
-    syncInventory,
+    removeOrder
 }) => {
     const [customers, setCustomers] = useState<CompanyJson[]>([]);
     const [selectedCompany, setSelectedCompany] = useState<CompanyJson | null>(null);
@@ -108,7 +106,9 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     }, [openDialog]);
 
     useEffect(() => {
-        setTotalPrice(orderLines.reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0))
+        if (concernedOrder.orderStatus === OrderStatusEnum.CONFIRMED ) {
+            setTotalPrice(orderLines.reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0))
+        }
     }, [orderLines]);
 
     const deduceColor = (paintVariationColorId: number) => {
@@ -210,11 +210,6 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
             }
         }
 
-        handleCloseDialog();
-    }
-
-    const handleSyncInventory = () => {
-        syncInventory(concernedOrder);
         handleCloseDialog();
     }
 
@@ -391,14 +386,6 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                 </DialogContent>
                 <DialogActions>
                     {actionButton}
-                    {(dialogType === ModalTypeEnum.UPDATE && concernedOrder.orderStatus > OrderStatusEnum.CONFIRMED) ? (
-                        <Button
-                            variant="contained"
-                            onClick={() => handleSyncInventory()}
-                            color="info"
-                            disabled={concernedOrder.inventoryUpdated}
-                        >Sync Inventaire</Button>
-                    ) : ('')}
                     <Button variant="outlined" onClick={() => handleCloseDialog()}>Cancel</Button>
                 </DialogActions>
             </Dialog>
