@@ -20,14 +20,12 @@ interface ShipOrderDialogProps {
     concernedOrder: OrderJson;
     customers: CompanyJson[];
     shippers: CompanyJson[];
-    dialogType: ModalTypeEnum;
     openDialog: boolean;
     closeDialog: () => void;
 }
 
 const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
     concernedOrder,
-    dialogType,
     customers,
     shippers,
     openDialog,

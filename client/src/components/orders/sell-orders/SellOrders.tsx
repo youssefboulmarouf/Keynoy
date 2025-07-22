@@ -133,7 +133,6 @@ const SellOrders: React.FC = () => {
                 concernedOrder={shippingDialog.data}
                 customers={companies.filter(c => c.companyType === CompanyTypeEnum.CUSTOMERS)}
                 shippers={companies.filter(c => c.companyType === CompanyTypeEnum.SHIPPERS)}
-                dialogType={shippingDialog.type}
                 openDialog={shippingDialog.open}
                 closeDialog={shippingDialog.closeDialog}
             />
