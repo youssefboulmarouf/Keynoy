@@ -66,10 +66,10 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
                     <TableCell><Typography variant="h6" fontSize="14px">Prix Total</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Date</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Sync Inventaire</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Sync Charge</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Date Livraison</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Date Reception</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Prix Livraison</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Sync Charge</Typography></TableCell>
                     <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                 </TableRow>
             </TableHead>
@@ -86,10 +86,10 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
                             <TableCell>{order.totalPrice}</TableCell>
                             <TableCell>{formatDate(order.date)}</TableCell>
                             <TableCell>{renderStatusIcon(order.inventoryUpdated)}</TableCell>
-                            <TableCell>{renderStatusIcon(order.expenseUpdated)}</TableCell>
                             <TableCell>{shipping ? formatDate(shipping.shippingDate) : "-"}</TableCell>
                             <TableCell>{shipping?.deliveryDate ? formatDate(shipping.deliveryDate) : "-"}</TableCell>
                             <TableCell>{shipping ? shipping.price : "-"}</TableCell>
+                            <TableCell>{renderStatusIcon(order.expenseUpdated)}</TableCell>
                             <TableCell align="right">
                                 {order.orderStatus >= OrderStatusEnum.IN_PROGRESS && (
                                     <SyncInventoryButton
