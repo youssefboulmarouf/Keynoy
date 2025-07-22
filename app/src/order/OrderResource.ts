@@ -68,7 +68,8 @@ router.put("/:id/sync-inventory",
                 .status(201)
                 .json(
                     await orderService.updateInventory(
-                        Number(req.params.id)
+                        Number(req.params.id),
+                        OrderJson.fromObject(req.body)
                     )
                 );
         }

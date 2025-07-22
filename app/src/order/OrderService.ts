@@ -129,13 +129,17 @@ export class OrderService extends BaseService {
         return await this.getById(orderId);
     }
 
-    async updateInventory(orderId: number): Promise<void> {
+    async updateInventory(orderId: number, order: OrderJson): Promise<void> {
         const existingOrder = await this.getById(orderId);
         if (existingOrder.getOrderType() === OrderTypeEnum.BUY) {
-            this.logger.log(`Increasing product quantity for new BUY order`);
+            this.logger.log(`Increasing product variation inventory for new BUY order`);
             await this.adjustProductQuantities(existingOrder.getOrderLines(), +1);
         } else {
-            this.logger.log(`Decreasing product quantity for new SELL order`);
+            this.logger.log(`Update order lines and consumed variation quantities for new SELL order `);
+            await this.orderLineService.deleteByOrderId(orderId);
+            await this.orderLineService.addList(order.getOrderLines(), orderId)
+
+            this.logger.log(`Decreasing product variation inventory for new SELL order`);
             await this.adjustProductQuantities(existingOrder.getOrderLines(), -1);
         }
 
@@ -238,21 +242,21 @@ export class OrderService extends BaseService {
         const itemsToProcess = orderLines.flatMap(ol => {
             const items = [];
 
-            if (ol.getQuantity() > 0) {
-                items.push({ productVariationId: ol.getProductVariationId(), diff: ol.getQuantity() * direction });
-            }
+            items.push({ productVariationId: ol.getProductVariationId(), diff: ol.getQuantity() * direction });
 
-            ol.getOrderLineConsumedVariations()
-                .filter(olv => olv.getQuantity() > 0)
-                .forEach(olv => {
-                    items.push({ productVariationId: olv.getProductVariationId(), diff: olv.getQuantity() * direction });
-                });
+            if (direction === -1) {
+                ol.getOrderLineConsumedVariations()
+                    .filter(olv => olv.getQuantity() > 0)
+                    .forEach(olv => {
+                        items.push({ productVariationId: olv.getProductVariationId(), diff: olv.getQuantity() * direction });
+                    });
+            }
 
             return items;
         });
 
         await Promise.all(itemsToProcess.map(async item => {
-            this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product [id=${item.productVariationId}] by [${item.diff}]`);
+            this.logger.log(`${direction > 0 ? "Increasing" : "Decreasing"} quantity of product variation [id=${item.productVariationId}] by [${item.diff}]`);
             await this.productVariationService.updateQuantity(item.productVariationId, item.diff);
         }));
     }

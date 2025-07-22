@@ -3,11 +3,11 @@ import {OrderLineJson} from "./OrderLineJson";
 import {OrderLineConsumedVariationService} from "./order-line-product-variation/OrderLineConsumedVariationService";
 
 export class OrderLineService extends BaseService {
-    private readonly orderLineProductVariationService: OrderLineConsumedVariationService;
+    private readonly orderLineConsumedVariationService: OrderLineConsumedVariationService;
 
     constructor() {
         super(OrderLineService.name);
-        this.orderLineProductVariationService = new OrderLineConsumedVariationService();
+        this.orderLineConsumedVariationService = new OrderLineConsumedVariationService();
     }
 
     async getByOrderId(orderId: number): Promise<OrderLineJson[]> {
@@ -16,7 +16,7 @@ export class OrderLineService extends BaseService {
         return await Promise.all(lines.map(async line =>
             OrderLineJson.fromObjectAndVariations(
                 line,
-                await this.orderLineProductVariationService.getByOrderLineId(orderId, line.id)
+                await this.orderLineConsumedVariationService.getByOrderLineId(orderId, line.id)
             )
         ));
     }
@@ -36,7 +36,7 @@ export class OrderLineService extends BaseService {
 
         this.logger.log(`Created order line with [id: ${orderLineData.id}]`);
 
-        const orderLineProductVariations = await this.orderLineProductVariationService.addList(
+        const orderLineProductVariations = await this.orderLineConsumedVariationService.addList(
             orderId,
             orderLineData.id,
             orderLine.getOrderLineConsumedVariations()
@@ -62,7 +62,7 @@ export class OrderLineService extends BaseService {
 
         await Promise.all(
             orderLines.map(async ol => {
-                await this.orderLineProductVariationService.deleteByOrderLineId(orderId, ol.getId())
+                await this.orderLineConsumedVariationService.deleteByOrderLineId(orderId, ol.getId())
             })
         );
 
