@@ -110,12 +110,6 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
                                             disable={order.inventoryUpdated}
                                         />
                                     )}
-                                    {shipping && (
-                                        <SyncExpenseButton
-                                            tooltipText="Sync Charge"
-                                            openDialogWithType={() => {}}
-                                        />
-                                    )}
                                     {order.orderStatus >= OrderStatusEnum.FINISHED && (
                                         <ShippingButton
                                             tooltipText="Livraison"
