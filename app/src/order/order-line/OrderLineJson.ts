@@ -6,6 +6,7 @@ export class OrderLineJson {
     private readonly designId: number | null;
     private readonly productVariationId: number;
     private readonly quantity: number;
+    private readonly finalQuantity: number;
     private readonly unitPrice: number;
     private readonly orderLineConsumedVariations: OrderLineConsumedVariationJson[];
 
@@ -15,6 +16,7 @@ export class OrderLineJson {
         designId: number | null,
         productVariationId: number,
         quantity: number,
+        finalQuantity: number,
         unitPrice: number,
         orderLineConsumedVariations: OrderLineConsumedVariationJson[]
     ) {
@@ -23,6 +25,7 @@ export class OrderLineJson {
         this.designId = designId;
         this.productVariationId = productVariationId;
         this.quantity = quantity;
+        this.finalQuantity = finalQuantity;
         this.unitPrice = unitPrice;
         this.orderLineConsumedVariations = orderLineConsumedVariations;
     }
@@ -47,6 +50,10 @@ export class OrderLineJson {
         return this.quantity;
     }
 
+    public getFinalQuantity(): number {
+        return this.finalQuantity;
+    }
+
     public getUnitPrice(): number {
         return this.unitPrice;
     }
@@ -62,6 +69,7 @@ export class OrderLineJson {
             body.designId ? Number(body.designId) : null,
             Number(body.productVariationId),
             Number(body.quantity),
+            Number(body.finalQuantity),
             Number(body.unitPrice),
             body.orderLineConsumedVariations.map(OrderLineConsumedVariationJson.fromObject)
         )
@@ -74,6 +82,7 @@ export class OrderLineJson {
             body.designId ? Number(body.designId) : null,
             Number(body.productVariationId),
             Number(body.quantity),
+            Number(body.finalQuantity),
             Number(body.unitPrice),
             orderLineConsumedVariations
         )

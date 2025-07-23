@@ -69,6 +69,7 @@ export type OrderLineJson = {
     designId: number | null;
     productVariationId: number;
     quantity: number;
+    finalQuantity: number;
     unitPrice: number;
     orderLineConsumedVariations: OrderLineConsumedVariationJson[];
 }
@@ -77,6 +78,7 @@ export type OrderLineConsumedVariationJson = {
     orderLineId: number;
     productVariationId: number;
     quantity: number;
+    finalQuantity: number;
 }
 
 export enum OrderStatusEnum {

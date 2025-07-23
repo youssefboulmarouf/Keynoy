@@ -84,10 +84,12 @@ const SyncInventoryDialog: React.FC<SyncInventoryDialogProps> = ({
             ...concernedOrder,
             orderLines: concernedOrder.orderLines.map(ol => ({
                 ...ol,
-                quantity: getFinalQuantity(ol.id, ol.productVariationId),
+                quantity: ol.quantity,
+                finalQuantity: getFinalQuantity(ol.id, ol.productVariationId),
                 orderLineConsumedVariations: ol.orderLineConsumedVariations.map(cv => ({
                     ...cv,
-                    quantity: getFinalQuantity(cv.orderLineId, cv.productVariationId)
+                    quantity: cv.quantity,
+                    finalQuantity: getFinalQuantity(cv.orderLineId, cv.productVariationId)
                 }))
             }))
         };

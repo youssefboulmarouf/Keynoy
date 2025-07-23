@@ -30,6 +30,7 @@ export class OrderLineService extends BaseService {
                 designId: orderLine.getDesignId(),
                 productVariationId: orderLine.getProductVariationId(),
                 quantity: orderLine.getQuantity(),
+                finalQuantity: orderLine.getFinalQuantity(),
                 unitPrice: orderLine.getUnitPrice(),
             }
         });

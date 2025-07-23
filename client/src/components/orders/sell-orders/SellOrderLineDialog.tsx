@@ -86,6 +86,7 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 designId: selectedCompanyDesign.id,
                 productVariationId: selectedVariant.id,
                 quantity: quantity,
+                finalQuantity: 0,
                 unitPrice: unitPrice,
                 orderLineConsumedVariations: buildOrderLineConsumedVariations()
             }
@@ -102,14 +103,16 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 orderLineProductVariations.push({
                     orderLineId: 0,
                     productVariationId: spp?.id,
-                    quantity: 0
+                    quantity: 0,
+                    finalQuantity: 0
                 })
             })
 
             orderLineProductVariations.push({
                 orderLineId: 0,
                 productVariationId: selectedCalqueVariation.id,
-                quantity: calqueQuantity
+                quantity: calqueQuantity,
+                finalQuantity: 0
             })
 
             return orderLineProductVariations;

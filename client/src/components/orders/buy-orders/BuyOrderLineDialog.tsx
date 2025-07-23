@@ -57,6 +57,7 @@ const BuyOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
                 designId: null,
                 productVariationId: selectedVariant.id,
                 quantity: quantity,
+                finalQuantity: quantity,
                 unitPrice: unitPrice,
                 orderLineConsumedVariations: []
             }

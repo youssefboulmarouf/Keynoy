@@ -242,13 +242,13 @@ export class OrderService extends BaseService {
         const itemsToProcess = orderLines.flatMap(ol => {
             const items = [];
 
-            items.push({ productVariationId: ol.getProductVariationId(), diff: ol.getQuantity() * direction });
+            items.push({ productVariationId: ol.getProductVariationId(), diff: ol.getFinalQuantity() * direction });
 
             if (direction === -1) {
                 ol.getOrderLineConsumedVariations()
-                    .filter(olv => olv.getQuantity() > 0)
+                    .filter(olv => olv.getFinalQuantity() > 0)
                     .forEach(olv => {
-                        items.push({ productVariationId: olv.getProductVariationId(), diff: olv.getQuantity() * direction });
+                        items.push({ productVariationId: olv.getProductVariationId(), diff: olv.getFinalQuantity() * direction });
                     });
             }
 

@@ -64,6 +64,7 @@ const emptyOrderLine: OrderLineJson = {
     designId: 0,
     productVariationId: 0,
     quantity: 0,
+    finalQuantity: 0,
     unitPrice: 0,
     orderLineConsumedVariations: []
 }

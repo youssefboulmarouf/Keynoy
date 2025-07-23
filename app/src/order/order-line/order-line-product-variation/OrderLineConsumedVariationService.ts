@@ -14,7 +14,8 @@ export class OrderLineConsumedVariationService extends BaseService {
             data: orderLineProductVariations.map(o => ({
                 orderLineId,
                 productVariationId: o.getProductVariationId(),
-                quantity: o.getQuantity()
+                quantity: o.getQuantity(),
+                finalQuantity: o.getFinalQuantity()
             })),
         })
 
