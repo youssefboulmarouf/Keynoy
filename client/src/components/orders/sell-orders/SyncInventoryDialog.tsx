@@ -49,14 +49,14 @@ const SyncInventoryDialog: React.FC<SyncInventoryDialogProps> = ({
                 orderLineId: ol.id,
                 productVariationId: ol.productVariationId,
                 quantity: ol.quantity,
-                finalQuantity: ol.quantity, // default to initial quantity
+                finalQuantity: ol.finalQuantity
             });
             ol.orderLineConsumedVariations.forEach(cv => {
                 inventoryData.push({
                     orderLineId: cv.orderLineId,
                     productVariationId: cv.productVariationId,
                     quantity: cv.quantity,
-                    finalQuantity: cv.quantity,
+                    finalQuantity: cv.finalQuantity
                 });
             });
         });
@@ -155,7 +155,7 @@ const SyncInventoryDialog: React.FC<SyncInventoryDialogProps> = ({
                 </Table>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="primary" onClick={handleSyncInventory}>Ajouter Livraison</Button>
+                <Button variant="contained" color="primary" onClick={handleSyncInventory}>Sync Inventaire</Button>
                 <Button variant="outlined" onClick={() => closeDialog()}>Cancel</Button>
             </DialogActions>
         </Dialog>
