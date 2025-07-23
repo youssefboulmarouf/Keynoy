@@ -55,6 +55,7 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
         setShippingDate(shippingDetails ? new Date(shippingDetails.shippingDate) : null)
         setDeliveryDate((shippingDetails && shippingDetails.deliveryDate) ? new Date(shippingDetails.deliveryDate) : null)
         setShippingPrice(shippingDetails?.price ?? 0)
+        setShippingCode(shippingDetails?.shippingCode ?? "")
     }, [shippingDetails]);
 
     const handleCloseDialog = () => {
@@ -72,7 +73,6 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
     }
 
     const handleDialogAction = async () => {
-        console.log("handleDialogAction")
         if (concernedOrder.orderStatus < OrderStatusEnum.SHIPPED) {
             if (selectedShipper && shippingDate) {
                 await addShipping({
@@ -173,7 +173,7 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                         onChange={(newValue: Date | null) => setDeliveryDate(newValue)}
                         minDate={new Date("01/01/2024")}
                         maxDate={new Date("01/01/2047")}
-                        disabled={concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED && deliveryDate != null}
+                        disabled={concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED && shippingDetails?.deliveryDate != null}
                     />
                 </LocalizationProvider>
 
@@ -181,7 +181,7 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
                 <NumberField
                     value={shippingPrice}
                     onChange={setShippingPrice}
-                    disabled={concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED}
+                    disabled={concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED && shippingDetails?.deliveryDate != null}
                 />
 
             </DialogContent>
