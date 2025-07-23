@@ -24,24 +24,24 @@ enum PaintType {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  name      String
-  email     String
-  password  String
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  password String
 }
 
 model Color {
-  id        Int     @id @default(autoincrement())
-  name      String
-  htmlCode  String
+  id       Int    @id @default(autoincrement())
+  name     String
+  htmlCode String
 
-  productVariation   ProductVariation[]
+  productVariation ProductVariation[]
 }
 
 model Expense {
   id         Int      @id @default(autoincrement())
   name       String
-  totalPrice Decimal  @db.Decimal(10, 2) @default(0.00)
+  totalPrice Decimal  @default(0.00) @db.Decimal(10, 2)
   date       DateTime
   isOrder    Boolean
   isShipping Boolean
@@ -49,19 +49,19 @@ model Expense {
 }
 
 model Shipping {
-  orderId      Int @id
+  orderId      Int       @id
   companyId    Int
   shippingCode String
   shippingDate DateTime?
   deliveryDate DateTime?
-  price        Decimal @db.Decimal(10, 2) @default(0.00)
+  price        Decimal   @default(0.00) @db.Decimal(10, 2)
 
-  order        Order   @relation(fields: [orderId], references: [id])
-  shipper      Company @relation(fields: [companyId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id])
+  shipper Company @relation(fields: [companyId], references: [id])
 }
 
 model Company {
-  id          Int     @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   companyType CompanyType
   location    String?
@@ -73,46 +73,46 @@ model Company {
 }
 
 model CompanyDesign {
-  id           Int     @id @default(autoincrement())
-  designName   String
-  companyId    Int
+  id         Int    @id @default(autoincrement())
+  designName String
+  companyId  Int
 
-  company      Company @relation(fields: [companyId], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id])
   designImages DesignImage[]
   orderLine    OrderLine[]
 }
 
 model DesignImage {
-  id              Int     @id @default(autoincrement())
+  id              Int    @id @default(autoincrement())
   imageUrl        String
   companyDesignId Int
 
-  companyDesign   CompanyDesign @relation(fields: [companyDesignId], references: [id])
+  companyDesign CompanyDesign @relation(fields: [companyDesignId], references: [id])
 }
 
 model ProductType {
-  id            Int     @id @default(autoincrement())
-  name          String
-  isPrintable   Boolean
-  isPaint       Boolean
-  isTool        Boolean
+  id          Int     @id @default(autoincrement())
+  name        String
+  isPrintable Boolean
+  isPaint     Boolean
+  isTool      Boolean
 
-  product   Product[]
+  product Product[]
 }
 
 model Product {
-  id            Int            @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   name          String
   isSellable    Boolean
   isLayer       Boolean
   productTypeId Int
 
-  productType       ProductType    @relation(fields: [productTypeId], references: [id])
-  productVariation  ProductVariation[]
+  productType      ProductType        @relation(fields: [productTypeId], references: [id])
+  productVariation ProductVariation[]
 }
 
 model ProductVariation {
-  id        Int @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   productId Int
   colorId   Int
   name      String
@@ -120,39 +120,40 @@ model ProductVariation {
   quantity  Int
   threshold Int
 
-  product   Product @relation(fields: [productId], references: [id])
-  color     Color   @relation(fields: [colorId], references: [id])
-  orderLine OrderLine[]
+  product                     Product                      @relation(fields: [productId], references: [id])
+  color                       Color                        @relation(fields: [colorId], references: [id])
+  orderLine                   OrderLine[]
   orderLineConsumedVariations OrderLineConsumedVariation[]
 }
 
 model Order {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   companyId        Int
   orderType        OrderType
   orderStatus      Int
-  totalPrice       Decimal  @db.Decimal(10, 2) @default(0.00)
+  totalPrice       Decimal   @default(0.00) @db.Decimal(10, 2)
   date             DateTime
   inventoryUpdated Boolean
   expenseUpdated   Boolean
 
-  company   Company  @relation(fields: [companyId], references: [id])
+  company   Company     @relation(fields: [companyId], references: [id])
   orderLine OrderLine[]
   shipping  Shipping?
 }
 
 model OrderLine {
-  id                  Int      @id @default(autoincrement())
-  orderId             Int
+  id      Int @id @default(autoincrement())
+  orderId Int
 
-  designId            Int?
-  productVariationId  Int
-  quantity            Int
-  unitPrice           Decimal @db.Decimal(10, 2) @default(0.00)
+  designId           Int?
+  productVariationId Int
+  quantity           Int
+  finalQuantity      Int
+  unitPrice          Decimal @default(0.00) @db.Decimal(10, 2)
 
-  order               Order   @relation(fields: [orderId], references: [id])
-  productVariation    ProductVariation @relation(fields: [productVariationId], references: [id])
-  design              CompanyDesign? @relation(fields: [designId], references: [id])
+  order            Order            @relation(fields: [orderId], references: [id])
+  productVariation ProductVariation @relation(fields: [productVariationId], references: [id])
+  design           CompanyDesign?   @relation(fields: [designId], references: [id])
 
   consumedVariations OrderLineConsumedVariation[]
 }
@@ -161,8 +162,9 @@ model OrderLineConsumedVariation {
   orderLineId        Int
   productVariationId Int
   quantity           Int
+  finalQuantity      Int
 
-  orderLine OrderLine @relation(fields: [orderLineId], references: [id])
+  orderLine        OrderLine        @relation(fields: [orderLineId], references: [id])
   productVariation ProductVariation @relation(fields: [productVariationId], references: [id])
 
   @@id([orderLineId, productVariationId])
