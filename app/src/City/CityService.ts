@@ -48,7 +48,7 @@ export class CityService extends BaseService {
         this.logger.log(`City updated data`, cityJson);
 
         return CityJson.from(
-            await this.prisma.color.update({
+            await this.prisma.city.update({
                 where: { id },
                 data: {
                     name: cityJson.getName()
