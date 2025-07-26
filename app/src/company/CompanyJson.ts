@@ -6,20 +6,20 @@ export class CompanyJson {
     private readonly name: string;
     private readonly companyType: CompanyTypeEnum;
     private readonly phone: string;
-    private readonly location: string;
+    private readonly cityId: number;
 
     constructor(
         id: number,
         name: string,
         companyType: CompanyTypeEnum,
         phone: string,
-        location: string,
+        cityId: number
     ) {
         this.id = id;
         this.name = name;
         this.companyType = companyType;
         this.phone = phone;
-        this.location = location;
+        this.cityId = cityId;
     }
 
     public getId(): number {
@@ -38,8 +38,8 @@ export class CompanyJson {
         return this.phone;
     }
 
-    public getLocation(): string {
-        return this.location;
+    public getCityId(): number {
+        return this.cityId;
     }
 
     public static fromObject(body: any): CompanyJson {
@@ -48,7 +48,7 @@ export class CompanyJson {
             body.name,
             mapCompanyTypeToCompanyTypeEnum(body.companyType),
             body.phone,
-            body.location,
+            body.cityId
         )
     }
 }

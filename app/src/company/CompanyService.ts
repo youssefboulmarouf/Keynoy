@@ -38,7 +38,7 @@ export class CompanyService extends BaseService {
                 name: company.getName(),
                 companyType: mapCompanyTypeEnumToCompanyType(company.getCompanyType()),
                 phone: company.getPhone(),
-                location: company.getLocation()
+                cityId: company.getCityId()
             }
         });
 
@@ -64,7 +64,7 @@ export class CompanyService extends BaseService {
                     name: company.getName(),
                     companyType: mapCompanyTypeEnumToCompanyType(company.getCompanyType()),
                     phone: company.getPhone(),
-                    location: company.getLocation()
+                    cityId: company.getCityId()
                 }
             })
         );
