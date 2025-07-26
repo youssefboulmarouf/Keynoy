@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import Breadcrumb from "../common/Breadcrumb";
 import {Card, CardContent, Grid} from "@mui/material";
 import {Stack} from "@mui/system";
@@ -10,6 +10,7 @@ import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 import CompaniesList from "./CompaniesList";
 import {useCompaniesContext} from "../../context/CompaniesContext";
 import {useDialogController} from "../common/useDialogController";
+import {useCityContext} from "../../context/CitiesContext";
 
 const bCrumb = [
     {
@@ -30,21 +31,25 @@ const emptyCompany: CompanyJson = {
     name: "",
     companyType: "",
     phone: "",
-    location: ""
+    cityId: 0
 }
 
 const Companies: React.FC<CompaniesProps> = ({companyType}) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const companyDialog = useDialogController<CompanyJson>(emptyCompany)
     const {companies, addCompany, editCompany, removeCompany} = useCompaniesContext();
+    const {cities} = useCityContext();
 
-    const filteredCompanies = companies?.filter(c =>
-        c.companyType === companyType && (
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.location.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    ) || [];
+    const filteredCompanies = useMemo(() => {
+        return companies?.filter(c => {
+            const isCompanyType = c.companyType === companyType;
+            const companyNameMatchSearch = searchTerm ? c.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const companyPhoneMatchSearch = searchTerm ? c.phone.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+            const cityMatchSearch = searchTerm ? cities.find(city => city.id === c.cityId)?.name.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+
+            return isCompanyType && (companyNameMatchSearch || companyPhoneMatchSearch || cityMatchSearch)
+        }) || [];
+    }, [searchTerm, companies, cities, companyType]);
 
     return (
         <>
@@ -64,6 +69,7 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
                             <CompaniesList
                                 companyType={companyType}
                                 companies={filteredCompanies}
+                                cities={cities}
                                 openCompanyDialogWithType={companyDialog.openDialog}
                             />
                         </Box>
@@ -73,6 +79,7 @@ const Companies: React.FC<CompaniesProps> = ({companyType}) => {
 
             <CompanyDialog
                 selectedCompany={companyDialog.data}
+                cities={cities}
                 dialogType={companyDialog.type}
                 companyType={companyType}
                 openDialog={companyDialog.open}

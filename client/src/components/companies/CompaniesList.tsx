@@ -1,5 +1,5 @@
 import React from "react";
-import {CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
+import {CityJson, CompanyJson, ModalTypeEnum} from "../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import EditButton from "../common/buttons/EditButton";
@@ -10,10 +10,11 @@ import Pagination from "../common/Pagination";
 interface CompaniesListProps {
     companyType: string;
     companies: CompanyJson[];
+    cities: CityJson[];
     openCompanyDialogWithType: (type: ModalTypeEnum, company: CompanyJson) => void;
 }
 
-const CompaniesList: React.FC<CompaniesListProps> = ({companyType, companies, openCompanyDialogWithType}) => {
+const CompaniesList: React.FC<CompaniesListProps> = ({companyType, companies, cities, openCompanyDialogWithType}) => {
     const paginationController = usePaginationController<CompanyJson>(companies);
     if (companies.length === 0) return <Typography>Aucun {companyType} trouver</Typography>;
     return (
@@ -33,7 +34,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({companyType, companies, op
                         <TableCell>{comp.id}</TableCell>
                         <TableCell>{comp.name}</TableCell>
                         <TableCell>{comp.phone}</TableCell>
-                        <TableCell>{comp.location}</TableCell>
+                        <TableCell>{cities.find(city => city.id === comp.cityId)?.name}</TableCell>
                         <TableCell align="right">
                             <EditButton
                                 tooltipText={`Modifier ${companyType}`}
