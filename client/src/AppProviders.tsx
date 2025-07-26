@@ -8,28 +8,31 @@ import { ColorsProvider } from "./context/ColorsContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import {ShippingProvider} from "./context/ShippingContext";
 import {ExpensesProvider} from "./context/ExpensesContext";
+import {CitiesProvider} from "./context/CitiesContext";
 
 export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <CompaniesDesignsProvider>
-            <CompaniesProvider>
-                <ProductTypesProvider>
-                    <ProductsProvider>
-                        <ProductVariationProvider>
-                            <ColorsProvider>
-                                <ExpensesProvider>
-                                    <OrdersProvider>
-                                        <ShippingProvider>
-                                            {children}
-                                        </ShippingProvider>
-                                    </OrdersProvider>
-                                </ExpensesProvider>
-                            </ColorsProvider>
-                        </ProductVariationProvider>
-                    </ProductsProvider>
-                </ProductTypesProvider>
-            </CompaniesProvider>
-        </CompaniesDesignsProvider>
+        <CitiesProvider>
+            <CompaniesDesignsProvider>
+                <CompaniesProvider>
+                    <ProductTypesProvider>
+                        <ProductsProvider>
+                            <ProductVariationProvider>
+                                <ColorsProvider>
+                                    <ExpensesProvider>
+                                        <OrdersProvider>
+                                            <ShippingProvider>
+                                                {children}
+                                            </ShippingProvider>
+                                        </OrdersProvider>
+                                    </ExpensesProvider>
+                                </ColorsProvider>
+                            </ProductVariationProvider>
+                        </ProductsProvider>
+                    </ProductTypesProvider>
+                </CompaniesProvider>
+            </CompaniesDesignsProvider>
+        </CitiesProvider>
     );
 };
 
