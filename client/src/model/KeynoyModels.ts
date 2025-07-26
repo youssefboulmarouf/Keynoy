@@ -3,7 +3,7 @@ export type CompanyJson = {
     name: string;
     companyType: string;
     phone: string;
-    location: string;
+    cityId: number;
 }
 
 export type CompanyDesignJson = {
