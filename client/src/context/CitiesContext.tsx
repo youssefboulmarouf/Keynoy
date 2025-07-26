@@ -1,11 +1,15 @@
 import React, {createContext, ReactNode, useContext, useEffect, useMemo, useState} from "react";
 import {CityJson} from "../model/KeynoyModels";
-import {fetchCities} from "../api/CitiesApi";
+import {createCity, deleteCity, fetchCities, updateCity} from "../api/CitiesApi";
 
 interface CitiesContextValue {
     cities: CityJson[];
     loading: boolean;
     error: Error | null;
+    refresh: () => void;
+    addCity: (cityJson: CityJson) => Promise<void>;
+    editCity: (cityJson: CityJson) => Promise<void>;
+    removeCity: (cityJson: CityJson) => Promise<void>;
 }
 
 const CitiesContext = createContext<CitiesContextValue | undefined>(undefined);
@@ -22,6 +26,21 @@ export const CitiesProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [cities, setCities] = useState<CityJson[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
+
+    const addCity = async (cityJson: CityJson) => {
+        await createCity(cityJson);
+        await refresh();
+    }
+
+    const editCity = async (cityJson: CityJson) => {
+        await updateCity(cityJson);
+        await refresh();
+    }
+
+    const removeCity = async (cityJson: CityJson) => {
+        await deleteCity(cityJson);
+        await refresh();
+    }
 
     const refresh = async () => {
         setLoading(true);
@@ -43,7 +62,11 @@ export const CitiesProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const value: CitiesContextValue = useMemo(() => ({
         cities,
         loading,
-        error
+        error,
+        refresh,
+        addCity,
+        editCity,
+        removeCity,
     }), [cities, loading, error])
 
     return (
