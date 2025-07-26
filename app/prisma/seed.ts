@@ -6,6 +6,27 @@ async function main() {
     console.log("Seeding database using raw SQL...");
 
     await prisma.$executeRawUnsafe(`
+        INSERT INTO City
+            (name)
+        VALUES
+            ('Casablanca'), ('Fes'), ('Marrakech'), ('Tangier'), ('Sale'), ('Rabat'), ('Meknes'), ('Oujda'), 
+            ('Kenitra'), ('Agadir'), ('Tétouan'), ('Taourirt'), ('Temara'), ('Safi'), ('Khenifra'), ('El Jadid'), 
+            ('Laayoune'), ('Mohammedia'), ('Kouribga'), ('Beni Mellal'), ('Ait Melloul'), ('Nador'), ('Taza'), 
+            ('Settat'), ('Barrechid'), ('Al Khmissat'), ('Inezgane'), ('Ksar El Kebir'), ('My Drarga'), ('Larache'), 
+            ('Guelmim'), ('Berkane'), ('Ad Dakhla'), ('Bouskoura'), ('Al Fqih Ben Salah'), ('Oued Zem'), ('Sidi Slimane'), 
+            ('Errachidia'), ('Guercif'), ('Oulad Teima'), ('Ben Guerir'), ('Sefrou'), ('Fnidq'), ('Sidi Qacem'), 
+            ('Tiznit'), ('Moulay Abdallah'), ('Youssoufia'), ('Martil'), ('Ain Harrouda'), ('Souq Sebt Oulad Nemma'), 
+            ('Skhirate'), ('Ouezzane'), ('Sidi Yahya Zaer'), ('Al Hoceïma'), ('Mdieq'), ('Midalt'), ('Azrou'), 
+            ('El Kelaa des Srarhna'), ('Ain El Aouda'), ('Beni Yakhlef'), ('Ad Darwa'), ('Al Aaroui'), ('Qasbat Tadla'), 
+            ('Boujad'), ('Jerada'), ('Mrirt'), ('El Aioun'), ('Azemmour'), ('Temsia'), ('Zagora'), ('Ait Ourir'), 
+            ('Aziylal'), ('Sidi Yahia El Gharb'), ('Biougra'), ('Zaio'), ('Aguelmous'), ('El Hajeb'), ('Zeghanghane'), 
+            ('Imzouren'), ('Tit Mellil'), ('Mechraa Bel Ksiri'), ('Al Attawia'), ('Demnat'), ('Arfoud'), ('Tameslouht'),
+            ('Bou Arfa'), ('Sidi Smail'), ('Souk Tnine Jorf el Mellah'), ('Mehdya'), ('Ain Taoujdat'), ('Chichaoua'), 
+            ('Tahla'), ('Oulad Yaïch'), ('Moulay Bousselham'), ('Iheddadene'), ('Missour'), ('Zawyat ech Cheïkh'), 
+            ('Bouknadel'), ('Oulad Tayeb'), ('Oulad Barhil'), ('Bir Jdid'), ('Tifariti');
+    `);
+
+    await prisma.$executeRawUnsafe(`
         INSERT INTO Color 
             (name,          htmlCode)
         VALUES
@@ -28,11 +49,11 @@ async function main() {
 
     await prisma.$executeRawUnsafe(`
         INSERT INTO Company 
-            (name,          companyType,    location,   phone)
+            (name,          companyType,    phone, cityId)
         VALUES
-            ('Ozone',       'Livreur',      'Rabat',    ''),
-            ('Alta',        'Livreur',      'Sale',     ''),
-            ('Redombale',   'Fournisseur',  'Sale',     '');
+            ('Ozone',       'Livreur',      '',    (SELECT id from City WHERE name = 'Rabat')),
+            ('Alta',        'Livreur',      '',    (SELECT id from City WHERE name = 'Sale')),
+            ('Redombale',   'Fournisseur',  '',    (SELECT id from City WHERE name = 'Sale'));
     `);
 
     await prisma.$executeRawUnsafe(`
@@ -103,31 +124,31 @@ async function main() {
             ((SELECT id from Product WHERE name = 'Sac Anse'),      (SELECT id from Color WHERE name = 'Blanc'),        'Anse 50/50 Blanc',     '50/50',    0,        10),
             ((SELECT id from Product WHERE name = 'Sac Anse'),      (SELECT id from Color WHERE name = 'Noire'),        'Anse 50/60 Noire',     '50/60',    0,        10),
             ((SELECT id from Product WHERE name = 'Sac Anse'),      (SELECT id from Color WHERE name = 'Blanc'),        'Anse 50/60 Blanc',     '50/60',    0,        10),
-            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Or'),           'Peinture PVC Or',      '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Noire'),        'Peinture PVC Noire',   '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Vert'),         'Peinture PVC Vert',    '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Blanc'),        'Peinture EAU Blanc',   '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Bleu'),         'Peinture EAU Bleu',    '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Rouge'),        'Peinture EAU Rouge',   '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Vert'),         'Peinture EAU Vert',    '1',        0,          0),
+            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Or'),           'Peinture PVC Or',      '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Noire'),        'Peinture PVC Noire',   '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture PVC'),  (SELECT id from Color WHERE name = 'Vert'),         'Peinture PVC Vert',    '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Blanc'),        'Peinture EAU Blanc',   '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Bleu'),         'Peinture EAU Bleu',    '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Rouge'),        'Peinture EAU Rouge',   '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Peinture EAU'),  (SELECT id from Color WHERE name = 'Vert'),         'Peinture EAU Vert',    '1',        0,         0),
             ((SELECT id from Product WHERE name = 'Calque'),        (SELECT id from Color WHERE name = 'Transparent'),  'Calque',               '1',        0,        10),
-            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 90',             '90',       0,          0),
-            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 120',            '120',      0,          0),
-            ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Normale',        '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Couvrante',      '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 20/30',        '20/30',    0,          0),
-            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 30/40',        '30/40',    0,          0),
-            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 40/50',        '40/50',    0,          0),
-            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - L',            'L',        0,          0),
-            ((SELECT id from Product WHERE name = 'Gelatine'),      (SELECT id from Color WHERE name = 'Transparent'),  'Gelatine Normale',     '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Gelatine'),      (SELECT id from Color WHERE name = 'Transparent'),  'Gelatine Sati',        '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 30',          '30',       0,          0),
-            ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 25',          '25',       0,          0),
-            ((SELECT id from Product WHERE name = 'Bisagra'),       (SELECT id from Color WHERE name = 'Transparent'),  'Bizagra',              '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Dulio'),         (SELECT id from Color WHERE name = 'Transparent'),  'Dulio 1050',           '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Cyclo'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cyclo',                '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Scotche'),       (SELECT id from Color WHERE name = 'Transparent'),  'Scotche',              '1',        0,          0),
-            ((SELECT id from Product WHERE name = 'Decapant'),      (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,          0);
+            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 90',             '90',       0,         0),
+            ((SELECT id from Product WHERE name = 'La Soie'),       (SELECT id from Color WHERE name = 'Transparent'),  'Laswa 120',            '120',      0,         0),
+            ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Normale',        '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Patte'),         (SELECT id from Color WHERE name = 'Transparent'),  'Patte Couvrante',      '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 20/30',        '20/30',    0,         0),
+            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 30/40',        '30/40',    0,         0),
+            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - 40/50',        '40/50',    0,         0),
+            ((SELECT id from Product WHERE name = 'Cadre'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cadre - L',            'L',        0,         0),
+            ((SELECT id from Product WHERE name = 'Gelatine'),      (SELECT id from Color WHERE name = 'Transparent'),  'Gelatine Normale',     '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Gelatine'),      (SELECT id from Color WHERE name = 'Transparent'),  'Gelatine Sati',        '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 30',          '30',       0,         0),
+            ((SELECT id from Product WHERE name = 'Raclette'),      (SELECT id from Color WHERE name = 'Transparent'),  'Raclette 25',          '25',       0,         0),
+            ((SELECT id from Product WHERE name = 'Bisagra'),       (SELECT id from Color WHERE name = 'Transparent'),  'Bizagra',              '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Dulio'),         (SELECT id from Color WHERE name = 'Transparent'),  'Dulio 1050',           '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Cyclo'),         (SELECT id from Color WHERE name = 'Transparent'),  'Cyclo',                '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Scotche'),       (SELECT id from Color WHERE name = 'Transparent'),  'Scotche',              '1',        0,         0),
+            ((SELECT id from Product WHERE name = 'Decapant'),      (SELECT id from Color WHERE name = 'Transparent'),  'Decapot',              '1',        0,         0);
     `);
 
     console.log("Seeding completed successfully!");

@@ -30,6 +30,13 @@ model User {
   password String
 }
 
+model City {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  company Company[]
+}
+
 model Color {
   id       Int    @id @default(autoincrement())
   name     String
@@ -64,9 +71,10 @@ model Company {
   id          Int         @id @default(autoincrement())
   name        String
   companyType CompanyType
-  location    String?
   phone       String?
+  cityId      Int
 
+  city           City            @relation(fields: [cityId], references: [id])
   orders         Order[]
   shipping       Shipping[]
   companyDesigns CompanyDesign[]
