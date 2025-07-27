@@ -8,7 +8,7 @@ import CompanyResource from "./company/CompanyResource";
 import ColorResource from "./color/ColorResource";
 import ProductVariationResource from "./product/product-variation/ProductVariationResource";
 import CompanyDesignResource from "./company/company-design/CompanyDesignResource";
-import CityResource from "./City/CityResource";
+import CityResource from "./city/CityResource";
 
 const router = express.Router();
 
