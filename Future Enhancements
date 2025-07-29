@@ -1,6 +1,3 @@
-Problems:
-8 - Sync Inventory/Expenses after order state finished, to be in a separate modal
-
 Improvements:
 1 - Introduce new tables
     1.1 - Size Table
@@ -47,63 +44,6 @@ Improvements:
                 product   Product[]
             }
         ```
-
-    1.3 - Cities Table (this should be considered in companies)
-        ```
-            model City {
-                id        Int     @id @default(autoincrement())
-                name      String
-            }
-        ```
-
-2 - Move all flags from ProductType to Product
-    ```
-        model Product {
-            id            Int            @id @default(autoincrement())
-            name          String
-
-            isLayer       Boolean
-            isPaint       Boolean
-            isSellable    Boolean
-            isPrintable   Boolean
-            isPaintTool   Boolean
-            isPrintTool   Boolean
-
-            productTypeId Int
-
-            productType       ProductType    @relation(fields: [productTypeId], references: [id])
-            productVariation  ProductVariation[]
-        }
-    ```
-3 - Adjust OrderLine to contain  sellable product related fields (`productVariationId`, `quantity`, `unitPrice`)
-    and keep `OrderLineProductVariation` only for consumable products, and rename `OrderLineProductVariation` to `OrderLineConsumedVariation`
-    ```
-        model OrderLine {
-            id                  Int      @id @default(autoincrement())
-            orderId             Int
-            designId            Int?
-            productVariationId  Int
-            quantity            Int
-            unitPrice           Decimal @db.Decimal(10, 2) @default(0.00)
-
-            order               Order   @relation(fields: [orderId], references: [id])
-            productVariation    ProductVariation @relation(fields: [productVariationId], references: [id])
-            design              CompanyDesign? @relation(fields: [designId], references: [id])
-
-            consumedVariations OrderLineProductVariation[]
-        }
-
-        model OrderLineProductVariation {
-            orderLineId        Int
-            productVariationId Int
-            quantity           Int
-
-            orderLine OrderLine @relation(fields: [orderLineId], references: [id])
-            productVariation ProductVariation @relation(fields: [productVariationId], references: [id])
-
-            @@id([orderLineId, productVariationId])
-        }
-    ```
 
 4 - Ability to track the status history
     4.1 - Create a new `OrderStatusHistory` model
