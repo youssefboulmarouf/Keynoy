@@ -99,20 +99,23 @@ model DesignImage {
 }
 
 model ProductType {
-  id          Int     @id @default(autoincrement())
-  name        String
-  isPrintable Boolean
-  isPaint     Boolean
-  isTool      Boolean
+  id   Int    @id @default(autoincrement())
+  name String
 
   product Product[]
 }
 
 model Product {
-  id            Int     @id @default(autoincrement())
-  name          String
-  isSellable    Boolean
-  isLayer       Boolean
+  id   Int    @id @default(autoincrement())
+  name String
+
+  isLayer     Boolean
+  isPaint     Boolean
+  isSellable  Boolean
+  isPrintable Boolean
+  isPaintTool Boolean
+  isPrintTool Boolean
+
   productTypeId Int
 
   productType      ProductType        @relation(fields: [productTypeId], references: [id])

@@ -14,6 +14,7 @@ import ProductFilter from "./ProductFilter";
 
 interface FilterProps {
     searchTerm: string;
+    sellable: boolean;
     productType: ProductTypeJson | null;
 }
 
@@ -32,11 +33,15 @@ const emptyProduct: ProductJson = {
     name: "",
     isSellable: false,
     isLayer: false,
+    isPaint: false,
+    isPrintable: false,
+    isPaintTool: false,
+    isPrintTool: false,
     productTypeId: 0
 }
 
 const Products: React.FC = () => {
-    const [filters, setFilters] = useState<FilterProps>({searchTerm: "", productType: null});
+    const [filters, setFilters] = useState<FilterProps>({searchTerm: "", sellable: false, productType: null});
     const {products, addProduct, editProduct, removeProduct, loading: isLoadingProducts} = useProductsContext();
     const {productTypes, loading: isLoadingProductTypes} = useProductTypesContext();
     const productDialog = useDialogController<ProductJson>(emptyProduct);
@@ -50,8 +55,9 @@ const Products: React.FC = () => {
             const productNameMatchSearch = filters.searchTerm ? productName.includes(searchTerm) : true;
             const productTypeNameMatchSearch = filters.searchTerm ? productTypeName.includes(searchTerm) : true;
             const productIsPartOfType = filters.productType ? p.productTypeId === filters.productType.id : true;
+            const sellableProducts = filters.sellable ? p.isSellable : true;
 
-            return (productNameMatchSearch || productTypeNameMatchSearch) && productIsPartOfType;
+            return (productNameMatchSearch || productTypeNameMatchSearch) && sellableProducts && productIsPartOfType;
         }) || [];
     }, [products, filters, productTypes]);
 

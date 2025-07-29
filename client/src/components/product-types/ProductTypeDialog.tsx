@@ -1,4 +1,4 @@
-import {Dialog, DialogActions, DialogContent, DialogTitle, Stack, Switch, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField} from "@mui/material";
 import Button from "@mui/material/Button";
 import React, {FC, useEffect, useState} from "react";
 import {ModalTypeEnum, ProductTypeJson} from "../../model/KeynoyModels";
@@ -17,16 +17,10 @@ interface ProductTypeDialogProps {
 const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, dialogType, openDialog, closeDialog}) => {
     const { addProductType, editProductType, removeProductType } = useProductTypesContext();
     const [productTypeName, setProductTypeName] = useState<string>("");
-    const [productTypePrintable, setProductTypePrintable] = useState<boolean>(false);
-    const [productTypePaint, setProductTypePaint] = useState<boolean>(false);
-    const [productTypeTool, setProductTypeTool] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
         setProductTypeName(concernedProductType.name);
-        setProductTypePrintable(concernedProductType.isPrintable);
-        setProductTypePaint(concernedProductType.isPaint);
-        setProductTypeTool(concernedProductType.isTool);
     }, [concernedProductType]);
 
     const handleSubmit = async () => {
@@ -39,18 +33,12 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
         } else if (dialogType === ModalTypeEnum.ADD) {
             await addProductType({
                 id: 0,
-                name: productTypeName,
-                isPrintable: productTypePrintable,
-                isPaint: productTypePaint,
-                isTool: productTypeTool
+                name: productTypeName
             });
         } else {
             await editProductType({
                 id: concernedProductType.id,
-                name: productTypeName,
-                isPrintable: productTypePrintable,
-                isPaint: productTypePaint,
-                isTool: productTypeTool
+                name: productTypeName
             });
         }
 
@@ -60,9 +48,6 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
     
     const emptyForm = () => {
         setProductTypeName("");
-        setProductTypePrintable(false);
-        setProductTypePaint(false);
-        setProductTypeTool(false);
 
         closeDialog();
     }
@@ -89,33 +74,6 @@ const ProductTypeDialog: FC<ProductTypeDialogProps> = ({concernedProductType, di
                             fullWidth
                             value={productTypeName}
                             onChange={(e: any) => setProductTypeName(e.target.value)}
-                            disabled={dialogType === ModalTypeEnum.DELETE}
-                        />
-
-                        <FormLabel>Support Impresseion</FormLabel>
-                        <Switch
-                            checked={productTypePrintable}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
-                                setProductTypePrintable(checked)
-                            }
-                            disabled={dialogType === ModalTypeEnum.DELETE}
-                        />
-
-                        <FormLabel>Peinture</FormLabel>
-                        <Switch
-                            checked={productTypePaint}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
-                                setProductTypePaint(checked)
-                            }
-                            disabled={dialogType === ModalTypeEnum.DELETE}
-                        />
-
-                        <FormLabel>Outils</FormLabel>
-                        <Switch
-                            checked={productTypeTool}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
-                                setProductTypeTool(checked)
-                            }
                             disabled={dialogType === ModalTypeEnum.DELETE}
                         />
                     </Stack>

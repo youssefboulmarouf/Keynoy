@@ -28,9 +28,6 @@ export enum CompanyTypeEnum {
 export type ProductTypeJson = {
     id: number;
     name: string;
-    isPrintable: boolean;
-    isPaint: boolean;
-    isTool: boolean;
 };
 
 export type ProductJson = {
@@ -38,6 +35,10 @@ export type ProductJson = {
     name: string;
     isSellable: boolean;
     isLayer: boolean;
+    isPaint: boolean;
+    isPrintable: boolean;
+    isPaintTool: boolean;
+    isPrintTool: boolean;
     productTypeId: number;
 }
 

@@ -34,6 +34,10 @@ export class ProductService extends BaseService {
                 name: product.getName(),
                 isSellable: product.getSellable(),
                 isLayer: product.getLayer(),
+                isPaint: product.getPaint(),
+                isPrintable: product.getPrintable(),
+                isPaintTool: product.getPaintTool(),
+                isPrintTool: product.getPrintTool(),
                 productTypeId: product.getProductTypeId()
             }
         });
@@ -59,6 +63,10 @@ export class ProductService extends BaseService {
                 name: product.getName(),
                 isSellable: product.getSellable(),
                 isLayer: product.getLayer(),
+                isPaint: product.getPaint(),
+                isPrintable: product.getPrintable(),
+                isPaintTool: product.getPaintTool(),
+                isPrintTool: product.getPrintTool(),
                 productTypeId: product.getProductTypeId()
             }
         })

@@ -30,6 +30,10 @@ const ProductDialog: FC<ProductDialogProps> = ({
     const [productName, setProductName] = useState<string>("");
     const [sellable, setSellable] = useState<boolean>(false);
     const [layer, setLayer] = useState<boolean>(false);
+    const [paint, setPaint] = useState<boolean>(false);
+    const [printable, setPrintable] = useState<boolean>(false);
+    const [paintTool, setPaintTool] = useState<boolean>(false);
+    const [printTool, setPrintTool] = useState<boolean>(false);
     const [productType, setProductType] = useState<ProductTypeJson | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -37,6 +41,10 @@ const ProductDialog: FC<ProductDialogProps> = ({
         setProductName(selectedProduct.name);
         setSellable(selectedProduct.isSellable);
         setLayer(selectedProduct.isLayer);
+        setPaint(selectedProduct.isPaint);
+        setPrintable(selectedProduct.isPrintable);
+        setPaintTool(selectedProduct.isPaintTool);
+        setPrintTool(selectedProduct.isPrintTool);
         setProductType(productsType.find(pt => pt.id === selectedProduct.productTypeId) || null);
     }, [selectedProduct]);
 
@@ -54,6 +62,10 @@ const ProductDialog: FC<ProductDialogProps> = ({
                 name: productName,
                 isSellable: sellable,
                 isLayer: layer,
+                isPaint: paint,
+                isPrintable: printable,
+                isPaintTool: paintTool,
+                isPrintTool: printTool,
                 productTypeId: productType.id
             });
         } else {
@@ -62,6 +74,10 @@ const ProductDialog: FC<ProductDialogProps> = ({
                 name: productName,
                 isSellable: sellable,
                 isLayer: layer,
+                isPaint: paint,
+                isPrintable: printable,
+                isPaintTool: paintTool,
+                isPrintTool: printTool,
                 productTypeId: productType.id
             });
         }
@@ -74,6 +90,10 @@ const ProductDialog: FC<ProductDialogProps> = ({
         setProductName("");
         setSellable(false);
         setLayer(false);
+        setPaint(false);
+        setPrintable(false);
+        setPaintTool(false);
+        setPrintTool(false);
         setProductType(null);
 
         closeDialog();
@@ -132,6 +152,42 @@ const ProductDialog: FC<ProductDialogProps> = ({
                             checked={layer}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
                                 setLayer(checked)
+                            }
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
+
+                        <FormLabel>Peinture</FormLabel>
+                        <Switch
+                            checked={paint}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                                setPaint(checked)
+                            }
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
+
+                        <FormLabel>Outils Peinture</FormLabel>
+                        <Switch
+                            checked={paintTool}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                                setPaintTool(checked)
+                            }
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
+
+                        <FormLabel>Support Impression</FormLabel>
+                        <Switch
+                            checked={printable}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                                setPrintable(checked)
+                            }
+                            disabled={dialogType === ModalTypeEnum.DELETE}
+                        />
+
+                        <FormLabel>Outils Impression</FormLabel>
+                        <Switch
+                            checked={printTool}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>
+                                setPrintTool(checked)
                             }
                             disabled={dialogType === ModalTypeEnum.DELETE}
                         />

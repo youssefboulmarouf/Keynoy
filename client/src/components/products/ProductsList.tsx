@@ -37,7 +37,10 @@ const ProductsList: React.FC<ProductsListProps> = ({
                     <TableCell><Typography variant="h6" fontSize="14px">Nom Produit</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Type</Typography></TableCell>
                     <TableCell><Typography variant="h6" fontSize="14px">Vendable</Typography></TableCell>
-                    <TableCell><Typography variant="h6" fontSize="14px">Calque</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Support Impression</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Outils Impression</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Peinture</Typography></TableCell>
+                    <TableCell><Typography variant="h6" fontSize="14px">Outils Peinture</Typography></TableCell>
                     <TableCell align="right"><Typography variant="h6" fontSize="14px">Actions</Typography></TableCell>
                 </TableRow>
             </TableHead>
@@ -61,7 +64,40 @@ const ProductsList: React.FC<ProductsListProps> = ({
                             )}
                         </TableCell>
                         <TableCell>
-                            {product.isLayer ? (
+                            {product.isPrintable ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {product.isPrintTool ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {product.isPaint ? (
+                                <IconButton color="success">
+                                    <CheckIcon width={22} />
+                                </IconButton>
+                            ) : (
+                                <IconButton color="error">
+                                    <ClearIcon width={22} />
+                                </IconButton>
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {product.isPaintTool ? (
                                 <IconButton color="success">
                                     <CheckIcon width={22} />
                                 </IconButton>

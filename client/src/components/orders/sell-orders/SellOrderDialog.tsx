@@ -87,7 +87,6 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
 
     const {companies} = useCompaniesContext();
     const {colors} = useColorContext();
-    const {productTypes} = useProductTypesContext();
     const {products} = useProductsContext();
     const {variations} = useProductVariationContext();
     const {designs} = useCompaniesDesignsContext();
@@ -117,13 +116,7 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     }
 
     const deducePaints = (orderLine: OrderLineJson) => {
-        const paintProductTypeIds = productTypes
-            .filter(pt => pt.isPaint && !pt.isPrintable && !pt.isTool)
-            .map(pt => pt.id);
-
-        const paintProductIds = products
-            .filter(p => paintProductTypeIds.includes(p.productTypeId))
-            .map(p => p.id);
+        const paintProductIds = products.filter(p => p.isPaint).map(p => p.id);
 
         const paintVariationIds = variations
             .filter(v => paintProductIds.includes(v.productId))
@@ -395,7 +388,6 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
                 <SellOrderLineDialog
                     openDialog={orderLineDialog.open}
                     closeDialog={orderLineDialog.closeDialog}
-                    productTypes={productTypes}
                     products={products}
                     variations={variations}
                     colors={colors}

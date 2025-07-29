@@ -23,9 +23,6 @@ const bCrumb = [
 const emptyProductType: ProductTypeJson = {
     id: 0,
     name: "",
-    isPrintable: false,
-    isPaint: false,
-    isTool: false
 }
 
 const ProductTypes: React.FC = () => {

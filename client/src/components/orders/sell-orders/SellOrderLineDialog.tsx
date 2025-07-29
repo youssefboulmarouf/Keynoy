@@ -19,7 +19,6 @@ import NumberField from "../../common/NumberField";
 interface SellOrderLineDialogProps {
     openDialog: boolean;
     closeDialog: () => void;
-    productTypes: ProductTypeJson[];
     products: ProductJson[];
     variations: ProductVariationJson[]
     colors: ColorJson[];
@@ -30,15 +29,12 @@ interface SellOrderLineDialogProps {
 const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
     openDialog,
     closeDialog,
-    productTypes,
     products,
     variations,
     colors,
     designs,
     addOrderLine
 }) => {
-    const [selectedProductType, setSelectedProductType] = useState<ProductTypeJson | null>(null);
-    const [narrowProducts, setNarrowProducts] = useState<ProductJson[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<ProductJson | null>(null);
     const [narrowVariation, setNarrowVariation] = useState<ProductVariationJson[]>([]);
     const [selectedVariant, setSelectedVariant] = useState<ProductVariationJson | null>(null);
@@ -55,24 +51,14 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
     const [totalPrice, setTotalPrice] = useState<number>(0);
 
     useEffect(() => {
-        const paintProductTypeIds = productTypes
-            .filter(pt => pt.isPaint && !pt.isPrintable && !pt.isTool)
-            .map(pt => pt.id);
-        setPaintProducts(products.filter(p => paintProductTypeIds.includes(p.productTypeId)));
+        setPaintProducts(products.filter(p => p.isPaint));
 
-        const paintSupportProductTypeIds = productTypes
-            .filter(pt => pt.isPaint && !pt.isPrintable && pt.isTool)
-            .map(pt => pt.id);
-        const paintSupportProductIds = products.filter(p => paintSupportProductTypeIds.includes(p.productTypeId)).map(p => p.id);
+        const paintSupportProductIds = products.filter(p => p.isPaintTool).map(p => p.id);
         setPaintSupportVariations(variations.filter(v => paintSupportProductIds.includes(v.productId)))
 
         const calqueProductIds = products.filter(p => p.isLayer).map(p => p.id);
         setCalqueVariations(variations.filter(v => calqueProductIds.includes(v.productId)));
-    }, [productTypes, products]);
-
-    useEffect(() => {
-        setNarrowProducts(products.filter(p => p.productTypeId === selectedProductType?.id && p.isSellable));
-    }, [selectedProductType]);
+    }, [products]);
 
     useEffect(() => {
         setNarrowVariation(variations.filter(v => v.productId === selectedProduct?.id));
@@ -139,7 +125,6 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
     }
 
     const handleCloseDialog = () => {
-        setSelectedProductType(null);
         setSelectedProduct(null);
         setSelectedVariant(null);
         setSelectedCalqueVariation(null);
@@ -157,26 +142,9 @@ const SellOrderLineDialog: React.FC<SellOrderLineDialogProps> = ({
             <DialogTitle sx={{ mt: 2 }}>{"Ajouter Ligne Commande"}</DialogTitle>
 
             <DialogContent>
-                <FormLabel>Type Produit</FormLabel>
-                <Autocomplete
-                    options={productTypes.filter(pt => pt.isPrintable && !pt.isPaint && !pt.isTool)}
-                    fullWidth
-                    getOptionKey={(options) => options.id}
-                    getOptionLabel={(options) => options.name}
-                    value={selectedProductType}
-                    onChange={(event: React.SyntheticEvent, newValue: ProductTypeJson | null) => {
-                        setSelectedProductType(newValue)
-                        setSelectedProduct(null)
-                        setSelectedVariant(null)
-                        setQuantity(0)
-                        setUnitPrice(0)
-                    }}
-                    renderInput={(params) => <TextField {...params} placeholder="Type Produit" />}
-                />
-
                 <FormLabel>Produit</FormLabel>
                 <Autocomplete
-                    options={narrowProducts}
+                    options={products.filter(p => p.isSellable)}
                     fullWidth
                     getOptionKey={(options) => options.id}
                     getOptionLabel={(options) => options.name}

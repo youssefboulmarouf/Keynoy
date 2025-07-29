@@ -10,7 +10,7 @@ import {
     TableRow,
     TextField
 } from "@mui/material";
-import {OrderJson, OrderLineJson, OrderStatusEnum} from "../../../model/KeynoyModels";
+import {OrderJson} from "../../../model/KeynoyModels";
 import Typography from "@mui/material/Typography";
 import {useProductVariationContext} from "../../../context/ProductVariationContext";
 import {useColorContext} from "../../../context/ColorsContext";
@@ -27,8 +27,8 @@ interface SyncInventoryDialogProps {
 interface SyncInventoryData {
     orderLineId: number;
     productVariationId: number;
-    quantity: number; // Initial quantity
-    finalQuantity: number; // Editable quantity
+    quantity: number;
+    finalQuantity: number;
 }
 
 const SyncInventoryDialog: React.FC<SyncInventoryDialogProps> = ({
