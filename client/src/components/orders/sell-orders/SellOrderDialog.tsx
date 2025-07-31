@@ -208,7 +208,12 @@ const SellOrderDialog: React.FC<OrderDialogProps> = ({
     }
 
     const actionText = `${dialogType} Commande ${OrderTypeEnum.SELL}`;
-    const actionButton = getActionButton(dialogType, handleSubmit, actionText);
+    const actionButton = getActionButton(
+        dialogType,
+        handleSubmit,
+        actionText,
+        concernedOrder.inventoryUpdated && concernedOrder.expenseUpdated
+    );
 
     return (
         <>
