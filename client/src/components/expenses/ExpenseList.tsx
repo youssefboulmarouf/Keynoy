@@ -38,7 +38,7 @@ const ExpenseList: React.FC<ExpenseListProps> = ({expenses, loading, handleOpenD
                 </TableRow>
             </TableHead>
             <TableBody>
-                {expenses.map((exp, i) => (
+                {paginationController.data.map((exp, i) => (
                     <TableRow key={exp.id}>
                         <TableCell>{exp.id}</TableCell>
                         <TableCell>{exp.name}</TableCell>
