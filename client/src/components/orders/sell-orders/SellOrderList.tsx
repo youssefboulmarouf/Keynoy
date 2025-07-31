@@ -11,7 +11,6 @@ import ShippingButton from "../../common/buttons/ShippingButton";
 import EditButton from "../../common/buttons/EditButton";
 import DeleteButton from "../../common/buttons/DeleteButton";
 import SyncInventoryButton from "../../common/buttons/SyncInventoryButton";
-import SyncExpenseButton from "../../common/buttons/SyncExpenseButton";
 import {useDialogController} from "../../common/useDialogController";
 import SyncInventoryDialog from "./SyncInventoryDialog";
 
@@ -93,7 +92,7 @@ const SellOrderList: React.FC<SellOrdersListProps> = ({
                         return (
                             <TableRow key={order.id}>
                                 <TableCell>{order.id}</TableCell>
-                                <TableCell>{company ? `${company.name} - ${company.phone}` : '-'}</TableCell>
+                                <TableCell>{company ? `${company.name} - ${company.phone ?? ''}` : '-'}</TableCell>
                                 <TableCell><OrderStatusChip orderStatus={order.orderStatus} /></TableCell>
                                 <TableCell>{order.totalPrice}</TableCell>
                                 <TableCell>{formatDate(order.date)}</TableCell>
