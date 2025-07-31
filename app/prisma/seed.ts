@@ -9,21 +9,26 @@ async function main() {
         INSERT INTO City
             (name)
         VALUES
-            ('Casablanca'), ('Fes'), ('Marrakech'), ('Tangier'), ('Sale'), ('Rabat'), ('Meknes'), ('Oujda'), 
-            ('Kenitra'), ('Agadir'), ('Tétouan'), ('Taourirt'), ('Temara'), ('Safi'), ('Khenifra'), ('El Jadid'), 
+            ('Casablanca'), ('Fes'), ('Marrakech'), ('Tanger'), ('Sale'), ('Rabat'), ('Meknes'), ('Oujda'), 
+            ('Kenitra'), ('Agadir'), ('Tetouan'), ('Taourirt'), ('Temara'), ('Safi'), ('Khenifra'), ('El Jadida'), 
             ('Laayoune'), ('Mohammedia'), ('Khouribga'), ('Beni Mellal'), ('Ait Melloul'), ('Nador'), ('Taza'), 
             ('Settat'), ('Barrechid'), ('Al Khmissat'), ('Inezgane'), ('Ksar El Kebir'), ('My Drarga'), ('Larache'), 
             ('Guelmim'), ('Berkane'), ('Ad Dakhla'), ('Bouskoura'), ('Al Fqih Ben Salah'), ('Oued Zem'), ('Sidi Slimane'), 
             ('Errachidia'), ('Guercif'), ('Oulad Teima'), ('Ben Guerir'), ('Sefrou'), ('Fnidq'), ('Sidi Qacem'), 
             ('Tiznit'), ('Moulay Abdallah'), ('Youssoufia'), ('Martil'), ('Ain Harrouda'), ('Souq Sebt Oulad Nemma'), 
             ('Skhirate'), ('Ouezzane'), ('Sidi Yahya Zaer'), ('Al Hoceïma'), ('Mdieq'), ('Midalt'), ('Azrou'), 
-            ('El Kelaa des Srarhna'), ('Ain El Aouda'), ('Beni Yakhlef'), ('Ad Darwa'), ('Al Aaroui'), ('Qasbat Tadla'), 
+            ('Kelaa des Sraghna'), ('Ain Aouda'), ('Beni Yakhlef'), ('Ad Darwa'), ('Al Aaroui'), ('Qasbat Tadla'), 
             ('Boujad'), ('Jerada'), ('Mrirt'), ('El Aioun'), ('Azemmour'), ('Temsia'), ('Zagora'), ('Ait Ourir'), 
             ('Aziylal'), ('Sidi Yahia El Gharb'), ('Biougra'), ('Zaio'), ('Aguelmous'), ('El Hajeb'), ('Zeghanghane'), 
             ('Imzouren'), ('Tit Mellil'), ('Mechraa Bel Ksiri'), ('Al Attawia'), ('Demnat'), ('Arfoud'), ('Tameslouht'),
             ('Bou Arfa'), ('Sidi Smail'), ('Souk Tnine Jorf el Mellah'), ('Mehdya'), ('Ain Taoujdat'), ('Chichaoua'), 
             ('Tahla'), ('Oulad Yaïch'), ('Moulay Bousselham'), ('Iheddadene'), ('Missour'), ('Zawyat ech Cheïkh'), 
-            ('Bouknadel'), ('Oulad Tayeb'), ('Oulad Barhil'), ('Bir Jdid'), ('Tifariti');
+            ('Bouknadel'), ('Oulad Tayeb'), ('Oulad Barhil'), ('Bir Jdid'), ('Tifariti'), ('Oued Laou'), ('Outat El Haj'), 
+            ('Marzouga'), ('Tafraoute'), ('Bouznika'), ('Tighassaline'), ('Ouarzazate'), ('Mediouna'), ('Errahma'), 
+            ('Souk Larbaa'), ('Tissint Tata'), ('Tamessna'), ('Taounate'), ('Tifelt'), ('Targist'), ('Essaouira'), 
+            ('Oulad Jerrar'), ('Tinghir'), ('Aklim'), ('Hociema'), ('Boujdour'), ('Sidi Ifni'), ('El Ksiba'), 
+            ('Khemiss Zmamra'), ('Boumia'), ('Belfaa'), ('Souk Sebt'), ('Ain Atiq'),
+        ;
     `);
 
     await prisma.$executeRawUnsafe(`
@@ -51,9 +56,9 @@ async function main() {
         INSERT INTO Company 
             (name,        companyType,   phone, cityId)
         VALUES
-            ('Ozone',     'Livreur',     '',    (SELECT id from City WHERE name = 'Rabat')),
-            ('Alta',      'Livreur',     '',    (SELECT id from City WHERE name = 'Sale')),
-            ('Redombale', 'Fournisseur', '',    (SELECT id from City WHERE name = 'Sale'));
+            ('Ozone',     'Livreur',     null,    (SELECT id from City WHERE name = 'Rabat')),
+            ('Alta',      'Livreur',     null,    (SELECT id from City WHERE name = 'Sale')),
+            ('Redombale', 'Fournisseur', null,    (SELECT id from City WHERE name = 'Sale'));
     `);
 
     await prisma.$executeRawUnsafe(`
