@@ -71,7 +71,7 @@ model Company {
   id          Int         @id @default(autoincrement())
   name        String
   companyType CompanyType
-  phone       String?
+  phone       String?     @unique
   cityId      Int
 
   city           City            @relation(fields: [cityId], references: [id])
