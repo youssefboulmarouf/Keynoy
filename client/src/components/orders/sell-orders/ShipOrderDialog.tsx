@@ -48,7 +48,7 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
         setCustomer(customers.find(c => c.id === concernedOrder.companyId) ?? null)
         setIsShipped(concernedOrder.orderStatus >= OrderStatusEnum.SHIPPED)
         setIsDelivered(concernedOrder.orderStatus >= OrderStatusEnum.DELIVERED)
-    }, [concernedOrder])
+    }, [openDialog])
 
     useEffect(() => {
         setSelectedShipper(shippers.find(c => c.id === shippingDetails?.companyId) ?? null)
@@ -189,7 +189,12 @@ const ShipOrderDialog: React.FC<ShipOrderDialogProps> = ({
             <DialogActions>
                 {(concernedOrder.orderStatus < OrderStatusEnum.SHIPPED)
                     ? <Button variant="contained" color="primary" onClick={handleDialogAction}>Ajouter Livraison</Button>
-                    : <Button variant="contained" color="warning" onClick={handleDialogAction}>Modifier Livraison</Button>
+                    : <Button
+                        variant="contained"
+                        color="warning"
+                        onClick={handleDialogAction}
+                        disabled={shippingDetails?.deliveryDate != null}
+                    >Modifier Livraison</Button>
                 }
                 <Button variant="outlined" onClick={() => handleCloseDialog()}>Cancel</Button>
             </DialogActions>
