@@ -109,12 +109,10 @@ const BuyOrderDialog: React.FC<OrderDialogProps> = ({
     }, [openDialog]);
 
     useEffect(() => {
-        if (dialogType === ModalTypeEnum.ADD) {
-            setTotalPrice(
-                orderLines
-                    .reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0)
-            )
-        }
+        setTotalPrice(
+            orderLines
+                .reduce((pv, ol) => pv + ol.unitPrice * ol.quantity, 0)
+        )
     }, [orderLines]);
 
     const handleAddOrderLine = (newOrderLine: OrderLineJson) => {
