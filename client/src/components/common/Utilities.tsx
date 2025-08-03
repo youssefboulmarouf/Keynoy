@@ -31,3 +31,21 @@ export const getFirstDayOfCurrentMonth = () => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
 };
+
+export const getCurrentMonthKey = (): string => {
+    const now = new Date();
+    return `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+}
+
+export const  getPastMonthKey = (): string => {
+    const now = new Date();
+    let month = now.getMonth() - 1;
+    let year = now.getFullYear();
+
+    if (month < 0) {
+        month = 11; // December
+        year -= 1;
+    }
+
+    return `${String(month + 1).padStart(2, "0")}/${year}`;
+}
